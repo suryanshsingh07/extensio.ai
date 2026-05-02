@@ -1,0 +1,138 @@
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MessageSquarePlus, Star, Send, CheckCircle2, AlertTriangle, Lightbulb } from 'lucide-react';
+
+export default function FeedbackPortal() {
+  const [rating, setRating] = useState(0);
+  const [hoveredRating, setHoveredRating] = useState(0);
+  const [category, setCategory] = useState('GENERAL_SATISFACTION');
+  const [comment, setComment] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (rating === 0) return;
+    
+    setIsSubmitting(true);
+    // Simulate API call to IntelligenceService
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+    }, 1200);
+  };
+
+  return (
+    <section className="w-full max-w-5xl px-4 md:px-6 py-12 border-t border-white/5 mx-auto">
+      <div className="flex items-center gap-3 mb-8 text-center justify-center flex-col md:flex-row">
+        <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-400 mb-4 md:mb-0">
+          <MessageSquarePlus className="w-6 h-6" />
+        </div>
+        <div className="text-center md:text-left">
+          <h2 className="text-3xl font-bold">Help Us Learn</h2>
+          <p className="text-gray-400">Extensio.ai gets smarter with your feedback. Tell us how/what the Ai did</p>
+        </div>
+      </div>
+      <div className="glass-panel p-8 rounded-3xl border border-white/5 max-w-2xl mx-auto relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
+        <AnimatePresence mode="wait">
+          {!isSubmitted ? (
+            <motion.form key="form"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, y: -20 }}
+              onSubmit={handleSubmit}
+              className="relative z-10">
+              {/* Star Rating */}
+              <div className="mb-8">
+                <label className="block text-sm font-medium text-gray-300 mb-3 text-center">Rate the generated code quality</label>
+                <div className="flex justify-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button key={star}
+                      type="button"
+                      onClick={() => setRating(star)}
+                      onMouseEnter={() => setHoveredRating(star)}
+                      onMouseLeave={() => setHoveredRating(0)}
+                      className="focus:outline-none transition-transform hover:scale-110 active:scale-95 cursor-pointer">
+                      <Star 
+                        className={`w-10 h-10 transition-colors ${
+                          star <= (hoveredRating || rating) 
+                            ? 'fill-yellow-400 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]' 
+                            : 'text-gray-600 hover:text-gray-500'
+                        }`}/>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Category Selection */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                <button type="button"
+                  onClick={() => setCategory('BUG_REPORT')}
+                  className={`py-3 px-4 rounded-xl border flex flex-col items-center gap-2 transition-all cursor-pointer ${category === 'BUG_REPORT' ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-surface border-white/5 text-gray-400 hover:bg-white/5'}`}>
+                  <AlertTriangle className="w-5 h-5" />
+                  <span className="text-xs font-medium">Report Bug</span>
+                </button>
+                <button type="button"
+                  onClick={() => setCategory('GENERAL_SATISFACTION')}
+                  className={`py-3 px-4 rounded-xl border flex flex-col items-center gap-2 transition-all cursor-pointer ${category === 'GENERAL_SATISFACTION' ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400' : 'bg-surface border-white/5 text-gray-400 hover:bg-white/5'}`}>
+                  <Star className="w-5 h-5" />
+                  <span className="text-xs font-medium">General Rating</span>
+                </button>
+                <button type="button"
+                  onClick={() => setCategory('FEATURE_REQUEST')}
+                  className={`py-3 px-4 rounded-xl border flex flex-col items-center gap-2 transition-all cursor-pointer ${category === 'FEATURE_REQUEST' ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-surface border-white/5 text-gray-400 hover:bg-white/5'}`}>
+                  <Lightbulb className="w-5 h-5" />
+                  <span className="text-xs font-medium">Feature Idea</span>
+                </button>
+              </div>
+
+              {/* Comment Box */}
+              <div className="mb-6">
+                <label htmlFor="comment" className="block text-sm font-medium text-gray-300 mb-2">
+                  Additional Details (Optional)
+                </label>
+                <textarea id="comment"
+                  rows="4"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="What did the AI get right or wrong?"
+                  className="w-full bg-surface border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-none"/>
+              </div>
+              <button type="submit"
+                disabled={rating === 0 || isSubmitting}
+                className={`w-full py-3 rounded-xl font-medium flex justify-center items-center gap-2 transition-all ${
+                  rating === 0 
+                    ? 'bg-surface text-gray-500 cursor-not-allowed border border-white/5' 
+                    : 'bg-indigo-500 hover:bg-indigo-600 text-white shadow-[0_0_20px_rgba(99,102,241,0.3)] cursor-pointer'
+                }`}>
+                {isSubmitting ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>Submit to AI Intelligence <Send className="w-4 h-4" /></>
+                )}
+              </button>
+            </motion.form>
+          ) : (
+            <motion.div key="success"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-12 relative z-10">
+              <div className="w-20 h-20 bg-green-500/10 text-green-400 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CheckCircle2 className="w-10 h-10" />
+              </div>
+              <h3 className="text-2xl font-bold mb-2">Feedback Ingested</h3>
+              <p className="text-gray-400 max-w-sm mx-auto">
+                Thank you! Your insights have been routed to our model training pipeline to improve future generations
+              </p>
+              <button onClick={() => { setIsSubmitted(false); setRating(0); setComment(''); }}
+                className="mt-8 text-sm text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer">
+                Submit another report
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </section>
+  );
+}
