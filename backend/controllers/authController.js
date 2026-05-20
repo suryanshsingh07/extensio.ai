@@ -2,11 +2,24 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const BillingService = require('../services/billingService');
+const OrganizationService = require('../services/organizationService');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'supersecretantigravitykey2026';
+const JWT_SECRET = process.env.JWT_SECRET;
 
-// In-memory fallback for detached mode
-const memoryUsers = [];
+// In-memory fallback for detached mode — seed a default admin user synchronously
+// so it's available immediately when the server starts accepting requests.
+// Login with: admin@extensio.ai / Password123
+const memoryUsers = [
+  {
+    _id: 'default-admin-id',
+    email: 'admin@extensio.ai',
+    password: bcrypt.hashSync('Password123', 10),
+    name: 'Default Admin',
+    isAdmin: true,
+    isPremium: true
+  }
+];
 
 class AuthController {
   static async register(req, res) {
@@ -15,6 +28,19 @@ class AuthController {
       
       if (!email || !password) {
         return res.status(400).json({ error: 'Validation Error', message: 'Email and password are required' });
+      }
+
+      const emailRegex = /^\S+@\S+\.\S+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: 'Validation Error', message: 'Malformed email address' });
+      }
+
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+      if (!passwordRegex.test(password)) {
+        return res.status(400).json({
+          error: 'Validation Error',
+          message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.'
+        });
       }
 
       // Detached mode fallback
@@ -38,6 +64,19 @@ class AuthController {
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = new User({ email, password: hashedPassword, name });
       await user.save();
+
+      // Initialize billing and organization services
+      try {
+        await BillingService.initializeUser(user._id);
+        await OrganizationService.createOrganization(
+          user._id,
+          `${user.name || 'Personal'}'s Workspace`,
+          user.email
+        );
+      } catch (serviceErr) {
+        console.error('Error initializing services on registration:', serviceErr);
+        // Continue and return token anyway to keep UX smooth
+      }
 
       const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
       res.status(201).json({ token, user: { id: user._id, email: user.email, name: user.name } });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Lock, User as UserIcon, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -11,6 +11,19 @@ export default function AuthModal() {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isReset, setIsReset] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthModalOpen) {
+      setError('');
+      setEmail('');
+      setPassword('');
+      setName('');
+      setIsReset(false);
+      setResetSuccess(false);
+    }
+  }, [isAuthModalOpen]);
 
   if (!isAuthModalOpen) return null;
 
@@ -20,6 +33,19 @@ export default function AuthModal() {
     e.preventDefault();
     setError('');
     setLoading(true);
+
+    if (isReset) {
+      try {
+        // Simulate sending a reset link via mock SMTP server
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setResetSuccess(true);
+      } catch (err) {
+        setError('Failed to send reset link.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
 
     let res;
     if (isLogin) {
@@ -40,6 +66,8 @@ export default function AuthModal() {
     setEmail('');
     setPassword('');
     setName('');
+    setIsReset(false);
+    setResetSuccess(false);
   };
 
   return (
@@ -66,88 +94,150 @@ export default function AuthModal() {
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-6">
               <img src="/logo.png" className="h-10 w-10 object-contain"/>
-              <h2 className="text-2xl font-bold">{isLogin ? 'Welcome back' : 'Create account'}</h2>
+              <h2 className="text-2xl font-bold">
+                {isReset ? 'Reset password' : isLogin ? 'Welcome back' : 'Create account'}
+              </h2>
             </div>
             <p className="text-gray-400 text-sm mb-6">
-              {isLogin
+              {isReset
+                ? 'Enter your email address and we will send you a recovery link.'
+                : isLogin
                 ? 'Log in to access your projects and continue building amazing extensions'
-                : 'Join Extensio. to build, package and publish extensions with Ai'}
+                : 'Join Extensio.ai to build, package and publish extensions with AI'}
             </p>
             {error && (
               <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
                 {error}
               </div>
             )}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
-                <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Full Name</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <UserIcon className="h-4 w-4 text-gray-500" />
+            
+            {isReset ? (
+              resetSuccess ? (
+                <div className="space-y-6 text-center py-4">
+                  <div className="w-16 h-16 rounded-2xl bg-green-500/10 border border-green-500/20 flex items-center justify-center mx-auto text-green-400">
+                    <Sparkles className="w-8 h-8 animate-pulse" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-2">Check your email</h3>
+                    <p className="text-gray-400 text-sm leading-relaxed">
+                      We've simulated SMTP email delivery and sent a recovery link to <span className="text-white font-medium">{email}</span>.
+                    </p>
+                  </div>
+                  <button type="button" onClick={() => { setIsReset(false); setResetSuccess(false); }}
+                    className="w-full bg-white/5 hover:bg-white/10 text-white font-medium py-2.5 rounded-xl border border-white/10 transition-colors">
+                    Back to Log In
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Email Address</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Mail className="h-4 w-4 text-gray-500" />
+                      </div>
+                      <input type="email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        className="block w-full pl-10 pr-3 py-2.5 border border-white/10 rounded-xl bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        placeholder="you@example.com"
+                        required/>
                     </div>
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={e => setName(e.target.value)}
-                      className="block w-full pl-10 pr-3 py-2.5 border border-white/10 rounded-xl bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                      placeholder="John Doe"
-                      required={!isLogin}
-                    />
                   </div>
-                </div>
-              )}
-              <div>
-                <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Email Address</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-4 w-4 text-gray-500" />
+                  <button type="submit"
+                    disabled={loading}
+                    className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-xl transition-all shadow-[0_0_15px_rgba(99,102,241,0.4)] mt-2 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                    {loading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                        Sending . . .
+                      </>
+                    ) : (
+                      'Send Reset Link'
+                    )}
+                  </button>
+                  <div className="pt-2 text-center">
+                    <button type="button" onClick={() => setIsReset(false)}
+                      className="text-xs text-gray-400 hover:text-white transition-colors">
+                      Back to Log In
+                    </button>
                   </div>
-                  <input type="email"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-2.5 border border-white/10 rounded-xl bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                    placeholder="you@example.com"
-                    required/>
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider">Password</label>
-                  {isLogin && <a href="#" className="text-xs text-primary hover:text-primary/80 transition-colors">Forgot password?</a>}
-                </div>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className="h-4 w-4 text-gray-500" />
+                </form>
+              )
+            ) : (
+              <>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {!isLogin && (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Full Name</label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <UserIcon className="h-4 w-4 text-gray-500" />
+                        </div>
+                        <input
+                          type="text"
+                          value={name}
+                          onChange={e => setName(e.target.value)}
+                          className="block w-full pl-10 pr-3 py-2.5 border border-white/10 rounded-xl bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                          placeholder="John Doe"
+                          required={!isLogin}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Email Address</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Mail className="h-4 w-4 text-gray-500" />
+                      </div>
+                      <input type="email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        className="block w-full pl-10 pr-3 py-2.5 border border-white/10 rounded-xl bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        placeholder="you@example.com"
+                        required/>
+                    </div>
                   </div>
-                  <input type="password"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-2.5 border border-white/10 rounded-xl bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                    placeholder="••••••••"
-                    required/>
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider">Password</label>
+                      {isLogin && <button type="button" onClick={() => { setIsReset(true); setResetSuccess(false); setError(''); }} className="text-xs text-primary hover:text-primary/80 transition-colors">Forgot password?</button>}
+                    </div>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Lock className="h-4 w-4 text-gray-500" />
+                      </div>
+                      <input type="password"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        className="block w-full pl-10 pr-3 py-2.5 border border-white/10 rounded-xl bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        placeholder="••••••••"
+                        required/>
+                    </div>
+                  </div>
+                  <button type="submit"
+                    disabled={loading}
+                    className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-xl transition-all shadow-[0_0_15px_rgba(99,102,241,0.4)] mt-2 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                    {loading ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                        {isLogin ? 'Logging in . . .' : 'Creating account . . .'}
+                      </>
+                    ) : (
+                      isLogin ? 'Log In' : 'Create Account'
+                    )}
+                  </button>
+                </form>
+                <div className="mt-6 text-center text-sm text-gray-400">
+                  {isLogin ? "Don't have an account? " : "Already have an account? "}
+                  <button onClick={toggleMode}
+                    className="text-white hover:text-primary font-medium transition-colors cursor-pointer">
+                    {isLogin ? 'Sign up' : 'Log in'}
+                  </button>
                 </div>
-              </div>
-              <button type="submit"
-                disabled={loading}
-                className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 px-4 rounded-xl transition-all shadow-[0_0_15px_rgba(99,102,241,0.4)] mt-2 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                {loading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                    {isLogin ? 'Loging in . . .' : 'Creating account . . .'}
-                  </>
-                ) : (
-                  isLogin ? 'Log In' : 'Create Account'
-                )}
-              </button>
-            </form>
-            <div className="mt-6 text-center text-sm text-gray-400">
-              {isLogin ? "Don't have an account? " : "Already have an account? "}
-              <button onClick={toggleMode}
-                className="text-white hover:text-primary font-medium transition-colors cursor-pointer">
-                {isLogin ? 'Sign up' : 'Log in'}
-              </button>
-            </div>
+              </>
+            )}
           </div>
         </motion.div>
       </div>

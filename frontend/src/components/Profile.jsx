@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../config';
 
 export default function Profile() {
-  const { user, token } = useAuth();
+  const { user, setUser, token } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -37,9 +37,7 @@ export default function Profile() {
       
       if (res.ok) {
         setMessage({ type: 'success', text: 'Profile updated successfully!' });
-        // Optionally update the context here, but reloading or waiting for next fetch is fine.
-        // Quick trick: refresh page to update navbar state
-        setTimeout(() => window.location.reload(), 1500);
+        setUser(data);
       } else {
         setMessage({ type: 'error', text: data.message || 'Failed to update profile.' });
       }
@@ -92,6 +90,7 @@ export default function Profile() {
                 <Mail className="h-5 w-5 text-gray-500" />
               </div>
               <input type="email" value={email}
+                onChange={e => setEmail(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 bg-surface border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 required/>
             </div>

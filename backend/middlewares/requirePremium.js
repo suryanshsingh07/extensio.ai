@@ -1,6 +1,10 @@
+const mongoose = require('mongoose');
 const Subscription = require('../models/Subscription');
 const requirePremium = async (req, res, next) => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      return next();
+    }
     const userId = req.user.id; // Assumes auth middleware ran first
     const sub = await Subscription.findOne({ userId });
 

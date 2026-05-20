@@ -1,63 +1,123 @@
 const path = require('path');
 const archiver = require('archiver');
 const generationWorker = require('../workers/generationWorker');
+const StorageService = require('../services/storageService');
+const PackagingService = require('../services/packagingService');
 
 class DownloadController {
   static async downloadExtension(req, res) {
     try {
-      const { token } = req.params;
-      if (!token) return res.status(400).json({ error: 'Download token is required.' });
+      const { token: idOrJobId } = req.params;
+      if (!idOrJobId) return res.status(400).json({ error: 'Download identifier is required.' });
 
-      // Try to get the real job files from the worker
+      // Authenticate via Authorization header or ?token=... query param
+      let user = null;
+      const authHeader = req.headers.authorization;
+      const queryToken = req.query.token;
+      const jwtToken = (authHeader && authHeader.startsWith('Bearer ')) 
+        ? authHeader.split(' ')[1] 
+        : queryToken;
+
+      if (!jwtToken) {
+        return res.status(401).json({ error: 'Unauthorized', message: 'No authentication token provided.' });
+      }
+
+      try {
+        const jwt = require('jsonwebtoken');
+        user = jwt.verify(jwtToken, process.env.JWT_SECRET);
+      } catch (err) {
+        return res.status(401).json({ error: 'Unauthorized', message: 'Invalid or expired token.' });
+      }
+
+      // Try to get the files
       let files = null;
       let extName = 'antigravity-extension';
+
+      // 1. Try to fetch from background generation worker Map
       try {
-        const job = await generationWorker.getJobStatus(token);
-        if (job && job.files && job.files.length > 0) {
-          files = job.files;
-          extName = (job.prompt || 'extension').split(' ').slice(0, 3).join('-').toLowerCase().replace(/[^a-z0-9-]/g, '');
+        const job = await generationWorker.getJobStatus(idOrJobId);
+        if (job) {
+          // Verify ownership
+          if (job.userId !== user.id) {
+            return res.status(403).json({ error: 'Forbidden', message: 'You do not have access to this generation job.' });
+          }
+          if (job.files && job.files.length > 0) {
+            files = job.files;
+            extName = (job.prompt || 'extension').split(' ').slice(0, 3).join('-').toLowerCase().replace(/[^a-z0-9-]/g, '');
+          }
         }
-      } catch (_) { /* Job not found — use fallback */ }
+      } catch (_) { /* Not an active/recent job ID */ }
+
+      // 2. If not found in worker, check database / in-memory Project fallback
+      if (!files) {
+        const mongoose = require('mongoose');
+        const Project = require('../models/Project');
+        const Version = require('../models/Version');
+
+        if (mongoose.connection.readyState === 1) {
+          try {
+            const project = await Project.findById(idOrJobId);
+            if (project) {
+              // Verify ownership
+              if (project.userId.toString() !== user.id) {
+                return res.status(403).json({ error: 'Forbidden', message: 'You do not have access to this project.' });
+              }
+              // Fetch latest version
+              const latestVersionDoc = await Version.findOne({ projectId: project._id })
+                .sort({ versionNumber: -1 });
+              if (latestVersionDoc && latestVersionDoc.files && latestVersionDoc.files.length > 0) {
+                files = latestVersionDoc.files;
+                extName = project.name.split(' ').slice(0, 3).join('-').toLowerCase().replace(/[^a-z0-9-]/g, '');
+              }
+            }
+          } catch (dbErr) {
+            console.warn('Failed to retrieve project from MongoDB:', dbErr);
+          }
+        }
+
+        // 3. Fallback to in-memory project history if not found in DB
+        if (!files) {
+          const ProjectService = require('../services/projectService');
+          try {
+            const userProjects = await ProjectService.getUserProjects(user.id);
+            const project = userProjects.find(p => p._id === idOrJobId);
+            if (project) {
+              const versions = await ProjectService.getProjectHistory(idOrJobId, user.id);
+              if (versions && versions.length > 0 && versions[0].files) {
+                files = versions[0].files;
+                extName = project.name.split(' ').slice(0, 3).join('-').toLowerCase().replace(/[^a-z0-9-]/g, '');
+              }
+            }
+          } catch (err) {
+            console.warn('Failed to retrieve project from memory fallback:', err);
+          }
+        }
+      }
+
+      if (!files || files.length === 0) {
+        return res.status(404).json({ error: 'Not Found', message: 'No extension files found for this build.' });
+      }
 
       res.setHeader('Content-Disposition', `attachment; filename="${extName}.zip"`);
       res.setHeader('Content-Type', 'application/zip');
 
       const archive = archiver('zip', { zlib: { level: 9 } });
-      archive.on('error', err => { throw err; });
+      archive.on('error', err => {
+        console.error('Archiver error:', err);
+        if (!res.headersSent) {
+          res.status(500).json({ error: 'Packaging failed', message: err.message });
+        }
+      });
       archive.pipe(res);
 
-      if (files && files.length > 0) {
-        // Serve the REAL generated extension files
-        for (const file of files) {
-          archive.append(file.content, { name: file.path });
-        }
-      } else {
-        // Fallback: minimal valid MV3 extension
-        const manifest = {
-          manifest_version: 3,
-          name: 'Extensio.ai Extension',
-          version: '1.0.0',
-          description: 'Generated by Extensio.ai AI Engine.',
-          action: { default_popup: 'popup.html', default_title: 'Extensio.ai' },
-          permissions: ['activeTab', 'scripting'],
-          host_permissions: ['<all_urls>']
-        };
-        archive.append(JSON.stringify(manifest, null, 2), { name: 'manifest.json' });
-
-        const popup = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-<style>body{width:280px;padding:20px;font-family:system-ui,sans-serif;background:#0b0b0f;color:#e2e8f0;margin:0;text-align:center;}
-h2{color:#a78bfa;font-size:16px;} button{width:100%;padding:10px;background:#6366f1;border:none;color:#fff;border-radius:8px;cursor:pointer;font-weight:600;margin-top:12px;}
-p{font-size:12px;color:#64748b;}</style></head><body>
-<h2>⚡ Extensio.ai</h2><p>Your extension is ready!</p>
-<button onclick="chrome.tabs.query({active:true,currentWindow:true},t=>chrome.scripting.executeScript({target:{tabId:t[0].id},func:()=>alert('Extensio.ai extension active!')}))">
-Activate</button></body></html>`;
-        archive.append(popup, { name: 'popup.html' });
+      for (const file of files) {
+        archive.append(file.content, { name: file.path });
       }
 
       await archive.finalize();
     } catch (error) {
       console.error('Download error:', error);
-      if (!res.headersSent) res.status(500).json({ error: error.message });
+      if (!res.headersSent) res.status(500).json({ error: 'Download failed', message: error.message });
     }
   }
 }

@@ -116,9 +116,10 @@ class ProjectService {
       if (idx !== -1) {
         memoryProjects.splice(idx, 1);
         // Also remove versions
-        const versionIdx = memoryVersions.findIndex(v => v.projectId === projectId);
+        let versionIdx = memoryVersions.findIndex(v => v.projectId === projectId);
         while(versionIdx !== -1) {
           memoryVersions.splice(versionIdx, 1);
+          versionIdx = memoryVersions.findIndex(v => v.projectId === projectId);
         }
       }
       return;

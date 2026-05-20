@@ -1,5 +1,10 @@
 const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 const ProjectService = require('../services/projectService');
+const SecurityValidator = require('../utils/securityValidator');
+const CacheManager = require('../utils/cacheManager');
+const ValidationService = require('../services/validationService');
+const IntelligenceService = require('../services/intelligenceService');
 
 function buildExtensionFiles(prompt) {
   const p = prompt.toLowerCase();
@@ -10,7 +15,7 @@ function buildExtensionFiles(prompt) {
   const isTimer = p.includes('timer') || p.includes('pomodoro') || p.includes('focus') || p.includes('break');
   const isTranslate = p.includes('translat') || p.includes('language');
   const isHighlight = p.includes('highlight') || p.includes('mark') || p.includes('color');
-  const isPassword = p.includes('password') || p.includes('generat') && p.includes('pass');
+  const isPassword = p.includes('password') || (p.includes('generat') && p.includes('pass'));
   const isNotes = p.includes('note') || p.includes('sticky') || p.includes('memo');
   const isScrollTop = p.includes('scroll') && (p.includes('top') || p.includes('back'));
   const isWordCount = p.includes('word') && (p.includes('count') || p.includes('stat'));
@@ -25,7 +30,7 @@ function buildExtensionFiles(prompt) {
     version: '1.0.0',
     description: shortDesc,
     action: { default_popup: 'popup.html', default_title: extName },
-    icons: { '16': 'icons/icon16.png', '48': 'icons/icon48.png', '128': 'icons/icon128.png' },
+    icons: { '16': 'icons/icon16.svg', '48': 'icons/icon48.svg', '128': 'icons/icon128.svg' },
     permissions: [],
     host_permissions: [],
     content_scripts: []
@@ -263,9 +268,9 @@ button:hover{background:#4f46e5;}
   }
 
   const iconSvg = (size) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><rect width="${size}" height="${size}" rx="${Math.round(size * 0.2)}" fill="#6366f1"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="${Math.round(size * 0.6)}" fill="#fff">⚡</text></svg>`;
-  files.push({ path: 'icons/icon16.png', content: iconSvg(16) });
-  files.push({ path: 'icons/icon48.png', content: iconSvg(48) });
-  files.push({ path: 'icons/icon128.png', content: iconSvg(128) });
+  files.push({ path: 'icons/icon16.svg', content: iconSvg(16) });
+  files.push({ path: 'icons/icon48.svg', content: iconSvg(48) });
+  files.push({ path: 'icons/icon128.svg', content: iconSvg(128) });
 
   return files;
 }
@@ -273,6 +278,18 @@ button:hover{background:#4f46e5;}
 class GenerationWorker {
   constructor() {
     this.activeJobs = new Map();
+    // TTL cleanup loop (every 10 minutes, delete active jobs > 1 hour)
+    this.cleanupInterval = setInterval(() => {
+      const now = Date.now();
+      for (const [jobId, job] of this.activeJobs.entries()) {
+        if (job.createdAt && (now - new Date(job.createdAt).getTime() > 3600000)) {
+          this.activeJobs.delete(jobId);
+        }
+      }
+    }, 600000);
+    if (this.cleanupInterval.unref) {
+      this.cleanupInterval.unref();
+    }
   }
 
   async enqueueGeneration(userId, promptText) {
@@ -301,25 +318,91 @@ class GenerationWorker {
     job.status = 'generating_code'; job.progress = 55;
     await new Promise(r => setTimeout(r, 2000));
 
-    // Build real extension files from the prompt
-    const files = buildExtensionFiles(promptText);
-
-    job.status = 'packaging'; job.progress = 85;
-    await new Promise(r => setTimeout(r, 800));
-
-    const projectName = promptText.split(' ').slice(0, 4).join(' ');
-
     try {
+      const promptHash = crypto.createHash('sha256').update(promptText.toLowerCase()).digest('hex');
+
+      // Check cache first
+      let files = await CacheManager.getCachedGeneration(promptHash);
+
+      if (!files) {
+        // Build real extension files from the prompt
+        files = buildExtensionFiles(promptText);
+
+        // Security check
+        for (const file of files) {
+          if (file.path.endsWith('.js') || file.path.endsWith('.html')) {
+            try {
+              await SecurityValidator.scanContent(file.content);
+            } catch (err) {
+              // Log threat to MongoDB SecurityLog
+              try {
+                const SecurityLog = require('../models/SecurityLog');
+                await SecurityLog.create({
+                  eventType: 'CODE_VULNERABILITY',
+                  severity: 'HIGH',
+                  userId: userId || null,
+                  details: `Security check failed for file "${file.path}": ${err.message}`,
+                  metadata: { promptText, filePath: file.path, content: file.content },
+                  resolved: false
+                });
+              } catch (dbErr) {
+                console.error('Failed to log security violation to MongoDB:', dbErr);
+              }
+
+              // Log telemetry failure
+              await IntelligenceService.logGenerationTelemetry(null, null, false, 'SECURITY_VIOLATION');
+              throw err;
+            }
+          }
+        }
+
+        // Validate files map
+        const filesMap = {};
+        files.forEach(f => {
+          filesMap[f.path] = f.content;
+        });
+
+        const validationReport = await ValidationService.validateProject(filesMap);
+        if (!validationReport.isValid) {
+          const validationError = new Error(`Validation failed: ${validationReport.errors.join(', ')}`);
+          await IntelligenceService.logGenerationTelemetry(null, null, false, 'VALIDATION_FAILURE');
+          throw validationError;
+        }
+
+        // Cache the files map
+        await CacheManager.cacheGeneration(promptHash, files);
+      }
+
+      job.status = 'packaging'; job.progress = 85;
+      await new Promise(r => setTimeout(r, 800));
+
+      const projectName = promptText.split(' ').slice(0, 4).join(' ');
+
       const result = await ProjectService.createProject(userId, projectName, promptText, files, jobId);
       job.projectId = result?.project?._id || result?.project?.id;
-    } catch (e) {
-      console.error('Failed to save project:', e);
-    }
 
-    job.status = 'completed';
-    job.progress = 100;
-    job.resultUrl = `/api/downloads/${jobId}`;
-    job.files = files;
+      // Log success telemetry
+      await IntelligenceService.logGenerationTelemetry(
+        result?.project?._id || result?.project?.id,
+        result?.version?._id || result?.version?.id,
+        true
+      );
+
+      job.status = 'completed';
+      job.progress = 100;
+      job.resultUrl = `/api/downloads/${jobId}`;
+      job.files = files;
+
+    } catch (err) {
+      console.error(`Job ${jobId} failed:`, err);
+      job.status = 'failed';
+      job.error = err.message;
+
+      // Log telemetry error if not already handled
+      if (!err.message.includes('Security') && !err.message.includes('Validation')) {
+        await IntelligenceService.logGenerationTelemetry(null, null, false, 'GENERATION_ERROR');
+      }
+    }
   }
 
   async getJobStatus(jobId) {

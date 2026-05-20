@@ -15,8 +15,10 @@ const versionSchema = new mongoose.Schema({
     required: true
   },
   files: {
-    type: Map,
-    of: String, // Map of filename to file content
+    type: [{
+      path: { type: String, required: true },
+      content: { type: String, required: true }
+    }],
     required: true
   },
   downloadToken: {

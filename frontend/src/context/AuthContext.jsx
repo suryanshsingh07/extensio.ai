@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { API_URL } from '../config';
 
 const AuthContext = createContext();
@@ -14,18 +14,7 @@ export const AuthProvider = ({ children }) => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState('login'); // 'login' or 'register'
 
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem('token', token);
-      fetchUser();
-    } else {
-      localStorage.removeItem('token');
-      setUser(null);
-      setLoading(false);
-    }
-  }, [token]);
-
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/auth/me`, {
         headers: {
@@ -44,7 +33,18 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem('token', token);
+      fetchUser();
+    } else {
+      localStorage.removeItem('token');
+      setUser(null);
+      setLoading(false);
+    }
+  }, [token, fetchUser]);
 
   const login = async (email, password) => {
     const response = await fetch(`${API_URL}/auth/login`, {
@@ -96,7 +96,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{user, token, loading, login, register, logout, isAuthModalOpen, authModalMode, openAuthModal, closeAuthModal, setAuthModalMode}}>
+    <AuthContext.Provider value={{user, setUser, token, loading, login, register, logout, isAuthModalOpen, authModalMode, openAuthModal, closeAuthModal, setAuthModalMode, fetchUser}}>
       {children}
     </AuthContext.Provider>
   );

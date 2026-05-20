@@ -17,8 +17,12 @@ export default function Navbar() {
 
   const appLinks = [
     { label: 'Workspace', to: '/workspace', icon: <LayoutDashboard className="w-4 h-4" /> },
-    { label: 'Admin', to: '/admin', icon: <ShieldCheck className="w-4 h-4" /> },
+    { label: 'Insights', to: '/insights', icon: <Sparkles className="w-4 h-4" /> }
   ];
+
+  if (user?.isAdmin) {
+    appLinks.push({ label: 'Admin', to: '/admin', icon: <ShieldCheck className="w-4 h-4" /> });
+  }
 
   return (
     <nav id="main-nav" className="w-full max-w-7xl px-4 sm:px-6 py-5 flex items-center justify-between z-50 relative">

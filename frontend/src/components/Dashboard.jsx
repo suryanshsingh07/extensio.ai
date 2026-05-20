@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Folder, Clock, Download, Edit3, Plus, Terminal, Cpu, Loader2, CheckCircle2, Trash2, Sparkles, AlertCircle, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -44,8 +44,17 @@ export default function Dashboard() {
   const [jobStatus, setJobStatus] = useState(null);
   const [toast, setToast] = useState(null);
   const [tipIdx, setTipIdx] = useState(0);
+  const pollIntervalRef = useRef(null);
 
   useEffect(() => { fetchProjects(); }, [token]);
+
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+      }
+    };
+  }, []);
 
   // Rotate tips
   useEffect(() => {
@@ -81,7 +90,7 @@ export default function Dashboard() {
   };
 
   const handleDownload = (projectId) => {
-    window.location.href = `${API_URL}/downloads/${projectId}`;
+    window.location.href = `${API_URL}/downloads/${projectId}?token=${token}`;
   };
 
   const handleEdit = async (projectId) => {
@@ -127,7 +136,11 @@ export default function Dashboard() {
   };
 
   const pollJobStatus = (jobId) => {
-    const interval = setInterval(async () => {
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+    }
+
+    pollIntervalRef.current = setInterval(async () => {
       try {
         const res = await fetch(`${API_URL}/generate/status/${jobId}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -136,19 +149,28 @@ export default function Dashboard() {
           const data = await res.json();
           setJobStatus(data);
           if (data.status === 'completed') {
-            clearInterval(interval);
+            if (pollIntervalRef.current) {
+              clearInterval(pollIntervalRef.current);
+              pollIntervalRef.current = null;
+            }
             setIsGenerating(false);
             setPrompt('');
             fetchProjects();
             showToast('Extension generated! Download it below.');
           } else if (data.status === 'failed') {
-            clearInterval(interval);
+            if (pollIntervalRef.current) {
+              clearInterval(pollIntervalRef.current);
+              pollIntervalRef.current = null;
+            }
             setIsGenerating(false);
             showToast('Generation failed.', 'error');
           }
         }
-      } catch {
-        clearInterval(interval);
+      } catch (err) {
+        if (pollIntervalRef.current) {
+          clearInterval(pollIntervalRef.current);
+          pollIntervalRef.current = null;
+        }
         setIsGenerating(false);
       }
     }, 1000);
