@@ -17,11 +17,11 @@ export default function EngineInsights() {
     <div className="w-full py-10 flex flex-col items-center">
       {/* Premium Page Header */}
       <div className="w-full text-center mb-12 relative">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-linear-to-r from-primary/10 to-secondary/10 rounded-full blur-[100px] pointer-events-none" />
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-semibold text-primary tracking-wide uppercase mb-4 animate-pulse">
           <Sparkles className="w-3.5 h-3.5" /> Premium Analytics Engine
         </div>
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-primary">
+        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-white via-indigo-200 to-primary">
           Engine Insights
         </h1>
         <p className="mt-4 text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
@@ -40,7 +40,7 @@ export default function EngineInsights() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer ${
                   isActive
-                    ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg'
+                    ? 'bg-linear-to-r from-primary to-secondary text-white shadow-lg'
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >

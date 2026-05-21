@@ -5,6 +5,7 @@ const SecurityValidator = require('../utils/securityValidator');
 const CacheManager = require('../utils/cacheManager');
 const ValidationService = require('../services/validationService');
 const IntelligenceService = require('../services/intelligenceService');
+const AIService = require('../services/aiService');
 
 function buildExtensionFiles(prompt) {
   const p = prompt.toLowerCase();
@@ -325,8 +326,13 @@ class GenerationWorker {
       let files = await CacheManager.getCachedGeneration(promptHash);
 
       if (!files) {
-        // Build real extension files from the prompt
-        files = buildExtensionFiles(promptText);
+        // Attempt custom AI generation if API key is provided
+        files = await AIService.generateExtension(promptText);
+
+        // Seamless fallback to local rules if AI generation is not enabled or fails
+        if (!files) {
+          files = buildExtensionFiles(promptText);
+        }
 
         // Security check
         for (const file of files) {

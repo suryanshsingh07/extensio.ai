@@ -17,9 +17,34 @@ const PORT = process.env.PORT || 5000;
 
 app.use(helmet());
 
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://extensio-ai.netlify.app',
+  'https://extensio-ai.vercel.app'
+];
+
+if (process.env.FRONTEND_URL) {
+  process.env.FRONTEND_URL.split(',').forEach(url => {
+    const trimmed = url.trim();
+    if (trimmed && !allowedOrigins.includes(trimmed)) {
+      allowedOrigins.push(trimmed);
+    }
+  });
+}
+
 app.use(cors({
-  origin: frontendUrl,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, server-to-server)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is in the allowed list or if any allowed origin is wildcard '*'
+    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      return callback(null, true);
+    } else {
+      const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
+      return callback(new Error(msg), false);
+    }
+  },
   credentials: true
 }));
 
@@ -92,4 +117,16 @@ async function startServer() {
   });
 }
 
-startServer();
+// Start the server if run directly
+if (require.main === module) {
+  startServer();
+} else {
+  // If imported as a serverless function, ensure mongoose connects
+  if (MONGO_URI) {
+    mongoose.connect(MONGO_URI).catch(err => {
+      console.error('⚠ Serverless MongoDB connection failed:', err.message);
+    });
+  }
+}
+
+module.exports = app;

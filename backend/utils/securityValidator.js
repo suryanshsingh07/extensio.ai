@@ -8,8 +8,7 @@ class SecurityValidator {
       /setTimeout\s*\(\s*['"]/i,
       /setInterval\s*\(\s*['"]/i,
       /document\.write\s*\(/i,
-      /innerHTML/i, // Basic check, could be refined
-      /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi // Inline scripts
+      /innerHTML/i // Basic check, could be refined
     ];
 
     for (const pattern of dangerousPatterns) {
@@ -17,6 +16,25 @@ class SecurityValidator {
         throw new Error(`Security validation failed. Unsafe pattern detected: ${pattern}`);
       }
     }
+
+    // Check for inline script tags or script tags without a src attribute in HTML
+    const scriptTagRegex = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
+    let match;
+    while ((match = scriptTagRegex.exec(content)) !== null) {
+      const attributes = match[1];
+      const body = match[2].trim();
+      
+      // If it contains actual inline JS code
+      if (body.length > 0) {
+        throw new Error('Security validation failed. Inline script content is not allowed in Manifest V3.');
+      }
+      
+      // If it does not reference an external file via src
+      if (!attributes.includes('src=')) {
+        throw new Error('Security validation failed. Script tags must have a "src" attribute and no inline content.');
+      }
+    }
+
     return true;
   }
 
