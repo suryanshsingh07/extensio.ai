@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Package, ShieldCheck, Zap, Clock, Download, Wand2, Code2, Globe } from 'lucide-react';
+import BorderGlow from './BorderGlow';
 
 const features = [
   {
@@ -94,12 +95,23 @@ export default function Features() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.07 }}
-            className={`glow-card glass-panel p-7 rounded-2xl border ${f.border} hover:scale-[1.02] transition-transform`}>
-            <div className={`w-11 h-11 ${f.bg} ${f.border} border rounded-xl flex items-center justify-center mb-5 ${f.color}`}>
-              {f.icon}
-            </div>
-            <h3 className="text-lg font-semibold mb-2">{f.title}</h3>
-            <p className="text-gray-400 text-sm leading-relaxed">{f.description}</p>
+            className="hover:scale-[1.02] transition-transform">
+            <BorderGlow
+              edgeSensitivity={24}
+              glowColor="40 80 80"
+              borderRadius={50}
+              glowRadius={80}
+              glowIntensity={3}
+              coneSpread={45}
+              backgroundColor="rgba(19, 19, 31, 0.6)"
+              className="p-7 h-full w-full"
+            >
+              <div className={`w-11 h-11 ${f.bg} ${f.border} border rounded-xl flex items-center justify-center mb-5 ${f.color}`}>
+                {f.icon}
+              </div>
+              <h3 className="text-lg font-semibold mb-2">{f.title}</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">{f.description}</p>
+            </BorderGlow>
           </motion.div>
         ))}
       </div>
@@ -117,13 +129,23 @@ export default function Features() {
             <motion.div key={n} initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="flex flex-col items-center text-center glass-panel rounded-2xl p-8 border border-white/5">
-              <div className="w-14 h-14 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center text-primary font-bold text-lg mb-5 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
-                {n}
-              </div>
-              <h3 className="font-semibold text-lg mb-2">{label}</h3>
-              <p className="text-gray-400 text-sm">{desc}</p>
+              transition={{ delay: i * 0.1 }}>
+              <BorderGlow
+                edgeSensitivity={24}
+                glowColor="40 80 80"
+                borderRadius={50}
+                glowRadius={80}
+                glowIntensity={3}
+                coneSpread={45}
+                backgroundColor="rgba(19, 19, 31, 0.6)"
+                className="flex flex-col items-center text-center p-8 h-full w-full"
+              >
+                <div className="w-14 h-14 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center text-primary font-bold text-lg mb-5 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+                  {n}
+                </div>
+                <h3 className="font-semibold text-lg mb-2">{label}</h3>
+                <p className="text-gray-400 text-sm">{desc}</p>
+              </BorderGlow>
             </motion.div>
           ))}
         </div>
