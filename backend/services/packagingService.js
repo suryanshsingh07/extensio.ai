@@ -6,11 +6,11 @@ const SecurityValidator = require('../utils/securityValidator');
 
 class PackagingService {
   /**
-   * Takes a JSON blueprint of files, validates them, writes to a temp dir, and zips them.
-   * @param {Object} filesJson - Format: { "manifest.json": "{...}", "content.js": "..." }
+   * Takes a JSON blueprint or array of files, validates them, writes to a temp dir, and zips them.
+   * @param {Object|Array} filesInput - Format: { "manifest.json": "..." } OR [{ path: "manifest.json", content: "..." }]
    * @returns {Promise<string>} - Path to the generated ZIP file
    */
-  static async packageExtension(filesJson) {
+  static async packageExtension(filesInput) {
     const sessionId = uuidv4();
     const tempDir = path.join(__dirname, '../../temp_workspaces', sessionId);
     const zipPath = path.join(__dirname, '../../temp_workspaces', `${sessionId}.zip`);
@@ -19,24 +19,43 @@ class PackagingService {
       // 1. Create isolated workspace
       await fs.ensureDir(tempDir);
 
-      // 2. Write files
-      for (const [filename, content] of Object.entries(filesJson)) {
-        // Prevent directory traversal attacks
-        const safeFilename = path.basename(filename);
-        const filePath = path.join(tempDir, safeFilename);
-        await fs.writeFile(filePath, content, 'utf-8');
+      // Normalize input files to an array of { path, content }
+      let files = [];
+      if (Array.isArray(filesInput)) {
+        files = filesInput;
+      } else if (typeof filesInput === 'object' && filesInput !== null) {
+        files = Object.entries(filesInput).map(([filepath, content]) => ({
+          path: filepath,
+          content
+        }));
+      }
+
+      // 2. Write files (preserving subdirectories securely)
+      const resolvedTempDir = path.resolve(tempDir);
+      for (const file of files) {
+        // Resolve absolute path and verify it remains within the temp directory (anti-directory traversal)
+        const filePath = path.resolve(resolvedTempDir, file.path);
+        if (!filePath.startsWith(resolvedTempDir)) {
+          throw new Error(`Directory traversal attack detected: ${file.path}`);
+        }
+
+        // Ensure parent directory exists for nested files
+        await fs.ensureDir(path.dirname(filePath));
+        
+        // Write content (Buffer or string)
+        await fs.writeFile(filePath, file.content);
       }
 
       // 3. Validate integrity and security
-      const manifestPath = path.join(tempDir, 'manifest.json');
+      const manifestPath = path.join(resolvedTempDir, 'manifest.json');
       await SecurityValidator.validateManifest(manifestPath);
-      await SecurityValidator.scanDirectory(tempDir);
+      await SecurityValidator.scanDirectory(resolvedTempDir);
 
       // 4. Create ZIP archive
-      await this.createZipArchive(tempDir, zipPath);
+      await this.createZipArchive(resolvedTempDir, zipPath);
 
-      // 5. Clean up temp directory (keep the zip for storage service)
-      await fs.remove(tempDir);
+      // 5. Clean up temp directory
+      await fs.remove(resolvedTempDir);
 
       return zipPath;
 

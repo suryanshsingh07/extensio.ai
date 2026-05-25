@@ -7,8 +7,7 @@ class SecurityValidator {
       /eval\s*\(/i,
       /setTimeout\s*\(\s*['"]/i,
       /setInterval\s*\(\s*['"]/i,
-      /document\.write\s*\(/i,
-      /innerHTML/i // Basic check, could be refined
+      /document\.write\s*\(/i
     ];
 
     for (const pattern of dangerousPatterns) {

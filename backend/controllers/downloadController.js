@@ -98,23 +98,19 @@ class DownloadController {
         return res.status(404).json({ error: 'Not Found', message: 'No extension files found for this build.' });
       }
 
-      res.setHeader('Content-Disposition', `attachment; filename="${extName}.zip"`);
-      res.setHeader('Content-Type', 'application/zip');
+      // 4. package using PackagingService which writes to secure temp directory, scans, and zips.
+      const zipPath = await PackagingService.packageExtension(files);
 
-      const archive = archiver('zip', { zlib: { level: 9 } });
-      archive.on('error', err => {
-        console.error('Archiver error:', err);
-        if (!res.headersSent) {
-          res.status(500).json({ error: 'Packaging failed', message: err.message });
+      // 5. Serve the zip file and clean it up afterwards
+      res.download(zipPath, `${extName}.zip`, async (downloadErr) => {
+        if (downloadErr) {
+          console.error('Download sending failed:', downloadErr);
         }
+        const fs = require('fs-extra');
+        await fs.remove(zipPath).catch(err => {
+          console.error('Failed to clean up temporary ZIP:', err.message);
+        });
       });
-      archive.pipe(res);
-
-      for (const file of files) {
-        archive.append(file.content, { name: file.path });
-      }
-
-      await archive.finalize();
     } catch (error) {
       console.error('Download error:', error);
       if (!res.headersSent) res.status(500).json({ error: 'Download failed', message: error.message });

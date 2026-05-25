@@ -20,43 +20,39 @@ class AIService {
 
     const systemInstruction = `You are a world-class Google Chrome Extension developer.
 Generate a complete, fully functional, and visually stunning Chrome Extension (Manifest V3) based on the user's prompt.
-You must return a valid JSON object containing all the files (HTML, CSS, JS, manifest.json, and SVG icons) needed for the extension.
+You must return a valid JSON object containing all the source files (HTML, CSS, JS, manifest.json) needed for the extension.
 Ensure all files are included so the extension runs immediately when unpacked.
 Ensure styling uses gorgeous premium modern designs (harmonious colors, dark mode, smooth gradients, subtle animations, or glassmorphic cards).
+
+CRITICAL MANIFEST V3 SECURITY AND FUNCTIONALITY RULES:
+1. NO INLINE SCRIPTS IN HTML: Placing JavaScript code directly inside <script>...</script> tags in HTML files (like popup.html) is STRICTLY PROHIBITED. All JS logic must reside in a separate external file (e.g. popup.js) and referenced via <script src="popup.js"></script>.
+2. MANIFEST V3 STANDARD: Do not use Manifest V2 keys. Use "action" instead of "browser_action". Background scripts must be defined as service workers: "background": { "service_worker": "background.js" }.
+3. EXTENSION ICON STANDARDS: Define PNG icons under "icons" in manifest.json (i.e. "icons": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" }). Do NOT generate or include raw binary icon files in the "files" array (since PNG is binary). The backend will automatically generate beautiful matching PNG icons for the exact icon paths you declare.
+4. NO PLACEHOLDERS: All generated JS, CSS, and HTML must be complete and fully functional in real life. Implement the user's requested logic thoroughly without comments saying "implement here".
 
 The output MUST be a single JSON object with this exact structure:
 {
   "files": [
     {
       "path": "manifest.json",
-      "content": "..." // string containing the manifest.json contents (valid JSON string)
+      "content": "..." // string containing the manifest.json contents (valid JSON string matching MV3 specs)
     },
     {
       "path": "popup.html",
-      "content": "..." // gorgeous premium popup html with inline styles or referencing popup.css
+      "content": "..." // gorgeous premium popup html referencing popup.js and popup.css (NO inline scripts!)
     },
     {
       "path": "popup.js",
-      "content": "..." // clean interactive javascript
+      "content": "..." // clean interactive javascript containing all popup logic
     },
     {
-      "path": "icons/icon16.svg",
-      "content": "<svg xmlns=\\"http://www.w3.org/2000/svg\\" width=\\"16\\" height=\\"16\\">...</svg>" // SVG vector markup
-    },
-    {
-      "path": "icons/icon48.svg",
-      "content": "<svg xmlns=\\"http://www.w3.org/2000/svg\\" width=\\"48\\" height=\\"48\\">...</svg>" // SVG vector markup
-    },
-    {
-      "path": "icons/icon128.svg",
-      "content": "<svg xmlns=\\"http://www.w3.org/2000/svg\\" width=\\"128\\" height=\\"128\\">...</svg>" // SVG vector markup
+      "path": "popup.css",
+      "content": "..." // stylish styling for popup.html
     }
   ]
 }
 
-DO NOT output any markdown formatting, no backticks, no explanations, no comments. Just the raw, valid JSON object.
-Create beautiful vector-based SVG icons. Never output binary image data, only text-based SVG markup inside the JSON string.
-Ensure all scripts and styling references are matching the files you create. All JS must be secure and free of XSS.`;
+DO NOT output any markdown formatting, no backticks, no explanations, no comments outside the JSON. Just the raw, valid JSON object.`;
 
     try {
       let rawResponse = '';

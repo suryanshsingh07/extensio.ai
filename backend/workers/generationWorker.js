@@ -20,6 +20,7 @@ function buildExtensionFiles(prompt) {
   const isNotes = p.includes('note') || p.includes('sticky') || p.includes('memo');
   const isScrollTop = p.includes('scroll') && (p.includes('top') || p.includes('back'));
   const isWordCount = p.includes('word') && (p.includes('count') || p.includes('stat'));
+  const isRedSquare = (p.includes('block') && p.includes('image')) || (p.includes('red') && p.includes('square'));
 
   const nameParts = prompt.split(' ').slice(0, 4).join(' ');
   const extName = nameParts.charAt(0).toUpperCase() + nameParts.slice(1);
@@ -31,7 +32,7 @@ function buildExtensionFiles(prompt) {
     version: '1.0.0',
     description: shortDesc,
     action: { default_popup: 'popup.html', default_title: extName },
-    icons: { '16': 'icons/icon16.svg', '48': 'icons/icon48.svg', '128': 'icons/icon128.svg' },
+    icons: { '16': 'icons/icon16.png', '48': 'icons/icon48.png', '128': 'icons/icon128.png' },
     permissions: [],
     host_permissions: [],
     content_scripts: []
@@ -220,6 +221,54 @@ document.getElementById('clearBtn').addEventListener('click',()=>{
   note.value='';chrome.storage.local.remove('note',()=>{status.textContent='Cleared';setTimeout(()=>status.textContent='',2000);});
 });`;
 
+  } else if (isRedSquare) {
+    manifest.permissions = ['activeTab', 'scripting', 'storage'];
+    manifest.host_permissions = ['<all_urls>'];
+    manifest.content_scripts = [{ matches: ['<all_urls>'], js: ['content.js'], run_at: 'document_start' }];
+
+    popupHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><style>
+body{width:280px;padding:20px;font-family:system-ui,sans-serif;background:#0f172a;color:#f8fafc;margin:0;text-align:center;}
+h2{margin:0 0 10px;font-size:16px;color:#f43f5e;}
+p{font-size:12px;color:#94a3b8;line-height:1.5;margin-bottom:16px;}
+.status-badge{background:#fda4af;color:#9f1239;padding:6px 12px;border-radius:20px;font-weight:600;font-size:11px;display:inline-block;}
+</style></head><body>
+<h2>🛡️ Red Square Blocker</h2>
+<p>All images on this website have been blocked and replaced with high-contrast red squares to save bandwidth and maximize focus.</p>
+<div class="status-badge">Blocking Active</div>
+</body></html>`;
+
+    contentJs = `// Extensio.ai Image Blocker & Red Square Replacer content script
+(function(){
+  const style = document.createElement('style');
+  style.id = '__extensio_red_square__';
+  style.textContent = \`
+    img, picture, svg, [style*="background-image"] {
+      content: "" !important;
+      background-color: #f43f5e !important;
+      background-image: none !important;
+      width: 100px !important;
+      height: 100px !important;
+      display: inline-block !important;
+    }
+  \`;
+  document.documentElement.appendChild(style);
+
+  // Monitor dynamic images
+  const observer = new MutationObserver(() => {
+    document.querySelectorAll('img').forEach(img => {
+      if (!img.dataset.blocked) {
+        img.style.setProperty('content', '""', 'important');
+        img.style.setProperty('background-color', '#f43f5e', 'important');
+        img.style.setProperty('width', img.width ? img.width + 'px' : '100px', 'important');
+        img.style.setProperty('height', img.height ? img.height + 'px' : '100px', 'important');
+        img.dataset.blocked = 'true';
+      }
+    });
+  });
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+  console.log('[Extensio.ai] Image to Red Square blocker initialized.');
+})();`;
+
   } else {
     manifest.permissions = ['activeTab', 'storage', 'scripting'];
     manifest.host_permissions = ['<all_urls>'];
@@ -268,10 +317,21 @@ button:hover{background:#4f46e5;}
     files.push({ path: 'rules.json', content: manifest._rules });
   }
 
-  const iconSvg = (size) => `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><rect width="${size}" height="${size}" rx="${Math.round(size * 0.2)}" fill="#6366f1"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="${Math.round(size * 0.6)}" fill="#fff">⚡</text></svg>`;
-  files.push({ path: 'icons/icon16.svg', content: iconSvg(16) });
-  files.push({ path: 'icons/icon48.svg', content: iconSvg(48) });
-  files.push({ path: 'icons/icon128.svg', content: iconSvg(128) });
+  // Load custom pure-JS PNG generator
+  const { generatePng } = require('../utils/pngGenerator');
+
+  // Assign beautifully matching solid gradient colored PNG icons dynamically
+  let r = 99, g = 102, b = 241;
+  if (isDarkMode) { r = 139; g = 92; b = 246; }
+  else if (isAdBlock) { r = 244; g = 114; b = 182; }
+  else if (isTimer) { r = 245; g = 158; b = 11; }
+  else if (isRedSquare) { r = 244; g = 63; b = 94; }
+  else if (isTabManager) { r = 96; g = 165; b = 250; }
+  else if (isNotes) { r = 167; g = 139; b = 250; }
+
+  files.push({ path: 'icons/icon16.png', content: generatePng(16, 16, r, g, b) });
+  files.push({ path: 'icons/icon48.png', content: generatePng(48, 48, r, g, b) });
+  files.push({ path: 'icons/icon128.png', content: generatePng(128, 128, r, g, b) });
 
   return files;
 }
@@ -329,8 +389,11 @@ class GenerationWorker {
         // Attempt custom AI generation if API key is provided
         files = await AIService.generateExtension(promptText);
 
-        // Seamless fallback to local rules if AI generation is not enabled or fails
-        if (!files) {
+        if (files) {
+          // Post-process custom generated AI files to ensure valid PNG icons and secure V3 rules
+          files = postProcessAIFiles(files);
+        } else {
+          // Seamless fallback to local rules if AI generation is not enabled or fails
           files = buildExtensionFiles(promptText);
         }
 
@@ -416,6 +479,104 @@ class GenerationWorker {
     if (!job) throw new Error('Job not found');
     return job;
   }
+}
+
+function postProcessAIFiles(files) {
+  if (!files || !Array.isArray(files)) return files;
+
+  // Find manifest.json
+  const manifestFile = files.find(f => f.path === 'manifest.json');
+  if (!manifestFile) return files;
+
+  try {
+    let manifest = JSON.parse(manifestFile.content);
+
+    // 1. Convert any referenced .svg extension icons in manifest.json to .png
+    let updatedManifest = false;
+
+    if (manifest.icons) {
+      for (const [size, pathStr] of Object.entries(manifest.icons)) {
+        if (pathStr.endsWith('.svg')) {
+          manifest.icons[size] = pathStr.replace('.svg', '.png');
+          updatedManifest = true;
+        }
+      }
+    }
+
+    if (manifest.action && manifest.action.default_icon) {
+      if (typeof manifest.action.default_icon === 'string' && manifest.action.default_icon.endsWith('.svg')) {
+        manifest.action.default_icon = manifest.action.default_icon.replace('.svg', '.png');
+        updatedManifest = true;
+      } else if (typeof manifest.action.default_icon === 'object') {
+        for (const [size, pathStr] of Object.entries(manifest.action.default_icon)) {
+          if (pathStr.endsWith('.svg')) {
+            manifest.action.default_icon[size] = pathStr.replace('.svg', '.png');
+            updatedManifest = true;
+          }
+        }
+      }
+    }
+
+    if (updatedManifest) {
+      manifestFile.content = JSON.stringify(manifest, null, 2);
+    }
+
+    // 2. Filter out raw SVG files in the icons folder
+    let filteredFiles = files.filter(f => {
+      const isSvgIcon = f.path.endsWith('.svg') && (f.path.includes('icon') || f.path.includes('logo'));
+      return !isSvgIcon;
+    });
+
+    // 3. Extract customized SVG fill color if any SVG icon is present
+    let r = 99, g = 102, b = 241; // Default modern Indigo (#6366f1)
+    const originalSvgFile = files.find(f => f.path.endsWith('.svg') && (f.path.includes('icon') || f.path.includes('logo')));
+    if (originalSvgFile) {
+      const fillMatch = originalSvgFile.content.match(/fill=["'](#(?:[a-fA-F0-9]{3}){1,2})["']/i);
+      if (fillMatch) {
+        const hex = fillMatch[1];
+        const parsed = parseHexColor(hex);
+        if (parsed) {
+          r = parsed.r;
+          g = parsed.g;
+          b = parsed.b;
+        }
+      }
+    }
+
+    // 4. Generate beautiful valid PNG binary icons for the paths defined in manifest
+    const { generatePng } = require('../utils/pngGenerator');
+
+    const iconPaths = manifest.icons || { '16': 'icons/icon16.png', '48': 'icons/icon48.png', '128': 'icons/icon128.png' };
+
+    for (const [size, pathStr] of Object.entries(iconPaths)) {
+      const sizeInt = parseInt(size, 10) || 48;
+      // Add the binary PNG buffer directly
+      filteredFiles.push({
+        path: pathStr,
+        content: generatePng(sizeInt, sizeInt, r, g, b)
+      });
+    }
+
+    return filteredFiles;
+  } catch (err) {
+    console.error('Failed to post-process AI-generated extension files:', err);
+    return files;
+  }
+}
+
+function parseHexColor(hex) {
+  let c = hex.substring(1);
+  if (c.length === 3) {
+    c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
+  }
+  if (c.length === 6) {
+    return {
+      r: parseInt(c.substring(0, 2), 16),
+      g: parseInt(c.substring(2, 4), 16),
+      b: parseInt(c.substring(4, 6), 16)
+    };
+  }
+  return null;
 }
 
 module.exports = new GenerationWorker();
