@@ -127,12 +127,14 @@ export default function App() {
     <AuthProvider>
       <Router>
         <ScrollToHash />
-        <div className="min-h-screen bg-background text-white font-sans">
+        {/* <div className="min-h-screen bg-background text-white font-sans">
           <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
             <div className="absolute top-[-15%] left-[-8%] w-[55%] h-[55%] bg-primary/10 blur-[160px] rounded-full" />
             <div className="absolute bottom-[-20%] right-[-10%] w-[45%] h-[45%] bg-secondary/10 blur-[160px] rounded-full" />
             <div className="absolute top-[40%] left-[30%] w-[30%] h-[30%] bg-accent/5 blur-[120px] rounded-full" />
-          </div>
+          </div> */}
+        <div className="min-h-screen bg-[#06060c] text-white font-sans">
+          <GridBackground />
           <div className="relative z-10 flex flex-col items-center w-full min-h-screen">
             <Navbar />
             <AuthModal />
