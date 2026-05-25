@@ -9,6 +9,7 @@ import DashboardPreview from './components/DashboardPreview';
 import Features from './components/Features';
 import Pricing from './components/Pricing';
 import FeedbackPortal from './components/FeedbackPortal';
+import GridBackground from './components/GridBackground';
 import {TermsOfService, PrivacyPolicy, Contact, Changelog, APIDocs, AboutUs, Blog, Careers, Security} from './components/FooterPages';
 
 const Dashboard = lazy(() => import('./components/Dashboard'));

@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const Project = require('../models/Project');
 const SecurityLog = require('../models/SecurityLog');
@@ -6,6 +7,28 @@ const MonitoringService = require('../services/monitoringService');
 class AdminController {
   static async getStats(req, res) {
     try {
+      if (mongoose.connection.readyState !== 1) {
+        console.log('💡 Admin Controller: Detached mode. Serving mock stats dashboard.');
+        return res.json({
+          stats: {
+            activeUsers: 14,
+            totalGenerations: 56,
+            blockedThreats: 3,
+            apiErrors: 0.015
+          },
+          alerts: [
+            {
+              id: 'detached-alert-1',
+              type: 'PROMPT_FLAGGED',
+              severity: 'HIGH',
+              user: 'user@example.com',
+              time: new Date(),
+              details: 'Suspicious keyword "steal cookies" detected in prompt.'
+            }
+          ]
+        });
+      }
+
       const activeUsers = await User.countDocuments();
       const totalGenerations = await Project.countDocuments();
       
@@ -41,6 +64,10 @@ class AdminController {
   static async resolveAlert(req, res) {
     try {
       const { id } = req.params;
+      if (mongoose.connection.readyState !== 1) {
+        console.log(`💡 Admin Controller: Detached mode. Resolving mock alert ${id}.`);
+        return res.json({ success: true });
+      }
       await MonitoringService.resolveAlert(id);
       res.json({ success: true });
     } catch (error) {

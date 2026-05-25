@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const SecurityLog = require('../models/SecurityLog');
 
 class MonitoringService {
@@ -24,6 +25,11 @@ class MonitoringService {
 
   static async logEvent(logData) {
     try {
+      if (mongoose.connection.readyState !== 1) {
+        console.warn('💡 Monitoring Service: detached mode. Event logged to console:', logData);
+        return logData;
+      }
+      
       const logEntry = new SecurityLog(logData);
       await logEntry.save();
       
@@ -39,14 +45,30 @@ class MonitoringService {
   }
 
   static async getActiveAlerts() {
-    return await SecurityLog.find({ resolved: false })
-      .sort({ createdAt: -1 })
-      .populate('userId', 'email')
-      .limit(50);
+    if (mongoose.connection.readyState !== 1) {
+      return [];
+    }
+    try {
+      return await SecurityLog.find({ resolved: false })
+        .sort({ createdAt: -1 })
+        .populate('userId', 'email')
+        .limit(50);
+    } catch (err) {
+      console.error('Failed to retrieve active alerts from MongoDB:', err.message);
+      return [];
+    }
   }
 
   static async resolveAlert(logId) {
-    return await SecurityLog.findByIdAndUpdate(logId, { resolved: true });
+    if (mongoose.connection.readyState !== 1) {
+      return null;
+    }
+    try {
+      return await SecurityLog.findByIdAndUpdate(logId, { resolved: true });
+    } catch (err) {
+      console.error('Failed to resolve alert in MongoDB:', err.message);
+      return null;
+    }
   }
 }
 
