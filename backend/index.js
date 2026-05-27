@@ -13,6 +13,7 @@ const mongoose = require('mongoose');
 const apiRoutes = require('./routes/api');
 
 const app = express();
+app.set('trust proxy', 1); // Essential for rate limiting behind reverse proxies (Render/Heroku)
 const PORT = process.env.PORT || 5000;
 
 app.use(helmet());
@@ -101,15 +102,16 @@ const MONGO_URI = process.env.MONGO_URI;
 
 async function startServer() {
   try {
-    if (MONGO_URI) {
-      await mongoose.connect(MONGO_URI);
-      console.log('✓ Connected to MongoDB');
-    } else {
-      console.warn('⚠ No MONGO_URI — running in in-memory mode.');
+    if (!MONGO_URI) {
+      console.error('FATAL ERROR: MONGO_URI environment variable is not defined.');
+      process.exit(1);
     }
+    await mongoose.connect(MONGO_URI);
+    console.log('✓ Connected to MongoDB');
   } catch (err) {
-    console.warn('⚠ MongoDB unavailable — running in detached mode.');
-    console.warn(`  Reason: ${err.message}`);
+    console.error('FATAL ERROR: MongoDB connection failed.');
+    console.error(`Reason: ${err.message}`);
+    process.exit(1);
   }
 
   app.listen(PORT, () => {

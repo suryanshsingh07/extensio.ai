@@ -11,6 +11,7 @@ import Pricing from './components/Pricing';
 import FeedbackPortal from './components/FeedbackPortal';
 import GridBackground from './components/GridBackground';
 import {TermsOfService, PrivacyPolicy, Contact, Changelog, APIDocs, AboutUs, Blog, Careers, Security} from './components/FooterPages';
+import ErrorBoundary from './components/ErrorBoundary';
 
 const Dashboard = lazy(() => import('./components/Dashboard'));
 const ValidationPreview = lazy(() => import('./components/ValidationPreview'));
@@ -125,48 +126,50 @@ function AdminPage() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <ScrollToHash />
-        {/* Commented out original background wrapper */}
-        {/* 
-        <div className="min-h-screen bg-background text-white font-sans">
-          <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
-            <div className="absolute top-[-15%] left-[-8%] w-[55%] h-[55%] bg-primary/10 blur-[160px] rounded-full" />
-            <div className="absolute bottom-[-20%] right-[-10%] w-[45%] h-[45%] bg-secondary/10 blur-[160px] rounded-full" />
-            <div className="absolute top-[40%] left-[30%] w-[30%] h-[30%] bg-accent/5 blur-[120px] rounded-full" />
-          </div> 
-          */}
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router>
+          <ScrollToHash />
+          {/* Commented out original background wrapper */}
+          {/* 
+          <div className="min-h-screen bg-background text-white font-sans">
+            <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
+              <div className="absolute top-[-15%] left-[-8%] w-[55%] h-[55%] bg-primary/10 blur-[160px] rounded-full" />
+              <div className="absolute bottom-[-20%] right-[-10%] w-[45%] h-[45%] bg-secondary/10 blur-[160px] rounded-full" />
+              <div className="absolute top-[40%] left-[30%] w-[30%] h-[30%] bg-accent/5 blur-[120px] rounded-full" />
+            </div> 
+            */}
 
-        {/* Your new active layout */}
-        <div className="min-h-screen bg-[#06060c] text-white font-sans">
-          <GridBackground />
-          <div className="relative z-10 flex flex-col items-center w-full min-h-screen">
-            <Navbar />
-            <AuthModal />
-            <main className="w-full max-w-7xl px-4 sm:px-6 flex flex-col items-center flex-1">
-              <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/workspace" element={<ProtectedRoute><WorkspacePage /></ProtectedRoute>} />
-                <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
-                <Route path="/profile" element={<ProtectedRoute><Suspense fallback={<Spinner />}><Profile /></Suspense></ProtectedRoute>} />
-                <Route path="/insights" element={<ProtectedRoute><Suspense fallback={<Spinner />}><EngineInsights /></Suspense></ProtectedRoute>} />
-                <Route path="/terms" element={<TermsOfService />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/changelog" element={<Changelog />} />
-                <Route path="/apidocs" element={<APIDocs />} />
-                <Route path="/about" element={<AboutUs />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/careers" element={<Careers />} />
-                <Route path="/security" element={<Security />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-            <Footer />
+          {/* Your new active layout */}
+          <div className="min-h-screen bg-[#06060c] text-white font-sans">
+            <GridBackground />
+            <div className="relative z-10 flex flex-col items-center w-full min-h-screen">
+              <Navbar />
+              <AuthModal />
+              <main className="w-full max-w-7xl px-4 sm:px-6 flex flex-col items-center flex-1">
+                <Routes>
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/workspace" element={<ProtectedRoute><WorkspacePage /></ProtectedRoute>} />
+                  <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
+                  <Route path="/profile" element={<ProtectedRoute><Suspense fallback={<Spinner />}><Profile /></Suspense></ProtectedRoute>} />
+                  <Route path="/insights" element={<ProtectedRoute><Suspense fallback={<Spinner />}><EngineInsights /></Suspense></ProtectedRoute>} />
+                  <Route path="/terms" element={<TermsOfService />} />
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/changelog" element={<Changelog />} />
+                  <Route path="/apidocs" element={<APIDocs />} />
+                  <Route path="/about" element={<AboutUs />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/careers" element={<Careers />} />
+                  <Route path="/security" element={<Security />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </main>
+              <Footer />
+            </div>
           </div>
-        </div>
-      </Router>
-    </AuthProvider>
+        </Router>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

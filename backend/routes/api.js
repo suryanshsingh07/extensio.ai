@@ -66,20 +66,18 @@ router.post('/deploy/:versionId', requireAuth, asyncHandler(async (req, res) => 
   }
 
   let projectId = null;
-  if (mongoose.connection.readyState === 1) {
-    const Version = require('../models/Version');
-    try {
-      const version = await Version.findById(versionId);
-      if (version) {
-        projectId = version.projectId;
-      }
-    } catch (e) {
-      console.warn('Failed to retrieve version details from MongoDB:', e);
+  const Version = require('../models/Version');
+  try {
+    const version = await Version.findById(versionId);
+    if (version) {
+      projectId = version.projectId;
     }
+  } catch (e) {
+    console.warn('Failed to retrieve version details from MongoDB:', e);
   }
 
   if (!projectId) {
-    projectId = 'fallback-project-id';
+    return res.status(404).json({ error: 'Not Found', message: 'Version not found.' });
   }
 
   const deployment = await DeploymentService.publishProject(projectId, versionId);
