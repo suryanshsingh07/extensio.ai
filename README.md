@@ -1,14 +1,43 @@
-# Extensio.ai - Text-to-Extension Developer Platform
+<div align="center">
+   <img src="./frontend/public/logo.png" width="120" />
+   <h1>Extensio.ai - The No Code Extension Factory</h1>
+   <h3>Empowering Creators to Build Browser Extensions with AI</h3>
+</div>
+<p  align="center">
+  <a href="https://extensio-ai.vercel.app/">
+    <img src="https://img.shields.io/badge/🚀 Live_Demo_vercel-View_Live-green?style=for-the-badge" />
+  </a>
+  <a href="https://extensio-ai.netlify.app/">
+    <img src="https://img.shields.io/badge/🚀 Mirror_netlify-View_Live-green?style=for-the-badge" />
+  </a> <br>
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E" alt="Vite" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Framer_Motion-000000?style=for-the-badge&logo=framer&logoColor=blue" alt="Framer Motion" />
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white" />
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" />
+</p>
+
+## 📖 Introduction
+
+**Extensio.ai** (No-Code Extension Factory) is a revolutionary SaaS platform that democratizes browser extension development. It eliminates the coding barrier by transforming simple natural language requirements into fully functional, packaged Chrome Manifest V3 extensions in seconds.
 
 **Extensio.ai** is a No-Code Extension Factory that empowers business users without coding knowledge to generate real, installable Chrome Extensions using natural language prompts.
 
-**Use Case (Production):** A business user types a requirement, such as: *"Make a Chrome extension that blocks all images on a website and replaces them with a red square."* The AI must generate all necessary files (`manifest.json`, `content.js`, `popup.html`), zip them, and provide an immediate download link.
+### 🎯 Use Case
+A business user types a requirement, such as: *"Make a Chrome extension that blocks all images on a website and replaces them with a red square."* The AI must generate all necessary files (`manifest.json`, `content.js`, `popup.html`), zip them and provide an immediate download link.
+
+**Extensio.ai** immediately:
+1.  **Analyzes** the intent using advanced LLM logic.
+2.  **Generates** `manifest.json`, `content.js` and `popup.html`.
+3.  **Packages** the files into a validated `.zip`.
+4.  **Serves** a direct download file for immediate installation.
 
 ---
 
-## 🚀 Core Product Features
+## 🚀 Product Features
 
-*   **Auto-Packaging System:** A robust Node.js backend handles the entire workflow: receiving the code JSON, writing files to a secure temporary file system, creating a validated `.zip` archive using `archiver`, and serving the download.
+*   **Auto-Packaging System:** A robust Node.js backend handles the entire workflow: receiving the code JSON, writing files to a secure temporary file system, creating a validated `.zip` archive using `archiver` and serving the download.
 *   **Prompt Strategy:** Utilizes a highly structured "Chain of Thought" system prompt to force the LLM to output files in a required JSON format and to ensure generation of a valid Chrome V3 Manifest file.
 *   **Access Control:** Users can securely save, manage, and iterate on their generated extension projects with basic version control, maintaining a full history of their workspace.
 *   **AST Security Validation:** Strict screening of generated JavaScript to prevent malicious capabilities like `eval()` and `innerHTML` injections.
@@ -27,10 +56,9 @@ This project was built following a rigorous 4-week development roadmap to ensure
 | **Week 4** | **Deployment & Security**<br>*(Finalization)* | Implement code sanitization on the AI output to prevent malicious code (security audit). Finalize and deploy the subscription flow. | Comprehensive security audit of the platform and the generated code. |
 
 ---
-
 ## 🏗 System Architecture
 
-The platform uses a decoupled client-server architecture where the frontend handles state and UI, and the backend manages the heavy lifting of AI generation, validation, and file packaging.
+The platform uses a decoupled client-server architecture where the frontend handles state and UI, and the backend manages the heavy lifting of AI generation, validation and file packaging.
 
 ```mermaid
 graph TD
@@ -65,9 +93,23 @@ graph TD
     Validator --> Packager
     Packager --> Router
 ```
+## 🏗️ Technical Architecture & System Flow
+
+Extensio.ai follows a modern, decoupled architecture designed for high-speed generation and a premium user experience.
+
+```mermaid
+graph TD
+    User((User)) -->|Prompt| Frontend[React 18 Workspace]
+    FE -->|Auth + API| Backend[Express Backend]
+    BE -->|Job| GW[Generation Worker]
+    GW -->|Intent Parsing| AI[Chain of Thought Engine]
+    AI -->|JSON Code| GW
+    GW -->|Zipping| PKG[Archiver Engine]
+    PKG -->|Download| User
+```
 
 ### Technology Stack Detail
-*   **Frontend:** React (v18), Vite, Tailwind CSS (with highly customized utility classes for glassmorphism, gradients, and micro-animations), React Router v6, Framer Motion.
+*   **Frontend:** React (v18), Vite, Tailwind CSS (with highly customized utility classes for glassmorphism, gradients and micro-animations), React Router v6, Framer Motion.
 *   **Backend:** Node.js, Express, MongoDB (Mongoose), `archiver` for `.zip` bundling, custom pure-JS zlib implementation for PNG generation.
 *   **Security:** Helmet, express-rate-limit, custom AST-like `securityValidator.js` to block `eval()` and dangerous permissions.
 
@@ -81,10 +123,10 @@ The workspace is organized into a monorepo containing both the React frontend an
 extensio.ai/
 ├── backend/                  # Node.js + Express API
 │   ├── controllers/          # Request handlers (auth, projects, admin)
-│   ├── middlewares/          # Security, authentication, & rate-limiting logic
+│   ├── middlewares/          # Security, authentication & rate-limiting logic
 │   ├── models/               # Mongoose MongoDB schemas
 │   ├── routes/               # API endpoint definitions (api.js)
-│   ├── services/             # Business logic (deployment, evolution, etc.)
+│   ├── services/             # Business logic (deployment, evolution etc.)
 │   ├── workers/              # Background generation tasks (Gemini AI API calls)
 │   ├── utils/                # Helper functions (pngGenerator, securityValidator, archiver)
 │   ├── .env                  # Backend secrets (ignored in git)
@@ -115,7 +157,7 @@ extensio.ai/
 
 ## ⚙️ Generation Workflow
 
-When a user submits a prompt, the system executes a complex, multi-stage pipeline to ensure the resulting extension is safe, functional, and ready to install.
+When a user submits a prompt, the system executes a complex, multi-stage pipeline to ensure the resulting extension is safe, functional and ready to install.
 
 ```mermaid
 sequenceDiagram
@@ -148,6 +190,21 @@ sequenceDiagram
 ```
 
 ---
+## ✨ Core Features
+
+### 🧩 Auto-Packaging System
+The Node.js backend handles the entire workflow:
+- **String to File:** Receives code JSON from the AI and writes it to a secure temporary file system.
+- **Validated Archiving:** Uses the `archiver` library to create Chrome-compatible ZIP archives.
+- **Immediate Serving:** Streamlined delivery of the generated package directly to the client.
+
+### 🧠 Prompt Strategy (Chain of Thought)
+Utilizes a highly structured **Chain of Thought** system prompt to:
+- Force the LLM to output files in a required JSON format (`{ filename: content }`).
+- Ensure strict adherence to **Chrome V3 Manifest** security and structural rules.
+- Guarantee parseability and cross-component compatibility.
+
+---
 
 ## 📡 Core API Reference
 
@@ -176,6 +233,15 @@ The backend exposes a comprehensive RESTful API for handling authentication, ext
 *   Node.js (v18+)
 *   MongoDB (Local instance or MongoDB Atlas)
 *   Gemini API Key
+*   Git
+
+
+### MongoDB Atlas Setup
+1. Create a free cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+2. Under "Database Access", create a user with read/write privileges.
+3. Under "Network Access", allow IP access (e.g., `0.0.0.0/0` for development).
+4. Get your connection string (URI) starting with `mongodb+srv://...`.
+5. Create a database named `extensio`.
 
 ### 1. Clone & Install
 ```bash
@@ -219,7 +285,7 @@ npm run dev
 
 ## 🔒 Security Best Practices Implemented
 *   **Proxy-Aware Rate Limiting:** The backend utilizes `app.set('trust proxy', 1)` to correctly rate-limit bad actors by their true IP address, rather than blocking the reverse proxy.
-*   **AST Validation (Week 4 Goal):** No `innerHTML`, `eval()`, or dynamic code execution is permitted in the generated extensions. 
+*   **AST Validation:** No `innerHTML`, `eval()`, or dynamic code execution is permitted in the generated extensions. 
 *   **Hardcoded Secrets Removed:** All administration accounts and static tokens have been removed from the source tree.
 
 ---
@@ -232,13 +298,7 @@ npm run dev
 
 ---
 
-## 🤝 Contributing
-Contributions, issues, and feature requests are welcome!
-Feel free to check [issues page](https://github.com/suryanshsingh07/extensio.ai/issues). 
-
-## 📝 License
-Copyright © 2026 Zaalima development pvt.ltd.
-This project is deeply confidential and meant for internal review.
-
----
-**Extensio.ai** — Build browser extensions at the speed of thought.
+<div align="center">
+  <p>© 2026 - All rights reserved</p>
+  <p><i>The next generation of browser extension development</i></p>
+</div>
