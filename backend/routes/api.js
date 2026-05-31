@@ -57,7 +57,7 @@ router.get('/generate/status/:jobId', requireAuth, asyncHandler(async (req, res)
   res.json(status);
 }));
 
-router.get('/downloads/:token', asyncHandler(DownloadController.downloadExtension));
+router.get('/downloads/:id', requireAuth, asyncHandler(DownloadController.downloadExtension));
 
 router.post('/deploy/:versionId', requireAuth, asyncHandler(async (req, res) => {
   const { versionId } = req.params;

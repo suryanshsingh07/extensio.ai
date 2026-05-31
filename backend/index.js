@@ -16,7 +16,39 @@ const app = express();
 app.set('trust proxy', 1); // Essential for rate limiting behind reverse proxies (Render/Heroku)
 const PORT = process.env.PORT || 5000;
 
-app.use(helmet());
+// Enhanced Security Headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      fontSrc: ["'self'"],
+      connectSrc: ["'self'"],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: []
+    }
+  },
+  hsts: {
+    maxAge: 31536000, // 1 year
+    includeSubDomains: true,
+    preload: true
+  },
+  frameguard: { action: 'deny' },
+  xssFilter: true,
+  noSniff: true,
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
+}));
+
+// Prevent parameter pollution
+app.use((req, res, next) => {
+  if (req.query && Object.keys(req.query).length > 50) {
+    return res.status(400).json({ error: 'Bad Request', message: 'Too many query parameters' });
+  }
+  next();
+});
 
 const allowedOrigins = [
   'http://localhost:5173',

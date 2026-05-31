@@ -36,11 +36,11 @@ export default function GridBackground() {
       <div className="absolute top-[30%] left-[-10%] w-[35%] h-[45%] bg-sky-500/5 blur-[120px] rounded-full" />
 
       {/* Floating Blueprint Wireframes */}
-      <div className="absolute inset-0 w-full h-full max-w-7xl mx-auto px-4 sm:px-6 relative">
+      <div className="absolute inset-0 w-full h-full max-w-7xl mx-auto px-4 sm:px-6">
 
         {/* 1. TOP-LEFT: Isometric Browser Window / Chrome Extension Popup Wireframe */}
         <motion.div 
-          className="absolute top-[12%] left-[3%] w-[180px] h-[150px] opacity-40 xl:opacity-60 hidden md:block"
+          className="absolute top-[12%] left-[3%] w-45 h-37.5 opacity-40 xl:opacity-60 hidden md:block"
           animate={{ y: [0, -10, 0], x: [0, 4, 0], rotate: [-2, 0, -2] }}
           transition={floatTransition(8, 0)}
         >
@@ -94,7 +94,7 @@ export default function GridBackground() {
 
         {/* 2. MIDDLE-LEFT: Glowing Isometric Puzzle Piece (Representing Extension/Plugin) */}
         <motion.div 
-          className="absolute top-[48%] left-[1.5%] w-[130px] h-[130px] opacity-35 xl:opacity-55 hidden lg:block"
+          className="absolute top-[48%] left-[1.5%] w-32.5 h-32.5 opacity-35 xl:opacity-55 hidden lg:block"
           animate={{ y: [0, 8, 0], x: [0, -3, 0], rotate: [0, 3, 0] }}
           transition={floatTransition(7, 1.5)}
         >
@@ -126,7 +126,7 @@ export default function GridBackground() {
 
         {/* 3. BOTTOM-LEFT: Glowing Cybernetic Database / Isometric Stacked Node */}
         <motion.div 
-          className="absolute bottom-[10%] left-[5%] w-[150px] h-[160px] opacity-30 xl:opacity-50 hidden md:block"
+          className="absolute bottom-[10%] left-[5%] w-37.5 h-40 opacity-30 xl:opacity-50 hidden md:block"
           animate={{ y: [0, -8, 0], x: [0, -2, 0], rotate: [-1, 2, -1] }}
           transition={floatTransition(9, 3)}
         >
@@ -176,7 +176,7 @@ export default function GridBackground() {
 
         {/* 4. TOP-RIGHT: Premium Isometric Chrome Logo Wireframe */}
         <motion.div 
-          className="absolute top-[8%] right-[3%] w-[200px] h-[200px] opacity-40 xl:opacity-60 hidden md:block"
+          className="absolute top-[8%] right-[3%] w-50 h-50 opacity-40 xl:opacity-60 hidden md:block"
           animate={{ y: [0, -12, 0], x: [0, -4, 0], rotate: [0, -2, 0] }}
           transition={floatTransition(10, 0.5)}
         >
@@ -226,7 +226,7 @@ export default function GridBackground() {
 
         {/* 5. MIDDLE-RIGHT: Rotating Engineering Automation Gear Wireframe */}
         <motion.div 
-          className="absolute top-[44%] right-[1%] w-[140px] h-[140px] opacity-35 xl:opacity-55 hidden lg:block"
+          className="absolute top-[44%] right-[1%] w-35 h-35 opacity-35 xl:opacity-55 hidden lg:block"
           animate={{ y: [0, -8, 0], x: [0, 3, 0] }}
           transition={floatTransition(7.5, 2)}
         >
@@ -283,7 +283,7 @@ export default function GridBackground() {
 
         {/* 6. BOTTOM-RIGHT: Glowing Cybernetic Code Nodes */}
         <motion.div 
-          className="absolute bottom-[12%] right-[5%] w-[160px] h-[150px] opacity-35 xl:opacity-55 hidden md:block"
+          className="absolute bottom-[12%] right-[5%] w-40 h-37.5 opacity-35 xl:opacity-55 hidden md:block"
           animate={{ y: [0, 10, 0], x: [0, 2, 0], rotate: [0, -3, 0] }}
           transition={floatTransition(8.5, 1.2)}
         >

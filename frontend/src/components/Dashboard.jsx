@@ -89,8 +89,40 @@ export default function Dashboard() {
     } catch { showToast('Error deleting.', 'error'); }
   };
 
-  const handleDownload = (projectId) => {
-    window.location.href = `${API_URL}/downloads/${projectId}?token=${token}`;
+  const handleDownload = async (projectId) => {
+    try {
+      showToast('Preparing download...');
+      const res = await fetch(`${API_URL}/downloads/${projectId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      if (!res.ok) {
+        showToast('Failed to download extension.', 'error');
+        return;
+      }
+
+      const blob = await res.blob();
+      const contentDisposition = res.headers.get('content-disposition');
+      let filename = 'extension.zip';
+      
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (filenameMatch) filename = filenameMatch[1];
+      }
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      showToast('Download started successfully.');
+    } catch (err) {
+      console.error('Download error:', err);
+      showToast('Download failed. Please try again.', 'error');
+    }
   };
 
   const handleEdit = async (projectId) => {

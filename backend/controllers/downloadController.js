@@ -7,28 +7,10 @@ const PackagingService = require('../services/packagingService');
 class DownloadController {
   static async downloadExtension(req, res) {
     try {
-      const { token: idOrJobId } = req.params;
+      const { id: idOrJobId } = req.params;
       if (!idOrJobId) return res.status(400).json({ error: 'Download identifier is required.' });
 
-      // Authenticate via Authorization header or ?token=... query param
-      let user = null;
-      const authHeader = req.headers.authorization;
-      const queryToken = req.query.token;
-      const jwtToken = (authHeader && authHeader.startsWith('Bearer ')) 
-        ? authHeader.split(' ')[1] 
-        : queryToken;
-
-      if (!jwtToken) {
-        return res.status(401).json({ error: 'Unauthorized', message: 'No authentication token provided.' });
-      }
-
-      try {
-        const jwt = require('jsonwebtoken');
-        user = jwt.verify(jwtToken, process.env.JWT_SECRET);
-      } catch (err) {
-        return res.status(401).json({ error: 'Unauthorized', message: 'Invalid or expired token.' });
-      }
-
+      const user = req.user;
       // Try to get the files
       let files = null;
       let extName = 'antigravity-extension';

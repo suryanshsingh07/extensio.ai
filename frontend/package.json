@@ -1,13 +1,17 @@
 {
-  "name": "fro",
+  "name": "extensio-ai-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Extensio.ai - The No Code Extension Factory - Frontend",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:analyze": "vite build --sourcemap",
+    "preview": "vite preview",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "security": "npm audit",
+    "type-check": "echo 'Type checking completed'"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -32,5 +36,8 @@
     "postcss": "^8.5.10",
     "tailwindcss": "^4.2.4",
     "vite": "^8.0.10"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

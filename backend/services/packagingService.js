@@ -33,9 +33,22 @@ class PackagingService {
       // 2. Write files (preserving subdirectories securely)
       const resolvedTempDir = path.resolve(tempDir);
       for (const file of files) {
-        // Resolve absolute path and verify it remains within the temp directory (anti-directory traversal)
-        const filePath = path.resolve(resolvedTempDir, file.path);
-        if (!filePath.startsWith(resolvedTempDir)) {
+        // Validate filename to prevent directory traversal attacks
+        if (!file.path || typeof file.path !== 'string') {
+          throw new Error('Invalid file path: must be a non-empty string');
+        }
+        
+        // Reject absolute paths and suspicious patterns (null bytes, etc)
+        if (path.isAbsolute(file.path) || file.path.includes('\0')) {
+          throw new Error(`Invalid file path detected: ${file.path}`);
+        }
+        
+        // Resolve and verify the file stays within temp directory
+        const filePath = path.resolve(path.join(resolvedTempDir, file.path));
+        const realTempDir = path.resolve(resolvedTempDir);
+        
+        // Ensure resolved path is within the temp directory using startsWith check
+        if (!filePath.startsWith(realTempDir + path.sep) && filePath !== realTempDir) {
           throw new Error(`Directory traversal attack detected: ${file.path}`);
         }
 
