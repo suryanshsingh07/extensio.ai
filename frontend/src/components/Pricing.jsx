@@ -50,7 +50,12 @@ export default function Pricing() {
             viewport={{ once: true }}
             transition={{ delay: idx * 0.1 }}
             key={plan.name}
-            className={`${plan.isPopular ? 'md:-mt-4 md:mb-4 z-10' : 'mt-0'}`}>
+            className={`relative ${plan.isPopular ? 'md:-mt-4 md:mb-4 z-10' : 'mt-0'}`}>
+            {plan.isPopular && (
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg z-20">
+                Most Popular
+              </div>
+            )}
             <BorderGlow
               edgeSensitivity={24}
               glowColor="40 80 80"
@@ -59,13 +64,8 @@ export default function Pricing() {
               glowIntensity={3}
               coneSpread={45}
               backgroundColor={plan.isPopular ? '#13131f' : 'rgba(19, 19, 31, 0.6)'}
-              className={`p-8 h-full w-full relative ${plan.isPopular ? 'shadow-[0_0_40px_rgba(99,102,241,0.15)]' : ''}`}
+              className={`p-8 ${plan.isPopular ? 'pt-12' : ''} h-full w-full relative ${plan.isPopular ? 'shadow-[0_0_40px_rgba(99,102,241,0.15)]' : ''}`}
             >
-              {plan.isPopular && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg z-10">
-                  Most Popular
-                </div>
-              )}
               
               <div className="flex items-center gap-3 mb-4">
                 <div className={`p-2 rounded-lg ${plan.isPopular ? 'bg-primary/20' : plan.name === 'Enterprise' ? 'bg-green-500/20' : 'bg-gray-500/20'}`}>
