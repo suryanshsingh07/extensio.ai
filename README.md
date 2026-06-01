@@ -32,6 +32,8 @@ A business user types a requirement, such as: *"Make a Chrome extension that blo
 2.  **Generates** `manifest.json`, `content.js` and `popup.html`.
 3.  **Packages** the files into a validated `.zip`.
 4.  **Serves** a direct download file for immediate installation.
+5.  **Condition** Make sure that you on your chrome extension developer mode.
+6.  **Uses** Load Unpacked your `.zip` folder and pin to toolbar.
 
 ---
 
