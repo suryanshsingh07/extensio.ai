@@ -1,8 +1,13 @@
 const path = require('path');
 const archiver = require('archiver');
+const fs = require('fs-extra');
+const mongoose = require('mongoose');
 const generationWorker = require('../workers/generationWorker');
 const StorageService = require('../services/storageService');
 const PackagingService = require('../services/packagingService');
+const Project = require('../models/Project');
+const Version = require('../models/Version');
+const ProjectService = require('../services/projectService');
 
 class DownloadController {
   static async downloadExtension(req, res) {
@@ -32,10 +37,6 @@ class DownloadController {
 
       // 2. If not found in worker, check database / in-memory Project fallback
       if (!files) {
-        const mongoose = require('mongoose');
-        const Project = require('../models/Project');
-        const Version = require('../models/Version');
-
         if (mongoose.connection.readyState === 1) {
           try {
             const project = await Project.findById(idOrJobId);
@@ -59,7 +60,6 @@ class DownloadController {
 
         // 3. Fallback to in-memory project history if not found in DB
         if (!files) {
-          const ProjectService = require('../services/projectService');
           try {
             const userProjects = await ProjectService.getUserProjects(user.id);
             const project = userProjects.find(p => p._id === idOrJobId);
@@ -88,7 +88,6 @@ class DownloadController {
         if (downloadErr) {
           console.error('Download sending failed:', downloadErr);
         }
-        const fs = require('fs-extra');
         await fs.remove(zipPath).catch(err => {
           console.error('Failed to clean up temporary ZIP:', err.message);
         });

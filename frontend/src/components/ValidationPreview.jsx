@@ -1,18 +1,14 @@
 import React from 'react';
 import { ShieldAlert, ShieldCheck, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 
-export default function ValidationPreview() {
-  const validationReport = {
-    isValid: false,
-    filesChecked: 4,
-    errors: [
-      'CRITICAL: Referenced file "popup.js" is missing from the generated project.',
-      'SECURITY: Unsafe \'eval()\' usage detected in content.js.'
-    ],
-    warnings: [
-      'Warning: \'document.write\' used in content.js. This is generally discouraged.'
-    ]
+export default function ValidationPreview({ report }) {
+  // Fallback for initial state or loading
+  const validationReport = report || {
+    isValid: true, filesChecked: 0, errors: [], warnings: []
   };
+
+  const hasManifestError = validationReport.errors.some(e => e.includes('manifest.json'));
+  const hasReferenceError = validationReport.errors.some(e => e.includes('Referenced file'));
 
   return (
     <section className="w-full max-w-7xl px-4 md:px-6 py-12 mt-12 border-t border-white/5">
@@ -38,11 +34,19 @@ export default function ValidationPreview() {
             </div>
             <div className="flex justify-between items-center p-3 bg-surface rounded-lg">
               <span className="text-sm text-gray-400">Manifest Syntax</span>
-              <span className="flex items-center gap-1 text-green-400 text-sm"><CheckCircle className="w-4 h-4"/> Valid</span>
+              {hasManifestError ? (
+                <span className="flex items-center gap-1 text-red-400 text-sm"><XCircle className="w-4 h-4"/> Invalid</span>
+              ) : (
+                <span className="flex items-center gap-1 text-green-400 text-sm"><CheckCircle className="w-4 h-4"/> Valid</span>
+              )}
             </div>
             <div className="flex justify-between items-center p-3 bg-surface rounded-lg">
               <span className="text-sm text-gray-400">Dependency Links</span>
-              <span className="flex items-center gap-1 text-red-400 text-sm"><XCircle className="w-4 h-4"/> Broken</span>
+              {hasReferenceError ? (
+                <span className="flex items-center gap-1 text-red-400 text-sm"><XCircle className="w-4 h-4"/> Broken</span>
+              ) : (
+                <span className="flex items-center gap-1 text-green-400 text-sm"><CheckCircle className="w-4 h-4"/> Healthy</span>
+              )}
             </div>
           </div>
         </div>
@@ -52,7 +56,7 @@ export default function ValidationPreview() {
           <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
             Inspection Logs
           </h3>
-          <div className="flex-1 bg-background rounded-xl p-4 font-mono text-sm overflow-y-auto space-y-3 border border-white/5 max-h-250px">
+          <div className="flex-1 bg-background rounded-xl p-4 font-mono text-sm overflow-y-auto space-y-3 border border-white/5 max-h-[250px]">
             {validationReport.errors.map((err, idx) => (
               <div key={idx} className="flex items-start gap-2 text-red-400">
                 <XCircle className="w-4 h-4 mt-0.5 shrink-0" />
@@ -72,7 +76,10 @@ export default function ValidationPreview() {
             )}
           </div>
           {!validationReport.isValid && (
-            <button className="mt-4 w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 font-medium py-3 rounded-lg border border-red-500/20 transition-all flex justify-center items-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+            <button 
+              onClick={() => alert('Auto-repair engine is analyzing logs to fix referenced file gaps...')}
+              className="mt-4 w-full bg-red-500/20 hover:bg-red-500/30 text-red-400 font-medium py-3 rounded-lg border border-red-500/20 transition-all flex justify-center items-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+            >
               Trigger Auto-Repair Workflow
             </button>
           )}

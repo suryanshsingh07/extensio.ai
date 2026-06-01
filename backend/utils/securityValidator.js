@@ -7,7 +7,9 @@ class SecurityValidator {
       /eval\s*\(/i,
       /setTimeout\s*\(\s*['"]/i,
       /setInterval\s*\(\s*['"]/i,
-      /document\.write\s*\(/i
+      /document\.write\s*\(/i,
+      /\.innerHTML\s*=/i,
+      /\.outerHTML\s*=/i
     ];
 
     for (const pattern of dangerousPatterns) {
@@ -29,7 +31,7 @@ class SecurityValidator {
       }
       
       // If it does not reference an external file via src
-      if (!attributes.includes('src=')) {
+      if (!/\bsrc\s*=/i.test(attributes)) {
         throw new Error('Security validation failed. Script tags must have a "src" attribute and no inline content.');
       }
     }
@@ -37,15 +39,8 @@ class SecurityValidator {
     return true;
   }
 
-  static async validateManifest(manifestPath) {
-    if (!await fs.pathExists(manifestPath)) {
-      throw new Error('Manifest file is missing.');
-    }
-
+  static async validateManifestObject(manifest) {
     try {
-      const manifestStr = await fs.readFile(manifestPath, 'utf-8');
-      const manifest = JSON.parse(manifestStr);
-
       if (manifest.manifest_version !== 3) {
         throw new Error('Only Manifest V3 is supported.');
       }
@@ -56,12 +51,16 @@ class SecurityValidator {
 
       // Check for dangerous permissions
       const dangerousPermissions = ['debugger', 'proxy', 'ttsEngine'];
-      if (manifest.permissions) {
-        manifest.permissions.forEach(perm => {
-          if (dangerousPermissions.includes(perm)) {
-            throw new Error(`Dangerous permission detected: ${perm}`);
-          }
-        });
+      const allPerms = [
+        ...(manifest.permissions || []),
+        ...(manifest.optional_permissions || []),
+        ...(manifest.host_permissions || [])
+      ];
+
+      for (const perm of allPerms) {
+        if (dangerousPermissions.includes(perm)) {
+          throw new Error(`Dangerous permission detected: ${perm}`);
+        }
       }
 
       return true;

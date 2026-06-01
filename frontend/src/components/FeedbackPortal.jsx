@@ -1,25 +1,46 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquarePlus, Star, Send, CheckCircle2, AlertTriangle, Lightbulb } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../config';
 
 export default function FeedbackPortal() {
+  const { token } = useAuth();
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [category, setCategory] = useState('GENERAL_SATISFACTION');
   const [comment, setComment] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (rating === 0) return;
     
+    setSubmitError(false);
     setIsSubmitting(true);
-    // Simulate API call to IntelligenceService
-    setTimeout(() => {
+    try {
+      const res = await fetch(`${API_URL}/intelligence/feedback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ rating, category, comment })
+      });
+
+      if (res.ok) {
+        setIsSubmitted(true);
+      } else {
+        setSubmitError(true);
+      }
+    } catch (err) {
+      setSubmitError(true);
+      console.error('Failed to submit feedback:', err);
+    } finally {
       setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 1200);
+    }
   };
 
   return (
@@ -99,6 +120,12 @@ export default function FeedbackPortal() {
                   placeholder="What did the AI get right or wrong?"
                   className="w-full bg-surface border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-none"/>
               </div>
+              {submitError && (
+                <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4" />
+                  Failed to send feedback. Please try again.
+                </div>
+              )}
               <button type="submit"
                 disabled={rating === 0 || isSubmitting}
                 className={`w-full py-3 rounded-xl font-medium flex justify-center items-center gap-2 transition-all ${
@@ -125,7 +152,7 @@ export default function FeedbackPortal() {
               <p className="text-gray-400 max-w-sm mx-auto">
                 Thank you! Your insights have been routed to our model training pipeline to improve future generations
               </p>
-              <button onClick={() => { setIsSubmitted(false); setRating(0); setComment(''); }}
+              <button onClick={() => { setIsSubmitted(false); setRating(0); setComment(''); setSubmitError(false); }}
                 className="mt-8 text-sm text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer">
                 Submit another report
               </button>

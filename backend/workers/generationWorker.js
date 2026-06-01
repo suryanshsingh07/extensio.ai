@@ -6,6 +6,8 @@ const CacheManager = require('../utils/cacheManager');
 const ValidationService = require('../services/validationService');
 const IntelligenceService = require('../services/intelligenceService');
 const AIService = require('../services/aiService');
+const { generatePng } = require('../utils/pngGenerator');
+const SecurityLog = require('../models/SecurityLog');
 
 function buildExtensionFiles(prompt) {
   const p = prompt.toLowerCase();
@@ -22,8 +24,8 @@ function buildExtensionFiles(prompt) {
   const isWordCount = p.includes('word') && (p.includes('count') || p.includes('stat'));
   const isRedSquare = (p.includes('block') && p.includes('image')) || (p.includes('red') && p.includes('square'));
 
-  const nameParts = prompt.split(' ').slice(0, 4).join(' ');
-  const extName = nameParts.charAt(0).toUpperCase() + nameParts.slice(1);
+  const nameParts = prompt.split(' ').slice(0, 4).join(' ') || 'Custom Extension';
+  const extName = (nameParts.charAt(0).toUpperCase() + nameParts.slice(1)).trim() || 'Extensio Project';
   const shortDesc = prompt.length > 80 ? prompt.slice(0, 77) + '...' : prompt;
 
   const manifest = {
@@ -317,9 +319,6 @@ button:hover{background:#4f46e5;}
     files.push({ path: 'rules.json', content: manifest._rules });
   }
 
-  // Load custom pure-JS PNG generator
-  const { generatePng } = require('../utils/pngGenerator');
-
   // Assign beautifully matching solid gradient colored PNG icons dynamically
   let r = 99, g = 102, b = 241;
   if (isDarkMode) { r = 139; g = 92; b = 246; }
@@ -392,8 +391,11 @@ class GenerationWorker {
         if (files) {
           // Post-process custom generated AI files to ensure valid PNG icons and secure V3 rules
           files = postProcessAIFiles(files);
+         console.log(`[Job ${jobId}] AI generation successful for user ${userId}`);
         } else {
           // Seamless fallback to local rules if AI generation is not enabled or fails
+          console.warn(`[Job ${jobId}] AI generation returned null or failed parsing. Falling back to local templates.`);
+          await IntelligenceService.logGenerationTelemetry(null, null, false, 'AI_PARSE_FALLBACK');
           files = buildExtensionFiles(promptText);
         }
 
@@ -405,7 +407,6 @@ class GenerationWorker {
             } catch (err) {
               // Log threat to MongoDB SecurityLog
               try {
-                const SecurityLog = require('../models/SecurityLog');
                 await SecurityLog.create({
                   eventType: 'CODE_VULNERABILITY',
                   severity: 'HIGH',
@@ -445,7 +446,7 @@ class GenerationWorker {
       job.status = 'packaging'; job.progress = 85;
       await new Promise(r => setTimeout(r, 800));
 
-      const projectName = promptText.split(' ').slice(0, 4).join(' ');
+      const projectName = (promptText.split(' ').slice(0, 4).join(' ') || 'New Extension').trim();
 
       const result = await ProjectService.createProject(userId, projectName, promptText, files, jobId);
       job.projectId = result?.project?._id || result?.project?.id;
@@ -521,19 +522,24 @@ function postProcessAIFiles(files) {
       manifestFile.content = JSON.stringify(manifest, null, 2);
     }
 
-    // 2. Filter out raw SVG files in the icons folder
+    const iconPaths = manifest.icons || { '16': 'icons/icon16.png', '48': 'icons/icon48.png', '128': 'icons/icon128.png' };
+    const iconPathValues = Object.values(iconPaths);
+
+    // 2. Filter out raw SVG files and existing PNG icons to prevent duplicates in the files array
     let filteredFiles = files.filter(f => {
       const isSvgIcon = f.path.endsWith('.svg') && (f.path.includes('icon') || f.path.includes('logo'));
-      return !isSvgIcon;
+      const isAlreadyAnIconPath = iconPathValues.includes(f.path);
+      return !isSvgIcon && !isAlreadyAnIconPath;
     });
 
     // 3. Extract customized SVG fill color if any SVG icon is present
     let r = 99, g = 102, b = 241; // Default modern Indigo (#6366f1)
     const originalSvgFile = files.find(f => f.path.endsWith('.svg') && (f.path.includes('icon') || f.path.includes('logo')));
     if (originalSvgFile) {
-      const fillMatch = originalSvgFile.content.match(/fill=["'](#(?:[a-fA-F0-9]{3}){1,2})["']/i);
+      // Enhanced regex to catch fill in attributes and style strings
+      const fillMatch = originalSvgFile.content.match(/fill=["'](#(?:[a-fA-F0-9]{3}){1,2})["']|style=.*fill:\s*(#(?:[a-fA-F0-9]{3}){1,2})/i);
       if (fillMatch) {
-        const hex = fillMatch[1];
+        const hex = fillMatch[1] || fillMatch[2];
         const parsed = parseHexColor(hex);
         if (parsed) {
           r = parsed.r;
@@ -542,11 +548,6 @@ function postProcessAIFiles(files) {
         }
       }
     }
-
-    // 4. Generate beautiful valid PNG binary icons for the paths defined in manifest
-    const { generatePng } = require('../utils/pngGenerator');
-
-    const iconPaths = manifest.icons || { '16': 'icons/icon16.png', '48': 'icons/icon48.png', '128': 'icons/icon128.png' };
 
     for (const [size, pathStr] of Object.entries(iconPaths)) {
       const sizeInt = parseInt(size, 10) || 48;

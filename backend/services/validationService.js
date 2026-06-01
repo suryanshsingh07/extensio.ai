@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
+const SecurityValidator = require('../utils/securityValidator');
 
 class ValidationService {
   static async validateProject(filesMap) {
@@ -28,13 +29,12 @@ class ValidationService {
         return report;
       }
 
-      if (!manifest.name || !manifest.version) {
+      // 2. Run central Security Manifest Validation
+      try {
+        await SecurityValidator.validateManifestObject(manifest);
+      } catch (err) {
         report.isValid = false;
-        report.errors.push('CRITICAL: manifest.json is missing required fields (name, version).');
-      }
-
-      if (manifest.manifest_version !== 3) {
-        report.warnings.push('Warning: Extension is not using Manifest V3.');
+        report.errors.push(`CRITICAL: ${err.message}`);
       }
 
       // 3. Verify referenced files exist in the map
@@ -55,6 +55,23 @@ class ValidationService {
         referencedFiles.add(manifest.action.default_popup);
       }
 
+      if (manifest.action && manifest.action.default_icon) {
+        if (typeof manifest.action.default_icon === 'string') {
+          referencedFiles.add(manifest.action.default_icon);
+        } else if (typeof manifest.action.default_icon === 'object') {
+          Object.values(manifest.action.default_icon).forEach(iconPath => {
+            referencedFiles.add(iconPath);
+          });
+        }
+      }
+
+      // Check icons
+      if (manifest.icons) {
+        Object.values(manifest.icons).forEach(iconPath => referencedFiles.add(iconPath));
+      } else {
+        report.warnings.push('Warning: No icons defined in manifest.json.');
+      }
+
       referencedFiles.forEach(file => {
         if (!filesMap[file]) {
           report.isValid = false;
@@ -62,18 +79,17 @@ class ValidationService {
         }
       });
 
-      // 4. Basic static analysis for JS files
-      Object.entries(filesMap).forEach(([filename, content]) => {
-        if (filename.endsWith('.js')) {
-          if (/eval\s*\(/.test(content)) {
+      // 4. Basic static analysis for JS and HTML files
+      for (const [filename, content] of Object.entries(filesMap)) {
+        if (filename.endsWith('.js') || filename.endsWith('.html')) {
+          try {
+            await SecurityValidator.scanContent(content);
+          } catch (err) {
             report.isValid = false;
-            report.errors.push(`SECURITY: Unsafe 'eval()' usage detected in ${filename}.`);
-          }
-          if (/document\.write\s*\(/.test(content)) {
-            report.warnings.push(`Warning: 'document.write' used in ${filename}. This is generally discouraged.`);
+            report.errors.push(`SECURITY: ${err.message} in ${filename}`);
           }
         }
-      });
+      }
 
     } catch (error) {
       report.isValid = false;
