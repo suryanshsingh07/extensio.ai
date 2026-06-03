@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, Lock, User as UserIcon, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function AuthModal() {
+  const navigate = useNavigate();
   const { isAuthModalOpen, closeAuthModal, authModalMode, setAuthModalMode, login, register } = useAuth();
 
   const [email, setEmail] = useState('');
@@ -55,7 +57,9 @@ export default function AuthModal() {
     }
 
     setLoading(false);
-    if (!res.success) {
+    if (res.success) {
+      navigate('/workspace');
+    } else {
       setError(res.error || 'Authentication failed');
     }
   };

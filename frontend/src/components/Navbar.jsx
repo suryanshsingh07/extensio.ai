@@ -9,20 +9,20 @@ export default function Navbar() {
   const isLanding = location.pathname === '/';
   
   const { user, openAuthModal, logout } = useAuth();
-
-  const landingLinks = [
-    { label: 'Features', href: '/#features' },
-    { label: 'Pricing', href: '/#pricing' },
-  ];
-
-  const appLinks = [
-    { label: 'Workspace', to: '/workspace', icon: <LayoutDashboard className="w-4 h-4" /> },
-    { label: 'Insights', to: '/insights', icon: <Sparkles className="w-4 h-4" /> }
-  ];
-
-  if (user?.isAdmin) {
-    appLinks.push({ label: 'Admin', to: '/admin', icon: <ShieldCheck className="w-4 h-4" /> });
-  }
+  
+  // Dynamic navigation items based on authentication status and user role
+  const navItems = user 
+    ? [
+        { label: 'Workspace', to: '/workspace', icon: <LayoutDashboard className="w-4 h-4" /> },
+        { label: 'Insights', to: '/insights', icon: <Sparkles className="w-4 h-4" /> },
+        ...(user.isAdmin ? [{ label: 'Admin', to: '/admin', icon: <ShieldCheck className="w-4 h-4" /> }] : []),
+        { label: 'Features', to: '/#features' },
+        { label: 'Pricing', to: '/#pricing' }
+      ]
+    : [
+        { label: 'Features', to: '/#features' },
+        { label: 'Pricing', to: '/#pricing' }
+      ];
 
   return (
     <nav id="main-nav" className="w-full max-w-7xl px-4 sm:px-6 py-5 flex items-center justify-between z-50 relative">
@@ -34,21 +34,13 @@ export default function Navbar() {
 
       {/* Desktop Navigation */}
       <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-400">
-        {isLanding ? (
-          landingLinks.map(link => (
-            <a key={link.label} href={link.href} className="hover:text-white transition-colors">
-              {link.label}
-            </a>
-          ))
-        ) : (
-          appLinks.map(link => (
-            <Link key={link.label}
-              to={link.to}
-              className={`flex items-center gap-1.5 hover:text-white transition-colors ${location.pathname === link.to ? 'text-white' : ''}`}>
-              {link.icon} {link.label}
-            </Link>
-          ))
-        )}
+        {navItems.map(link => (
+          <Link key={link.label}
+            to={link.to}
+            className={`flex items-center gap-1.5 hover:text-white transition-colors ${location.pathname === link.to ? 'text-white' : ''}`}>
+            {link.icon} {link.label}
+          </Link>
+        ))}
       </div>
 
       {/* Desktop CTA */}
@@ -98,25 +90,14 @@ export default function Navbar() {
       {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
         <div className="absolute top-full left-0 right-0 glass-panel border-t border-white/5 p-4 flex flex-col gap-1 md:hidden z-50 mx-4 rounded-2xl mt-2 shadow-2xl">
-          {isLanding ? (
-            landingLinks.map(link => (
-              <a key={link.label}
-                href={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-gray-300 hover:text-white py-3 px-4 rounded-xl hover:bg-white/5 transition-all text-sm font-medium">
-                {link.label}
-              </a>
-            ))
-          ) : (
-            appLinks.map(link => (
-              <Link key={link.label}
-                to={link.to}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`flex items-center gap-2 py-3 px-4 rounded-xl hover:bg-white/5 transition-all text-sm font-medium ${location.pathname === link.to ? 'text-white bg-white/5' : 'text-gray-300 hover:text-white'}`}>
-                {link.icon} {link.label}
-              </Link>
-            ))
-          )}
+          {navItems.map(link => (
+            <Link key={link.label}
+              to={link.to}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center gap-2 py-3 px-4 rounded-xl hover:bg-white/5 transition-all text-sm font-medium ${location.pathname === link.to ? 'text-white bg-white/5' : 'text-gray-300 hover:text-white'}`}>
+              {link.icon} {link.label}
+            </Link>
+          ))}
           
           <div className="border-t border-white/5 pt-3 mt-2 flex flex-col gap-2">
             {user ? (
