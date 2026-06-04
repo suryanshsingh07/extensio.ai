@@ -8,6 +8,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
+const fs = require('fs-extra');
+const path = require('path');
 
 // Import routes
 const apiRoutes = require('./routes/api');
@@ -139,6 +141,13 @@ async function startServer() {
       process.exit(1);
     }
     await mongoose.connect(MONGO_URI);
+
+    // Ensure temp workspace exists and is clean on startup
+    const tempPath = path.join(__dirname, 'temp_workspaces');
+    await fs.ensureDir(tempPath);
+    await fs.emptyDir(tempPath); 
+    console.log('✓ Temporary workspaces initialized and cleaned');
+
     console.log('✓ Connected to MongoDB');
   } catch (err) {
     console.error('FATAL ERROR: MongoDB connection failed.');

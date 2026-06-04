@@ -1,43 +1,99 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Sparkles, Menu, X, LayoutDashboard, ShieldCheck, User, LogOut } from 'lucide-react';
+import { Sparkles, Menu, X, LayoutDashboard, ShieldCheck, User, LogOut, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const isLanding = location.pathname === '/';
-  
+
   const { user, openAuthModal, logout } = useAuth();
-  
+
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved === 'dark';
+    return true; // Default to dark (Black Theme)
+  });
+
+  useEffect(() => {
+    // Sync across tabs and other components
+    const handleStorage = (e) => {
+      if (e.key === 'theme') {
+        const newDark = e.newValue === 'dark';
+        setIsDark(newDark);
+        window.dispatchEvent(new CustomEvent('theme-changed', { detail: newDark }));
+      }
+    };
+    const handleThemeEvent = (e) => setIsDark(e.detail);
+
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener('theme-changed', handleThemeEvent);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('theme-changed', handleThemeEvent);
+    };
+  }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const body = document.body;
+
+    if (isDark) {
+      root.classList.add('dark');
+      body.style.backgroundColor = '#000000';
+      localStorage.setItem('theme', 'dark');
+    } else {
+      root.classList.remove('dark');
+      body.style.backgroundColor = '#ffffff';
+      localStorage.setItem('theme', 'light');
+    }
+
+    // Apply transition only after initial theme set to prevent white-to-dark flash on load
+    const transitionTimeout = setTimeout(() => {
+      body.style.transition = 'background-color 0.5s ease-in-out';
+    }, 100);
+
+    return () => clearTimeout(transitionTimeout);
+  }, [isDark]);
+
+  const setThemeMode = (dark) => {
+    if (dark === isDark) return;
+    setIsDark(dark);
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
+    window.dispatchEvent(new CustomEvent('theme-changed', { detail: dark }));
+  };
+
+  const toggleTheme = () => setThemeMode(!isDark);
+
   // Dynamic navigation items based on authentication status and user role
-  const navItems = user 
+  const navItems = user
     ? [
-        { label: 'Workspace', to: '/workspace', icon: <LayoutDashboard className="w-4 h-4" /> },
-        { label: 'Insights', to: '/insights', icon: <Sparkles className="w-4 h-4" /> },
-        ...(user.isAdmin ? [{ label: 'Admin', to: '/admin', icon: <ShieldCheck className="w-4 h-4" /> }] : []),
-        { label: 'Features', to: '/#features' },
-        { label: 'Pricing', to: '/#pricing' }
-      ]
+      { label: 'Workspace', to: '/workspace', icon: <LayoutDashboard className="w-4 h-4" /> },
+      { label: 'Insights', to: '/insights', icon: <Sparkles className="w-4 h-4" /> },
+      ...(user.isAdmin ? [{ label: 'Admin', to: '/admin', icon: <ShieldCheck className="w-4 h-4" /> }] : []),
+      { label: 'Features', to: '/#features' },
+      { label: 'Pricing', to: '/#pricing' }
+    ]
     : [
-        { label: 'Features', to: '/#features' },
-        { label: 'Pricing', to: '/#pricing' }
-      ];
+      { label: 'Features', to: '/#features' },
+      { label: 'Pricing', to: '/#pricing' }
+    ];
 
   return (
     <nav id="main-nav" className="w-full max-w-7xl px-4 sm:px-6 py-5 flex items-center justify-between z-50 relative">
       {/* Brand */}
-      <Link to="/" className="flex items-center gap-2.5 group" id="brand-logo">
-        <img src="/logo.png" className="h-10 w-10 object-contain"/>
+      <Link to="/" className="flex items-center gap-2.5 group text-blue-500 dark:text-white" id="brand-logo">
+        <img src="/logo.png" className="h-10 w-10 object-contain" />
         <span className="text-xl font-bold tracking-wide">Extensio.ai</span>
       </Link>
 
       {/* Desktop Navigation */}
-      <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-400">
+      <div className={`hidden md:flex items-center gap-6 text-sm font-medium ${isDark ? "text-white/70" : "text-gray-500"}`}>
         {navItems.map(link => (
           <Link key={link.label}
             to={link.to}
-            className={`flex items-center gap-1.5 hover:text-white transition-colors ${location.pathname === link.to ? 'text-white' : ''}`}>
+            className={`flex items-center gap-1.5 transition-colors ${isDark ? "hover:text-white" : "hover:text-gray-900"} ${location.pathname === link.to ? 'text-primary' : ''}`}>
             {link.icon} {link.label}
           </Link>
         ))}
@@ -45,33 +101,38 @@ export default function Navbar() {
 
       {/* Desktop CTA */}
       <div className="hidden md:flex items-center gap-3">
+        {/* Single Theme Toggle */}
+        <button onClick={toggleTheme}
+          className={`p-2 rounded-full border  transition-all cursor-pointer mr-2 shadow-sm ${isDark ? "hover:bg-white/20 border-white/20" : "hover:bg-black/10 border-black/20"}`}          
+          title={isDark ? "Switch to White Theme" : "Switch to Black Theme"}>
+          {isDark ? <Sun className="w-4 h-4 text-yellow-500" /> : <Moon className="w-4 h-4 text-blue-500" />}
+        </button>
+
         {user ? (
           <div className="flex items-center gap-4">
-            {!isLanding && (
-              <Link to="/" className="text-sm font-medium text-gray-300 hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-white/5">
-                ← Back to Home
-              </Link>
-            )}
-            <Link to="/profile" className="flex items-center gap-2 px-3 py-1.5 bg-surface border border-white/5 rounded-full hover:bg-white/5 transition-colors cursor-pointer">
+            <Link to="/" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors px-4 py-2 rounded-lg">
+              ← Home
+            </Link>
+            <Link to="/profile" className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-zinc-900 border border-black/5 dark:border-white/5 rounded-full hover:bg-gray-200 dark:hover:bg-white/5 transition-colors cursor-pointer">
               <div className="w-6 h-6 bg-primary/20 text-primary rounded-full flex items-center justify-center">
                 <User className="w-3.5 h-3.5" />
               </div>
-              <span className="text-sm font-medium">{user.name}</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</span>
             </Link>
             <button onClick={logout}
-              className="text-gray-400 hover:text-red-400 transition-colors p-2"
+              className="text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors p-2"
               title="Logout">
               <LogOut className="w-4 h-4" />
             </button>
           </div>
         ) : (
           <>
-            <button onClick={() => openAuthModal('login')} 
+            <button onClick={() => openAuthModal('login')}
               className="bg-primary hover:bg-primary/90 text-white text-sm font-semibold py-2.5 px-6 rounded-full transition-all shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)]">
               Log In
             </button>
-            <button onClick={() => openAuthModal('register')} 
-              id="get-started-btn" 
+            <button onClick={() => openAuthModal('register')}
+              id="get-started-btn"
               className="bg-primary hover:bg-primary/90 text-white text-sm font-semibold py-2.5 px-6 rounded-full transition-all shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)]">
               Get Started
             </button>
@@ -81,7 +142,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Toggle */}
       <button id="mobile-menu-toggle"
-        className="md:hidden p-2 text-gray-300 hover:text-white transition-colors cursor-pointer"
+        className="md:hidden p-2 text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         aria-label="Toggle navigation menu">
         {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -89,20 +150,30 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 glass-panel border-t border-white/5 p-4 flex flex-col gap-1 md:hidden z-50 mx-4 rounded-2xl mt-2 shadow-2xl">
+        <div className="absolute top-full left-0 right-0 bg-white dark:bg-black glass-panel border-t border-gray-100 dark:border-white/5 p-4 flex flex-col gap-1 md:hidden z-50 mx-4 rounded-2xl mt-2 shadow-2xl">
           {navItems.map(link => (
             <Link key={link.label}
               to={link.to}
               onClick={() => setIsMobileMenuOpen(false)}
-              className={`flex items-center gap-2 py-3 px-4 rounded-xl hover:bg-white/5 transition-all text-sm font-medium ${location.pathname === link.to ? 'text-white bg-white/5' : 'text-gray-300 hover:text-white'}`}>
+              className={`flex items-center gap-2 py-3 px-4 rounded-xl transition-all text-sm font-medium ${location.pathname === link.to ? 'text-primary bg-primary/10' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5'}`}>
               {link.icon} {link.label}
             </Link>
           ))}
-          
-          <div className="border-t border-white/5 pt-3 mt-2 flex flex-col gap-2">
+
+          <div className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-sm font-medium text-gray-600 dark:text-gray-300">
+            <span>Theme</span>
+            <button
+              onClick={toggleTheme}
+              className="p-1.5 rounded-lg bg-black border border-white/10 text-gray-300 cursor-pointer"
+            >
+              {isDark ? <Sun className="w-4 h-4 text-yellow-500" /> : <Moon className="w-4 h-4" />}
+            </button>
+          </div>
+
+          <div className="border-t border-gray-100 dark:border-white/5 pt-3 mt-2 flex flex-col gap-2">
             {user ? (
               <>
-                <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 py-3 px-4 text-sm font-medium text-white hover:bg-white/5 rounded-xl transition-all">
+                <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 py-3 px-4 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all">
                   <User className="w-4 h-4 text-primary" />
                   {user.email}
                 </Link>

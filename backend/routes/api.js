@@ -29,6 +29,20 @@ router.post('/auth/login', asyncHandler(AuthController.login));
 router.get('/auth/me', requireAuth, asyncHandler(AuthController.me));
 router.put('/auth/profile', requireAuth, asyncHandler(AuthController.updateProfile));
 
+// Session Management (Active Devices)
+router.get('/auth/sessions', requireAuth, asyncHandler(async (req, res) => {
+  // In a production environment, this would be retrieved from a session store (e.g., Redis) 
+  // or a dedicated sessions collection linked to the user.
+  const sessions = [
+    { id: 'sess-1', deviceName: 'Chrome v124 (macOS)', deviceType: 'desktop', location: 'San Francisco, US', ip: '192.168.1.42', lastActive: 'Active Now', isCurrent: true },
+    { id: 'sess-2', deviceName: 'Safari Mobile (iPhone 15)', deviceType: 'mobile', location: 'New York, US', ip: '72.144.12.101', lastActive: '2 hours ago', isCurrent: false },
+    { id: 'sess-3', deviceName: 'Firefox v125 (Windows 11)', deviceType: 'desktop', location: 'London, UK', ip: '84.22.190.54', lastActive: '14 hours ago', isCurrent: false }
+  ];
+
+  // Returns the list of active sessions for the authenticated user
+  res.json(sessions);
+}));
+
 router.get('/projects', requireAuth, asyncHandler(ProjectController.getProjects));
 router.get('/projects/:projectId/history', requireAuth, asyncHandler(ProjectController.getHistory));
 router.delete('/projects/:projectId', requireAuth, asyncHandler(ProjectController.deleteProject));
@@ -38,10 +52,14 @@ router.post('/generate', requireAuth, asyncHandler(async (req, res) => {
   if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
     return res.status(400).json({ error: 'Validation Error', message: 'A non-empty "prompt" field is required.' });
   }
-  
+
+  if (prompt.length > 2500) {
+    return res.status(400).json({ error: 'Validation Error', message: 'Prompt exceeds maximum length of 2500 characters.' });
+  }
+
   // Screen prompt via MonitoringService
   await MonitoringService.analyzePrompt(req.user.id, prompt);
-  
+
   // Actually use the worker instead of just returning mock string
   const jobId = await generationWorker.enqueueGeneration(req.user.id, prompt);
 
@@ -102,7 +120,7 @@ router.post('/generate/advanced', requireAuth, requirePremium, asyncHandler(asyn
 
 router.get('/insights/strategic', requireAuth, asyncHandler(async (req, res) => {
   const insights = await EvolutionService.getStrategicInsights();
-  
+
   if (!insights || insights.length === 0) {
     // Return high quality premium mock data if database has no strategic insights
     return res.json([
@@ -135,7 +153,7 @@ router.get('/insights/strategic', requireAuth, asyncHandler(async (req, res) => 
       }
     ]);
   }
-  
+
   res.json(insights);
 }));
 

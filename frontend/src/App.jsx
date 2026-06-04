@@ -79,7 +79,7 @@ function NotFound() {
   return (
     <div className="flex flex-col items-center justify-center py-24 text-center">
       <h1 className="text-9xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-primary to-secondary animate-pulse">404</h1>
-      <p className="mt-4 text-2xl font-bold tracking-tight text-white sm:text-4xl">Page Not Found</p>
+      <p className="mt-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Page Not Found</p>
       <p className="mt-2 text-base text-gray-400">Sorry, we couldn’t find the page you’re looking for.</p>
       <div className="mt-10">
         <a href="/" className="px-6 py-3 rounded-xl bg-linear-to-r from-primary to-secondary font-semibold hover:opacity-90 transition-opacity">
@@ -140,8 +140,7 @@ export default function App() {
             </div> 
             */}
 
-          {/* Your new active layout */}
-          <div className="min-h-screen bg-[#06060c] text-white font-sans">
+          <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white font-sans transition-colors duration-500">
             <GridBackground />
             <div className="relative z-10 flex flex-col items-center w-full min-h-screen">
               <Navbar />

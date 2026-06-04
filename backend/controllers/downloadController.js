@@ -33,7 +33,9 @@ class DownloadController {
             extName = (job.prompt || 'extension').split(' ').slice(0, 3).join('-').toLowerCase().replace(/[^a-z0-9-]/g, '');
           }
         }
-      } catch (_) { /* Not an active/recent job ID */ }
+      } catch (workerErr) {
+        // Continue to check database if not in active worker memory
+      }
 
       // 2. If not found in worker, check database / in-memory Project fallback
       if (!files) {

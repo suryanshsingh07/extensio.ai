@@ -31,7 +31,7 @@ export default function Hero() {
       <motion.h1 initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
-        className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.08] mb-6">
+        className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.08] mb-6 text-gray-900 dark:text-white">
         Turn Ideas into
         <br />
         <span className="gradient-text glow-text">Chrome Extensions</span>
@@ -43,9 +43,9 @@ export default function Hero() {
       <motion.p initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl leading-relaxed">
+        className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl leading-relaxed">
         Describe your browser extension in plain English. Our AI builds a{' '}
-        <span className="text-white font-medium">real, installable, Manifest V3</span>{' '}
+        <span className="text-gray-900 dark:text-white font-medium">real, installable, Manifest V3</span>{' '}
         Chrome extension - packaged and ready for the Web Store in seconds
       </motion.p>
 
@@ -60,7 +60,7 @@ export default function Hero() {
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </button>
         <a href="#works"
-          className="glass-panel text-gray-300 hover:text-white text-base font-medium py-3.5 px-8 rounded-full transition-all hover:bg-white/5 border border-white/10">
+          className="bg-gray-100 dark:bg-white/5 glass-panel text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-base font-medium py-3.5 px-8 rounded-full transition-all border border-black/5 dark:border-white/10">
           See How It Works
         </a>
       </motion.div>

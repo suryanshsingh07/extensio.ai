@@ -62,7 +62,7 @@ const steps = [
 
 export default function Features() {
   return (
-    <section className="w-full py-20 border-t border-white/5" id="features">
+    <section className="w-full py-20 border-t border-black/5 dark:border-white/5 text-gray-900 dark:text-white" id="features">
       {/* Header */}
       <div className="text-center mb-16 px-4">
         <motion.p initial={{ opacity: 0 }}
@@ -103,7 +103,6 @@ export default function Features() {
               glowRadius={80}
               glowIntensity={3}
               coneSpread={45}
-              backgroundColor="rgba(19, 19, 31, 0.6)"
               className="p-7 h-full w-full"
             >
               <div className={`w-11 h-11 ${f.bg} ${f.border} border rounded-xl flex items-center justify-center mb-5 ${f.color}`}>
@@ -137,7 +136,6 @@ export default function Features() {
                 glowRadius={80}
                 glowIntensity={3}
                 coneSpread={45}
-                backgroundColor="rgba(19, 19, 31, 0.6)"
                 className="flex flex-col items-center text-center p-8 h-full w-full"
               >
                 <div className="w-14 h-14 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center text-primary font-bold text-lg mb-5 shadow-[0_0_20px_rgba(99,102,241,0.2)]">

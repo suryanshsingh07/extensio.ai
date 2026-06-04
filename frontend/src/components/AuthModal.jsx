@@ -87,7 +87,7 @@ export default function AuthModal() {
         <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-md glass-panel p-8 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(99,102,241,0.15)] bg-surface/90 overflow-hidden">
+          className="relative w-full max-w-md bg-white dark:bg-black glass-panel p-8 rounded-3xl border border-gray-200 dark:border-white/10 shadow-[0_0_50px_rgba(99,102,241,0.15)] overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 rounded-full blur-[60px] pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-secondary/20 rounded-full blur-[60px] pointer-events-none" />
@@ -98,7 +98,7 @@ export default function AuthModal() {
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-6">
               <img src="/logo.png" className="h-10 w-10 object-contain"/>
-              <h2 className="text-2xl font-bold">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                 {isReset ? 'Reset password' : isLogin ? 'Welcome back' : 'Create account'}
               </h2>
             </div>
@@ -122,9 +122,9 @@ export default function AuthModal() {
                     <Sparkles className="w-8 h-8 animate-pulse" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">Check your email</h3>
-                    <p className="text-gray-400 text-sm leading-relaxed">
-                      We've simulated SMTP email delivery and sent a recovery link to <span className="text-white font-medium">{email}</span>.
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Check your email</h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
+                      We've simulated SMTP email delivery and sent a recovery link to <span className="text-primary font-medium">{email}</span>.
                     </p>
                   </div>
                   <button type="button" onClick={() => { setIsReset(false); setResetSuccess(false); }}
@@ -143,7 +143,7 @@ export default function AuthModal() {
                       <input type="email"
                         value={email}
                         onChange={e => setEmail(e.target.value)}
-                        className="block w-full pl-10 pr-3 py-2.5 border border-white/10 rounded-xl bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                         placeholder="you@example.com"
                         required/>
                     </div>
@@ -182,7 +182,7 @@ export default function AuthModal() {
                           type="text"
                           value={name}
                           onChange={e => setName(e.target.value)}
-                          className="block w-full pl-10 pr-3 py-2.5 border border-white/10 rounded-xl bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                          className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                           placeholder="John Doe"
                           required={!isLogin}
                         />
@@ -198,7 +198,7 @@ export default function AuthModal() {
                       <input type="email"
                         value={email}
                         onChange={e => setEmail(e.target.value)}
-                        className="block w-full pl-10 pr-3 py-2.5 border border-white/10 rounded-xl bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                         placeholder="you@example.com"
                         required/>
                     </div>
@@ -215,7 +215,7 @@ export default function AuthModal() {
                       <input type="password"
                         value={password}
                         onChange={e => setPassword(e.target.value)}
-                        className="block w-full pl-10 pr-3 py-2.5 border border-white/10 rounded-xl bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                         placeholder="••••••••"
                         required/>
                     </div>
@@ -233,10 +233,10 @@ export default function AuthModal() {
                     )}
                   </button>
                 </form>
-                <div className="mt-6 text-center text-sm text-gray-400">
+                <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
                   {isLogin ? "Don't have an account? " : "Already have an account? "}
                   <button onClick={toggleMode}
-                    className="text-white hover:text-primary font-medium transition-colors cursor-pointer">
+                    className="text-gray-900 dark:text-white hover:text-primary font-medium transition-colors cursor-pointer">
                     {isLogin ? 'Sign up' : 'Log in'}
                   </button>
                 </div>

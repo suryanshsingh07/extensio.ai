@@ -218,24 +218,24 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="w-full max-w-7xl px-4 md:px-6 py-10 border-t border-white/5">
+    <div className="w-full max-w-7xl px-4 md:px-6 py-10 border-t border-black/5 dark:border-white/5 text-gray-900 dark:text-white">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-3">
-        <div>
+        <div className="transition-colors duration-500">
           <h2 className="text-3xl font-bold mb-1 flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-primary" /> My Workspace
           </h2>
           <p className="text-gray-400 text-sm">
-            Welcome back, <span className="text-white font-medium">{user?.name}</span>. Generate, manage and download your Chrome extensions
+            Welcome back, <span className="text-gray-900 dark:text-white font-medium">{user?.name}</span>. Generate, manage and download your Chrome extensions
           </p>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 glass-panel rounded-full text-xs text-gray-400 border border-white/5">
+        <div className="flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-black/50 glass-panel rounded-full text-xs text-gray-500 dark:text-gray-400 border border-black/5 dark:border-white/5">
           <div className="pulse-dot" />
           <span>{projects.length} extension{projects.length !== 1 ? 's' : ''} created</span>
         </div>
       </div>
       {/* Generator Card */}
-      <div className="glass-panel p-6 rounded-2xl mb-10 border border-primary/20 bg-linear-to-br from-primary/5 to-transparent">
+      <div className="bg-white/80 dark:bg-black glass-panel p-6 rounded-2xl mb-10 border border-primary/20 dark:bg-linear-to-br dark:from-primary/5 dark:to-transparent">
         <h3 className="text-lg font-semibold mb-1 flex items-center gap-2">
           <Terminal className="w-5 h-5 text-primary" />
           Create New Extension
@@ -252,7 +252,7 @@ export default function Dashboard() {
           </AnimatePresence>
         </p>
         <div className="flex flex-col md:flex-row gap-4">
-          <textarea className="flex-1 bg-surface/80 border border-white/10 rounded-xl p-4 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 resize-none h-28 transition-colors"
+          <textarea className="flex-1 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-white/10 rounded-xl p-4 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 resize-none h-28 transition-colors"
             placeholder="Describe your browser extension in plain English…"
             value={prompt}
             onChange={e => setPrompt(e.target.value)}
@@ -311,7 +311,7 @@ export default function Dashboard() {
               <Plus className="w-7 h-7 text-primary" />
             </div>
             <div className="text-center">
-              <p className="text-white font-medium mb-1">No extensions yet</p>
+              <p className="text-gray-900 dark:text-white font-medium mb-1">No extensions yet</p>
               <p className="text-gray-500 text-sm">Generate your first one using the prompt above!</p>
             </div>
           </div>
@@ -321,7 +321,7 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.07 }}
-              className="glow-card glass-panel p-6 rounded-2xl border border-white/5 hover:border-primary/30 transition-all group flex flex-col" >
+              className="glow-card bg-white dark:bg-black glass-panel p-6 rounded-2xl border border-gray-200 dark:border-white/5 hover:border-primary/30 transition-all group flex flex-col shadow-sm dark:shadow-none" >
               {/* Card header */}
               <div className="flex justify-between items-start mb-4">
                 <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors">
@@ -341,7 +341,7 @@ export default function Dashboard() {
                   </button>
                 </div>
               </div>
-              <h3 className="text-base font-semibold mb-1 group-hover:text-primary transition-colors line-clamp-1">
+              <h3 className="text-base font-semibold mb-1 text-gray-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1">
                 {project.name}
               </h3>
               <p className="text-xs text-gray-500 mb-4 line-clamp-2 leading-relaxed">
@@ -357,9 +357,9 @@ export default function Dashboard() {
                     v{project.latestVersion || 1}.0
                   </span>
                 </div>
-                <div className="flex gap-2 pt-3 border-t border-white/5">
+                <div className="flex gap-2 pt-3 border-t border-gray-100 dark:border-white/5">
                   <button onClick={() => handleEdit(project._id || project.id)}
-                    className="flex-1 bg-surface hover:bg-white/5 text-xs font-medium py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-colors border border-white/5 hover:border-white/10">
+                    className="flex-1 bg-gray-50 dark:bg-zinc-900 hover:bg-gray-100 dark:hover:bg-white/5 text-xs font-medium py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-colors border border-gray-200 dark:border-white/5">
                     <Edit3 className="w-3.5 h-3.5" /> Edit Prompt
                   </button>
                   <button onClick={() => handleDownload(project._id || project.id)}

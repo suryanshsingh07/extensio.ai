@@ -9,20 +9,29 @@ const AIService = require('../services/aiService');
 const { generatePng } = require('../utils/pngGenerator');
 const SecurityLog = require('../models/SecurityLog');
 
+const MAX_CONCURRENT_JOBS = 50;
+
 function buildExtensionFiles(prompt) {
   const p = prompt.toLowerCase();
 
-  const isDarkMode = p.includes('dark') || p.includes('night');
-  const isAdBlock = p.includes('ad') && (p.includes('block') || p.includes('remov'));
-  const isTabManager = p.includes('tab') && (p.includes('manag') || p.includes('sav') || p.includes('close') || p.includes('group'));
-  const isTimer = p.includes('timer') || p.includes('pomodoro') || p.includes('focus') || p.includes('break');
-  const isTranslate = p.includes('translat') || p.includes('language');
-  const isHighlight = p.includes('highlight') || p.includes('mark') || p.includes('color');
-  const isPassword = p.includes('password') || (p.includes('generat') && p.includes('pass'));
-  const isNotes = p.includes('note') || p.includes('sticky') || p.includes('memo');
-  const isScrollTop = p.includes('scroll') && (p.includes('top') || p.includes('back'));
-  const isWordCount = p.includes('word') && (p.includes('count') || p.includes('stat'));
-  const isRedSquare = (p.includes('block') && p.includes('image')) || (p.includes('red') && p.includes('square'));
+  // Helper to check for intent while avoiding simple negations
+  const hasIntent = (keywords) => {
+    const match = keywords.some(k => p.includes(k));
+    const isNegated = p.includes('not ') || p.includes('no ') || p.includes('without ') || p.includes('except ');
+    return match && !isNegated;
+  };
+
+  const isDarkMode = hasIntent(['dark', 'night']);
+  const isAdBlock = hasIntent(['ad block', 'adblock', 'remove ad']);
+  const isTabManager = hasIntent(['tab manag', 'save tab', 'close tab', 'group tab']);
+  const isTimer = hasIntent(['timer', 'pomodoro', 'focus', 'break']);
+  const isTranslate = hasIntent(['translat', 'language']);
+  const isHighlight = hasIntent(['highlight', 'mark', 'color']);
+  const isPassword = hasIntent(['password', 'pass gen']);
+  const isNotes = hasIntent(['note', 'sticky', 'memo']);
+  const isScrollTop = hasIntent(['scroll top', 'back to top']);
+  const isWordCount = hasIntent(['word count', 'word stat']);
+  const isRedSquare = (hasIntent(['block']) && p.includes('image')) || (p.includes('red') && p.includes('square'));
 
   const nameParts = prompt.split(' ').slice(0, 4).join(' ') || 'Custom Extension';
   const extName = (nameParts.charAt(0).toUpperCase() + nameParts.slice(1)).trim() || 'Extensio Project';
@@ -353,6 +362,10 @@ class GenerationWorker {
   }
 
   async enqueueGeneration(userId, promptText) {
+    if (this.activeJobs.size >= MAX_CONCURRENT_JOBS) {
+      throw new Error('Server is currently at maximum generation capacity. Please try again in a few minutes.');
+    }
+
     const jobId = uuidv4();
     this.activeJobs.set(jobId, {
       status: 'queued',
@@ -391,7 +404,7 @@ class GenerationWorker {
         if (files) {
           // Post-process custom generated AI files to ensure valid PNG icons and secure V3 rules
           files = postProcessAIFiles(files);
-         console.log(`[Job ${jobId}] AI generation successful for user ${userId}`);
+          console.log(`[Job ${jobId}] AI generation successful for user ${userId}`);
         } else {
           // Seamless fallback to local rules if AI generation is not enabled or fails
           console.warn(`[Job ${jobId}] AI generation returned null or failed parsing. Falling back to local templates.`);

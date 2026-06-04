@@ -60,19 +60,19 @@ export default function AdminDashboard() {
   }
 
   return (
-    <section className="w-full max-w-7xl px-4 md:px-6 py-12 border-t border-white/5 bg-red-950/5 rounded-3xl">
+    <section className="w-full max-w-7xl px-4 md:px-6 py-12 border-t border-black/5 dark:border-white/5 bg-gray-50/50 dark:bg-red-950/5 rounded-3xl">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div className="flex items-center gap-3">
           <div className="p-3 rounded-xl bg-red-500/10 text-red-400">
             <Shield className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-3xl font-bold">Security & Admin Portal</h2>
-            <p className="text-gray-400">Platform monitoring, threat detection and system health</p>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Security & Admin Portal</h2>
+            <p className="text-gray-600 dark:text-gray-400">Platform monitoring, threat detection and system health</p>
           </div>
         </div>
-        <div className="flex items-center gap-3 bg-surface p-2 rounded-lg border border-white/5">
-          <span className="flex items-center gap-2 text-sm px-3 py-1 bg-green-500/10 text-green-400 rounded-md">
+        <div className="flex items-center gap-3 bg-white dark:bg-surface p-2 rounded-lg border border-gray-200 dark:border-white/5">
+          <span className="flex items-center gap-2 text-sm px-3 py-1 bg-green-500/10 text-green-600 dark:text-green-400 rounded-md">
             <Activity className="w-4 h-4" /> System Healthy
           </span>
         </div>

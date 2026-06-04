@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 // Soft Floating Animation Presets
@@ -11,18 +11,32 @@ const floatTransition = (duration, delay = 0) => ({
 });
 
 export default function GridBackground() {
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    return saved ? saved === 'dark' : true; // Default to dark (Sun)
+  });
+
+  useEffect(() => {
+    const handleThemeEvent = (e) => setIsDark(e.detail);
+    window.addEventListener('theme-changed', handleThemeEvent);
+    return () => window.removeEventListener('theme-changed', handleThemeEvent);
+  }, []);
+
   return (
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
       {/* Deep Dark background base */}
-      <div className="absolute inset-0 bg-[#06060c]" />
+      <div 
+        className="absolute inset-0 transition-colors duration-500" 
+        style={{ backgroundColor: isDark ? '#000000' : '#ffffff' }}
+      />
 
       {/* Grid Pattern with subtle radial mask to fade at edges */}
       <div 
-        className="absolute inset-0 opacity-[0.25]"
+        className="absolute inset-0 opacity-[0.15] dark:opacity-[0.25]"
         style={{
           backgroundImage: `
-            linear-gradient(to right, rgba(99, 102, 241, 0.08) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(99, 102, 241, 0.08) 1px, transparent 1px)
+            linear-gradient(to right, rgba(99, 102, 241, 0.15) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(99, 102, 241, 0.15) 1px, transparent 1px)
           `,
           backgroundSize: '50px 50px',
           maskImage: 'radial-gradient(ellipse at 50% 50%, black 60%, transparent 100%)',
@@ -31,9 +45,9 @@ export default function GridBackground() {
       />
 
       {/* Giant Ambient Glows */}
-      <div className="absolute top-[-10%] left-[20%] w-[60%] h-[40%] bg-indigo-500/10 blur-[130px] rounded-full" />
-      <div className="absolute bottom-[-10%] right-[10%] w-[45%] h-[45%] bg-purple-500/10 blur-[130px] rounded-full" />
-      <div className="absolute top-[30%] left-[-10%] w-[35%] h-[45%] bg-sky-500/5 blur-[120px] rounded-full" />
+      <div className="absolute top-[-10%] left-[20%] w-[60%] h-[40%] bg-indigo-500/5 dark:bg-indigo-500/10 blur-[130px] rounded-full" />
+      <div className="absolute bottom-[-10%] right-[10%] w-[45%] h-[45%] bg-purple-500/5 dark:bg-purple-500/10 blur-[130px] rounded-full" />
+      <div className="absolute top-[30%] left-[-10%] w-[35%] h-[45%] bg-sky-500/0 dark:bg-sky-500/5 blur-[120px] rounded-full" />
 
       {/* Floating Blueprint Wireframes */}
       <div className="absolute inset-0 w-full h-full max-w-7xl mx-auto px-4 sm:px-6">
