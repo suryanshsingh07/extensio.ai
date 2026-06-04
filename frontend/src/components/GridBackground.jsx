@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Grainient from './Grainient';
 
 // Soft Floating Animation Presets
 const floatTransition = (duration, delay = 0) => ({
@@ -24,11 +25,40 @@ export default function GridBackground() {
 
   return (
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
-      {/* Deep Dark background base */}
-      <div 
-        className="absolute inset-0 transition-colors duration-500" 
-        style={{ backgroundColor: isDark ? '#000000' : '#ffffff' }}
-      />
+      {/* Background base */}
+      {isDark ? (
+        <div 
+          className="absolute inset-0 transition-colors duration-500 bg-black" 
+        />
+      ) : (
+        <div className="absolute inset-0 w-full h-full transition-opacity duration-500">
+          <Grainient
+            color1="#ffffff"
+            color2="#0005ff"
+            color3="#ffffff"
+            timeSpeed={0.95}
+            colorBalance={-0.26}
+            warpStrength={3.9}
+            warpFrequency={8.7}
+            warpSpeed={6}
+            warpAmplitude={80}
+            blendAngle={180}
+            blendSoftness={0.37}
+            rotationAmount={1440}
+            noiseScale={4}
+            grainAmount={0.14}
+            grainScale={8}
+            grainAnimated
+            contrast={2.5}
+            gamma={2.5}
+            saturation={2.5}
+            centerX={-1}
+            centerY={1}
+            zoom={1.35}
+            className="absolute inset-0 w-full h-full"
+          />
+        </div>
+      )}
 
       {/* Grid Pattern with subtle radial mask to fade at edges */}
       <div 
