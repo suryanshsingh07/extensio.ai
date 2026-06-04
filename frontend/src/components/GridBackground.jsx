@@ -33,28 +33,28 @@ export default function GridBackground() {
       ) : (
         <div className="absolute inset-0 w-full h-full transition-opacity duration-500">
           <Grainient
-            color1="#ffffff"
-            color2="#0005ff"
-            color3="#ffffff"
-            timeSpeed={0.95}
-            colorBalance={-0.26}
-            warpStrength={3.9}
-            warpFrequency={8.7}
-            warpSpeed={6}
-            warpAmplitude={80}
-            blendAngle={180}
-            blendSoftness={0.37}
-            rotationAmount={1440}
-            noiseScale={4}
-            grainAmount={0.14}
-            grainScale={8}
-            grainAnimated
-            contrast={2.5}
-            gamma={2.5}
-            saturation={2.5}
-            centerX={-1}
+            color1="#c646c2"
+            color2="#8576c2"
+            color3="#b292d0"
+            timeSpeed={0.25}
+            colorBalance={0}
+            warpStrength={1}
+            warpFrequency={5}
+            warpSpeed={2}
+            warpAmplitude={50}
+            blendAngle={0}
+            blendSoftness={0.05}
+            rotationAmount={500}
+            noiseScale={2}
+            grainAmount={0.1}
+            grainScale={2}
+            grainAnimated={false}
+            contrast={1.5}
+            gamma={1}
+            saturation={1}
+            centerX={1}
             centerY={1}
-            zoom={1.35}
+            zoom={0.9}
             className="absolute inset-0 w-full h-full"
           />
         </div>
