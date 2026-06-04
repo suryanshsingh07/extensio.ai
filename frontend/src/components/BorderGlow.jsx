@@ -81,8 +81,8 @@ export default function BorderGlow({
     return () => window.removeEventListener('theme-changed', handleThemeEvent);
   }, []);
 
-  // Fallback to theme-aware colors if no background is provided
-  const finalBackgroundColor = backgroundColor || (isDark ? '#000000' : '#ffffff');
+  // Fallback to theme-aware colors if no background is provided (transparent/glassmorphic effect)
+  const finalBackgroundColor = backgroundColor || (isDark ? 'rgba(0, 0, 0, 0.65)' : 'rgba(255, 255, 255, 0.35)');
 
   const getCenterOfElement = useCallback((el) => {
     const { width, height } = el.getBoundingClientRect();
