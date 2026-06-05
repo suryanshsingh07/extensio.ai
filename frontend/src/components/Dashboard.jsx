@@ -46,6 +46,17 @@ export default function Dashboard() {
   const [tipIdx, setTipIdx] = useState(0);
   const pollIntervalRef = useRef(null);
 
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    return saved ? saved === 'dark' : true;
+  });
+
+  useEffect(() => {
+    const handleThemeEvent = (e) => setIsDark(e.detail);
+    window.addEventListener('theme-changed', handleThemeEvent);
+    return () => window.removeEventListener('theme-changed', handleThemeEvent);
+  }, []);
+
   useEffect(() => { fetchProjects(); }, [token]);
 
   useEffect(() => {
@@ -218,41 +229,58 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="w-full max-w-7xl px-4 md:px-6 py-10 border-t border-black/5 dark:border-white/5 text-gray-900 dark:text-white">
+    <div className="w-full max-w-7xl px-4 md:px-6 py-10 border-t border-black/5 dark:border-white/5 transition-colors duration-500">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-3">
         <div className="transition-colors duration-500">
-          <h2 className="text-3xl font-bold mb-1 flex items-center gap-2">
+          <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-3xl font-bold mb-1 flex items-center gap-2 transition-colors duration-500">
             <Sparkles className="w-6 h-6 text-primary" /> My Workspace
           </h2>
-          <p className="text-gray-400 text-sm">
-            Welcome back, <span className="text-gray-900 dark:text-white font-medium">{user?.name}</span>. Generate, manage and download your Chrome extensions
+          <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm transition-colors duration-500">
+            Welcome back, <span style={{ color: isDark ? '#ffffff' : '#111827' }} className="font-medium transition-colors duration-500">{user?.name}</span>. Generate, manage and download your Chrome extensions
           </p>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-black/50 glass-panel rounded-full text-xs text-gray-500 dark:text-gray-400 border border-black/5 dark:border-white/5">
+        <div 
+          style={{ 
+            backgroundColor: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+            color: isDark ? '#9ca3af' : '#4b5563'
+          }}
+          className="flex items-center gap-2 px-4 py-2 glass-panel rounded-full text-xs border transition-colors duration-500">
           <div className="pulse-dot" />
           <span>{projects.length} extension{projects.length !== 1 ? 's' : ''} created</span>
         </div>
       </div>
       {/* Generator Card */}
-      <div className="bg-white/80 dark:bg-black glass-panel p-6 rounded-2xl mb-10 border border-primary/20 dark:bg-linear-to-br dark:from-primary/5 dark:to-transparent">
-        <h3 className="text-lg font-semibold mb-1 flex items-center gap-2">
+      <div 
+        style={{ 
+          backgroundColor: isDark ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+          borderColor: isDark ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.2)'
+        }}
+        className="glass-panel p-6 rounded-2xl mb-10 border transition-all duration-500 dark:bg-linear-to-br dark:from-primary/5 dark:to-transparent">
+        <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-lg font-semibold mb-1 flex items-center gap-2 transition-colors duration-500">
           <Terminal className="w-5 h-5 text-primary" />
           Create New Extension
         </h3>
-        <p className="text-xs text-gray-500 mb-4">
+        <p style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-xs mb-4 transition-colors duration-500">
           Try: <AnimatePresence mode="wait">
             <motion.span key={tipIdx}
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
-              className="text-gray-300 italic">
+              className="italic">
               {TIPS[tipIdx]}
             </motion.span>
           </AnimatePresence>
         </p>
         <div className="flex flex-col md:flex-row gap-4">
-          <textarea className="flex-1 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-white/10 rounded-xl p-4 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 resize-none h-28 transition-colors"
+          <textarea 
+            style={{ 
+              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+              color: isDark ? '#ffffff' : '#111827',
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+            }}
+            className="flex-1 border rounded-xl p-4 text-sm placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 resize-none h-28 transition-all duration-500"
             placeholder="Describe your browser extension in plain English…"
             value={prompt}
             onChange={e => setPrompt(e.target.value)}
@@ -292,7 +320,7 @@ export default function Dashboard() {
       </div>
       {/* Projects Grid */}
       <div className="mb-6 flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Your Extensions</h3>
+        <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-lg font-semibold transition-colors duration-500">Your Extensions</h3>
         {projects.length > 0 && (
           <span className="text-xs text-gray-500 bg-white/5 px-3 py-1 rounded-full border border-white/5">
             {projects.length} total
@@ -321,7 +349,11 @@ export default function Dashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.07 }}
-              className="glow-card bg-white dark:bg-black glass-panel p-6 rounded-2xl border border-gray-200 dark:border-white/5 hover:border-primary/30 transition-all group flex flex-col shadow-sm dark:shadow-none" >
+              style={{ 
+                backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+              }}
+              className="glow-card glass-panel p-6 rounded-2xl border hover:border-primary/30 transition-all group flex flex-col shadow-sm dark:shadow-none" >
               {/* Card header */}
               <div className="flex justify-between items-start mb-4">
                 <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors">
@@ -341,10 +373,10 @@ export default function Dashboard() {
                   </button>
                 </div>
               </div>
-              <h3 className="text-base font-semibold mb-1 text-gray-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1">
+              <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-base font-semibold mb-1 group-hover:text-primary transition-colors line-clamp-1">
                 {project.name}
               </h3>
-              <p className="text-xs text-gray-500 mb-4 line-clamp-2 leading-relaxed">
+              <p style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-xs mb-4 line-clamp-2 leading-relaxed transition-colors duration-500">
                 {project.description || 'A custom Chrome extension generated by Extensio.ai.'}
               </p>
               <div className="mt-auto">
@@ -357,9 +389,14 @@ export default function Dashboard() {
                     v{project.latestVersion || 1}.0
                   </span>
                 </div>
-                <div className="flex gap-2 pt-3 border-t border-gray-100 dark:border-white/5">
+                <div style={{ borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }} className="flex gap-2 pt-3 border-t">
                   <button onClick={() => handleEdit(project._id || project.id)}
-                    className="flex-1 bg-gray-50 dark:bg-zinc-900 hover:bg-gray-100 dark:hover:bg-white/5 text-xs font-medium py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-colors border border-gray-200 dark:border-white/5">
+                    style={{ 
+                      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
+                      color: isDark ? '#ffffff' : '#111827',
+                      borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                    }}
+                    className="flex-1 hover:bg-gray-100 dark:hover:bg-white/5 text-xs font-medium py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all border">
                     <Edit3 className="w-3.5 h-3.5" /> Edit Prompt
                   </button>
                   <button onClick={() => handleDownload(project._id || project.id)}

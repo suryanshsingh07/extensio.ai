@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, Lock, User as UserIcon, Sparkles } from 'lucide-react';
+import { X, Mail, Lock, User as UserIcon, Sparkles, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -16,6 +16,19 @@ export default function AuthModal() {
   const [isReset, setIsReset] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
 
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    return saved ? saved === 'dark' : true;
+  });
+
+  useEffect(() => {
+    const handleThemeEvent = (e) => setIsDark(e.detail);
+    window.addEventListener('theme-changed', handleThemeEvent);
+    return () => window.removeEventListener('theme-changed', handleThemeEvent);
+  }, []);
+
   useEffect(() => {
     if (!isAuthModalOpen) {
       setError('');
@@ -24,6 +37,7 @@ export default function AuthModal() {
       setName('');
       setIsReset(false);
       setResetSuccess(false);
+      setShowPassword(false);
     }
   }, [isAuthModalOpen]);
 
@@ -72,6 +86,7 @@ export default function AuthModal() {
     setName('');
     setIsReset(false);
     setResetSuccess(false);
+    setShowPassword(false);
   };
 
   return (
@@ -82,27 +97,32 @@ export default function AuthModal() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={closeAuthModal}
-          className="absolute inset-0 bg-background/80 backdrop-blur-sm"/>
+          style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)' }}
+          className="absolute inset-0 backdrop-blur-sm transition-colors duration-500"/>
         {/* Modal */}
         <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-md bg-white dark:bg-black glass-panel p-8 rounded-3xl border border-gray-200 dark:border-white/10 shadow-[0_0_50px_rgba(99,102,241,0.15)] overflow-hidden">
+          style={{ 
+            backgroundColor: isDark ? 'rgba(0, 0, 0, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+          }}
+          className="relative w-full max-w-md glass-panel p-8 rounded-3xl border shadow-[0_0_50px_rgba(99,102,241,0.15)] overflow-hidden transition-all duration-500">
           {/* Decorative elements */}
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 rounded-full blur-[60px] pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-secondary/20 rounded-full blur-[60px] pointer-events-none" />
           <button onClick={closeAuthModal}
-            className="absolute top-5 right-5 text-gray-400 hover:text-white transition-colors z-10">
+            className="absolute top-5 right-5 text-gray-400 hover:text-primary transition-colors z-10">
             <X className="w-5 h-5" />
           </button>
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-6">
               <img src="/logo.png" className="h-10 w-10 object-contain"/>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-2xl font-bold transition-colors duration-500">
                 {isReset ? 'Reset password' : isLogin ? 'Welcome back' : 'Create account'}
               </h2>
             </div>
-            <p className="text-gray-400 text-sm mb-6">
+            <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm mb-6 transition-colors duration-500">
               {isReset
                 ? 'Enter your email address and we will send you a recovery link.'
                 : isLogin
@@ -122,20 +142,25 @@ export default function AuthModal() {
                     <Sparkles className="w-8 h-8 animate-pulse" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Check your email</h3>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
+                    <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-lg font-semibold mb-2 transition-colors duration-500">Check your email</h3>
+                    <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm leading-relaxed transition-colors duration-500">
                       We've simulated SMTP email delivery and sent a recovery link to <span className="text-primary font-medium">{email}</span>.
                     </p>
                   </div>
                   <button type="button" onClick={() => { setIsReset(false); setResetSuccess(false); }}
-                    className="w-full bg-white/5 hover:bg-white/10 text-white font-medium py-2.5 rounded-xl border border-white/10 transition-colors">
+                    style={{ 
+                      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
+                      color: isDark ? '#ffffff' : '#111827',
+                      borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                    }}
+                    className="w-full font-medium py-2.5 rounded-xl border transition-colors hover:bg-black/5 dark:hover:bg-white/10">
                     Back to Log In
                   </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Email Address</label>
+                    <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="block text-xs font-medium mb-1.5 uppercase tracking-wider transition-colors duration-500">Email Address</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Mail className="h-4 w-4 text-gray-500" />
@@ -143,7 +168,12 @@ export default function AuthModal() {
                       <input type="email"
                         value={email}
                         onChange={e => setEmail(e.target.value)}
-                        className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        style={{ 
+                          backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+                          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                          color: isDark ? '#ffffff' : '#111827'
+                        }}
+                        className="block w-full pl-10 pr-3 py-2.5 border rounded-xl placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-500"
                         placeholder="you@example.com"
                         required/>
                     </div>
@@ -162,7 +192,7 @@ export default function AuthModal() {
                   </button>
                   <div className="pt-2 text-center">
                     <button type="button" onClick={() => setIsReset(false)}
-                      className="text-xs text-gray-400 hover:text-white transition-colors">
+                      className={`text-xs text-gray-400 transition-colors ${isDark ? 'hover:text-white' : 'hover:text-gray-900'}`}>
                       Back to Log In
                     </button>
                   </div>
@@ -173,7 +203,7 @@ export default function AuthModal() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {!isLogin && (
                     <div>
-                      <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Full Name</label>
+                      <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="block text-xs font-medium mb-1.5 uppercase tracking-wider transition-colors duration-500">Full Name</label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <UserIcon className="h-4 w-4 text-gray-500" />
@@ -182,7 +212,12 @@ export default function AuthModal() {
                           type="text"
                           value={name}
                           onChange={e => setName(e.target.value)}
-                          className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                          style={{ 
+                            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+                            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                            color: isDark ? '#ffffff' : '#111827'
+                          }}
+                          className="block w-full pl-10 pr-3 py-2.5 border rounded-xl placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-500"
                           placeholder="John Doe"
                           required={!isLogin}
                         />
@@ -190,7 +225,7 @@ export default function AuthModal() {
                     </div>
                   )}
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wider">Email Address</label>
+                    <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="block text-xs font-medium mb-1.5 uppercase tracking-wider transition-colors duration-500">Email Address</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Mail className="h-4 w-4 text-gray-500" />
@@ -198,26 +233,44 @@ export default function AuthModal() {
                       <input type="email"
                         value={email}
                         onChange={e => setEmail(e.target.value)}
-                        className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        style={{ 
+                          backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+                          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                          color: isDark ? '#ffffff' : '#111827'
+                        }}
+                        className="block w-full pl-10 pr-3 py-2.5 border rounded-xl placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-500"
                         placeholder="you@example.com"
                         required/>
                     </div>
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
-                      <label className="block text-xs font-medium text-gray-400 uppercase tracking-wider">Password</label>
+                      <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="block text-xs font-medium uppercase tracking-wider transition-colors duration-500">Password</label>
                       {isLogin && <button type="button" onClick={() => { setIsReset(true); setResetSuccess(false); setError(''); }} className="text-xs text-primary hover:text-primary/80 transition-colors">Forgot password?</button>}
                     </div>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Lock className="h-4 w-4 text-gray-500" />
                       </div>
-                      <input type="password"
+                      <input type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={e => setPassword(e.target.value)}
-                        className="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-white/10 rounded-xl bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                        style={{ 
+                          backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+                          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                          color: isDark ? '#ffffff' : '#111827'
+                        }}
+                        className="block w-full pl-10 pr-10 py-2.5 border rounded-xl placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-500 [&::-ms-reveal]:hidden [&::-ms-clear]:hidden"
                         placeholder="••••••••"
                         required/>
+                      <button 
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        style={{ color: isDark ? '#9ca3af' : '#6b7280' }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 hover:text-primary transition-colors cursor-pointer"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
                     </div>
                   </div>
                   <button type="submit"
@@ -233,10 +286,10 @@ export default function AuthModal() {
                     )}
                   </button>
                 </form>
-                <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+                <div style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="mt-6 text-center text-sm transition-colors duration-500">
                   {isLogin ? "Don't have an account? " : "Already have an account? "}
                   <button onClick={toggleMode}
-                    className="text-gray-900 dark:text-white hover:text-primary font-medium transition-colors cursor-pointer">
+                    className={`font-medium transition-colors cursor-pointer ${isDark ? 'text-white hover:text-primary' : 'text-gray-900 hover:text-primary'}`}>
                     {isLogin ? 'Sign up' : 'Log in'}
                   </button>
                 </div>

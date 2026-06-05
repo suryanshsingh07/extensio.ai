@@ -166,11 +166,12 @@ export default function BorderGlow({
       onPointerMove={handlePointerMove}
       onPointerEnter={() => setIsHovered(true)}
       onPointerLeave={() => setIsHovered(false)}
-      className={`relative grid isolate border border-white/10 ${className}`}
+      className={`relative grid isolate border transition-colors duration-500 ${className}`}
       style={{
         background: finalBackgroundColor,
         borderRadius: `${borderRadius}px`,
         transform: 'translate3d(0, 0, 0.01px)',
+        borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)',
       }}
     >
       {/* mesh gradient border */}

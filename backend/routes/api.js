@@ -27,11 +27,14 @@ const asyncHandler = (fn) => (req, res, next) => {
 router.post('/auth/register', asyncHandler(AuthController.register));
 router.post('/auth/login', asyncHandler(AuthController.login));
 router.get('/auth/me', requireAuth, asyncHandler(AuthController.me));
+
+// Alias for profile fetching to support the Profile component data fetching
+router.get('/auth/profile', requireAuth, asyncHandler(AuthController.me));
 router.put('/auth/profile', requireAuth, asyncHandler(AuthController.updateProfile));
 
 // Session Management (Active Devices)
 router.get('/auth/sessions', requireAuth, asyncHandler(async (req, res) => {
-  // In a production environment, this would be retrieved from a session store (e.g., Redis) 
+  // In a production environment, this would be retrieved from a session store (e.g., Redis)
   // or a dedicated sessions collection linked to the user.
   const sessions = [
     { id: 'sess-1', deviceName: 'Chrome v124 (macOS)', deviceType: 'desktop', location: 'San Francisco, US', ip: '192.168.1.42', lastActive: 'Active Now', isCurrent: true },
@@ -40,7 +43,7 @@ router.get('/auth/sessions', requireAuth, asyncHandler(async (req, res) => {
   ];
 
   // Returns the list of active sessions for the authenticated user
-  res.json(sessions);
+  res.json({ sessions });
 }));
 
 router.get('/projects', requireAuth, asyncHandler(ProjectController.getProjects));

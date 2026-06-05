@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Zap, Building, Sparkles } from 'lucide-react';
 import BorderGlow from './BorderGlow';
@@ -37,11 +37,24 @@ export default function Pricing() {
     }
   ];
 
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    return saved ? saved === 'dark' : true;
+  });
+
+  useEffect(() => {
+    const handleThemeEvent = (e) => setIsDark(e.detail);
+    window.addEventListener('theme-changed', handleThemeEvent);
+    return () => window.removeEventListener('theme-changed', handleThemeEvent);
+  }, []);
+
   return (
-    <section className="w-full max-w-7xl px-4 md:px-6 py-24 border-t border-black/5 dark:border-white/5 text-gray-900 dark:text-white" id="pricing">
+    <section className="w-full max-w-7xl px-4 md:px-6 py-24 border-t border-black/5 dark:border-white/5 transition-colors duration-500" id="pricing">
       <div className="text-center mb-16">
-        <h2 className="text-4xl font-bold mb-4">Simple, transparent pricing</h2>
-        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Start building for free, then upgrade when you need advanced models, team collaboration, and higher volume.</p>
+        <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-4xl font-bold mb-4 transition-colors duration-500">Simple, transparent pricing</h2>
+        <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="max-w-2xl mx-auto transition-colors duration-500">
+          Start building for free, then upgrade when you need advanced models, team collaboration, and higher volume.
+        </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
         {plans.map((plan, idx) => (
@@ -63,25 +76,30 @@ export default function Pricing() {
               glowRadius={80}
               glowIntensity={3}
               coneSpread={45}
-              className={`p-8 ${plan.isPopular ? 'pt-12' : ''} h-full w-full relative bg-white dark:bg-black border-gray-200 dark:border-white/5 ${plan.isPopular ? 'shadow-xl dark:shadow-[0_0_40px_rgba(99,102,241,0.15)]' : ''}`}
+              className={`p-8 ${plan.isPopular ? 'pt-12' : ''} h-full w-full relative border transition-all duration-500 ${plan.isPopular ? 'shadow-xl dark:shadow-[0_0_40px_rgba(99,102,241,0.15)]' : ''}`}
             >
 
               <div className="flex items-center gap-3 mb-4">
                 <div className={`p-2 rounded-lg ${plan.isPopular ? 'bg-primary/20' : plan.name === 'Enterprise' ? 'bg-green-500/20' : 'bg-gray-500/20'}`}>
                   {plan.icon}
                 </div>
-                <h3 className="text-xl font-semibold">{plan.name}</h3>
+                <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-xl font-semibold transition-colors duration-500">{plan.name}</h3>
               </div>
 
               <div className="mb-6">
-                <span className="text-4xl font-bold">{plan.price}</span>
-                <span className="text-gray-500 dark:text-gray-400 text-sm ml-2">/{plan.period}</span>
+                <span style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-4xl font-bold transition-colors duration-500">{plan.price}</span>
+                <span style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm ml-2 transition-colors duration-500">/{plan.period}</span>
               </div>
 
               <button onClick={() => alert("This facility is currently unavailable")}
-                className={`w-full py-3 rounded-xl font-medium mb-8 transition-colors ${plan.isPopular
+                style={!plan.isPopular ? { 
+                  backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(243, 244, 246, 1)',
+                  color: isDark ? '#ffffff' : '#374151',
+                  borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                } : {}}
+                className={`w-full py-3 rounded-xl font-medium mb-8 transition-all duration-500 ${plan.isPopular
                   ? 'bg-primary hover:bg-primary/90 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]'
-                  : 'bg-surface hover:bg-white/10 text-white border border-white/5'
+                  : 'border hover:scale-[1.02]'
                   }`}>
                 {plan.buttonText}
               </button>
@@ -90,7 +108,7 @@ export default function Pricing() {
                 {plan.features.map((feature, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <Check className={`w-5 h-5 shrink-0 ${plan.isPopular ? 'text-primary' : plan.name === 'Enterprise' ? 'text-green-400' : 'text-gray-400'}`} />
-                    <span className="text-gray-600 dark:text-gray-300 text-sm">{feature}</span>
+                    <span style={{ color: isDark ? '#d1d5db' : '#4b5563' }} className="text-sm transition-colors duration-500">{feature}</span>
                   </div>
                 ))}
               </div>

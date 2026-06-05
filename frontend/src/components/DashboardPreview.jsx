@@ -20,7 +20,7 @@ const CODE_LINES = [
   { t: 'code', text: '});' },
 ];
 
-function TypedLine({ text, delay, colorClass }) {
+function TypedLine({ text, delay, type, isDark }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), delay);
@@ -30,23 +30,35 @@ function TypedLine({ text, delay, colorClass }) {
     <motion.div initial={{ opacity: 0, x: -4 }}
       animate={visible ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.2 }}
-      className={`font-mono text-xs leading-5 ${colorClass}`}>
+      style={{ color: colorFor(type, isDark) }}
+      className="font-mono text-xs leading-5">
       {text || '\u00A0'}
     </motion.div>
   );
 }
 
-const colorFor = (t) => {
-  if (t === 'comment') return 'text-gray-500';
-  if (t === 'brace') return 'text-gray-300';
-  if (t === 'key') return 'text-blue-300';
-  if (t === 'string') return 'text-green-400';
+const colorFor = (t, isDark) => {
+  if (t === 'comment') return '#6b7280';
+  if (t === 'brace') return isDark ? '#d1d5db' : '#4b5563';
+  if (t === 'key') return isDark ? '#93c5fd' : '#2563eb';
+  if (t === 'string') return isDark ? '#4ade80' : '#16a34a';
   if (t === 'blank') return '';
-  return 'text-gray-300';
+  return isDark ? '#d1d5db' : '#4b5563';
 };
 
 export default function DashboardPreview() {
   const [step, setStep] = useState(0); // 0=input, 1=generating, 2=done
+
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    return saved ? saved === 'dark' : true;
+  });
+
+  useEffect(() => {
+    const handleThemeEvent = (e) => setIsDark(e.detail);
+    window.addEventListener('theme-changed', handleThemeEvent);
+    return () => window.removeEventListener('theme-changed', handleThemeEvent);
+  }, []);
 
   useEffect(() => {
     const t1 = setTimeout(() => setStep(1), 1800);
@@ -60,16 +72,28 @@ export default function DashboardPreview() {
       transition={{ duration: 0.7, delay: 0.45 }}
       className="w-full max-w-5xl my-10">
       {/* Browser chrome frame */}
-      <div className="glass-panel rounded-2xl border border-white/10 shadow-[0_0_60px_rgba(99,102,241,0.12)] overflow-hidden">
+      <div 
+        style={{ 
+          backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+        }}
+        className="glass-panel rounded-2xl border shadow-[0_0_60px_rgba(99,102,241,0.12)] overflow-hidden transition-colors duration-500">
         {/* Title bar */}
-        <div className="flex items-center gap-3 px-5 py-3 border-b border-white/5 bg-surface/60">
+        <div 
+          style={{ 
+            backgroundColor: isDark ? 'rgba(17, 17, 17, 0.6)' : 'rgba(243, 244, 246, 0.6)',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+          }}
+          className="flex items-center gap-3 px-5 py-3 border-b transition-colors duration-500">
           <div className="flex gap-1.5">
             <div className="w-3 h-3 rounded-full bg-red-500/70" />
             <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
             <div className="w-3 h-3 rounded-full bg-green-500/70" />
           </div>
           <div className="flex-1 flex justify-center">
-            <div className="bg-background/60 border border-white/5 rounded-full px-4 py-1 text-xs text-gray-500 font-mono">
+            <div 
+              style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.6)', borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }}
+              className="border rounded-full px-4 py-1 text-xs text-gray-500 font-mono transition-colors duration-500">
               app.extensio.ai/workspace
             </div>
           </div>
@@ -77,11 +101,19 @@ export default function DashboardPreview() {
         {/* Content */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-0 min-h-380px">
           {/* Left panel — prompt input */}
-          <div className="md:col-span-2 border-r border-white/5 p-5 flex flex-col gap-4 bg-surface/20">
+          <div 
+            style={{ backgroundColor: isDark ? 'rgba(17, 17, 17, 0.2)' : 'rgba(243, 244, 246, 0.2)', borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }}
+            className="md:col-span-2 border-r p-5 flex flex-col gap-4 transition-colors duration-500">
             <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest flex items-center gap-2">
               <Terminal className="w-3.5 h-3.5" /> Prompt
             </h3>
-            <div className="bg-background/70 rounded-xl p-4 text-sm text-gray-300 font-mono border border-white/5 flex-1 leading-relaxed">
+            <div 
+              style={{ 
+                backgroundColor: isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)',
+                color: isDark ? '#d1d5db' : '#374151',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+              }}
+              className="rounded-xl p-4 text-sm font-mono border flex-1 leading-relaxed transition-colors duration-500">
               "Dark mode toggle for any website"
             </div>
             <motion.button whileTap={{ scale: 0.96 }}
@@ -110,7 +142,9 @@ export default function DashboardPreview() {
                   <span>Writing extension code…</span>
                   <span>60%</span>
                 </div>
-                <div className="w-full bg-surface rounded-full h-1 overflow-hidden">
+                <div 
+                  style={{ backgroundColor: isDark ? '#111111' : '#e5e7eb' }}
+                  className="w-full rounded-full h-1 overflow-hidden transition-colors duration-500">
                   <motion.div className="bg-linear-to-r from-primary to-purple-500 h-1 rounded-full"
                     initial={{ width: '0%' }}
                     animate={{ width: '60%' }}
@@ -120,16 +154,20 @@ export default function DashboardPreview() {
             )}
           </div>
           {/* Right panel — generated code */}
-          <div className="md:col-span-3 p-5 flex flex-col bg-background/30">
+          <div 
+            style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(249, 250, 251, 0.3)' }}
+            className="md:col-span-3 p-5 flex flex-col transition-colors duration-500">
             <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest flex items-center gap-2 mb-4">
               <Code className="w-3.5 h-3.5" /> Generated Output
             </h3>
-            <div className="bg-background/80 rounded-xl p-4 border border-white/5 flex-1 overflow-hidden">
+            <div 
+              style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)', borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }}
+              className="rounded-xl p-4 border flex-1 overflow-hidden transition-colors duration-500">
               {/* Line numbers + code */}
               <div className="flex gap-3">
                 <div className="flex flex-col text-right select-none">
                   {CODE_LINES.map((_, i) => (
-                    <span key={i} className="font-mono text-xs text-gray-700 leading-5">{i + 1}</span>
+                    <span key={i} style={{ color: isDark ? '#374151' : '#9ca3af' }} className="font-mono text-xs leading-5 transition-colors duration-500">{i + 1}</span>
                   ))}
                 </div>
                 <div className="flex flex-col flex-1 overflow-hidden">
@@ -137,7 +175,8 @@ export default function DashboardPreview() {
                     <TypedLine key={i}
                       text={line.t === 'key' ? line.text + (line.val || '') : line.text}
                       delay={step >= 1 ? i * 120 : 99999}
-                      colorClass={colorFor(line.t)}/>
+                      type={line.t}
+                      isDark={isDark} />
                   ))}
                 </div>
               </div>

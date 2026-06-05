@@ -83,17 +83,20 @@ export default function Navbar() {
   return (
     <nav id="main-nav" className="w-full max-w-7xl px-4 sm:px-6 py-5 flex items-center justify-between z-50 relative">
       {/* Brand */}
-      <Link to="/" className="flex items-center gap-2.5 group text-blue-500 dark:text-white" id="brand-logo">
+      <Link to="/" 
+        style={{ color: isDark ? '#ffffff' : '#111827' }}
+        className="flex items-center gap-2.5 group transition-colors duration-500" id="brand-logo">
         <img src="/logo.png" className="h-10 w-10 object-contain" />
         <span className="text-xl font-bold tracking-wide">Extensio.ai</span>
       </Link>
 
       {/* Desktop Navigation */}
-      <div className={`hidden md:flex items-center gap-6 text-sm font-medium ${isDark ? "text-white/70" : "text-gray-500"}`}>
+      <div className="hidden md:flex items-center gap-6 text-sm font-medium">
         {navItems.map(link => (
           <Link key={link.label}
             to={link.to}
-            className={`flex items-center gap-1.5 transition-colors ${isDark ? "hover:text-white" : "hover:text-gray-900"} ${location.pathname === link.to ? 'text-primary' : ''}`}>
+            style={{ color: isDark ? 'rgba(255, 255, 255, 0.7)' : '#4b5563' }}
+            className={`flex items-center gap-1.5 transition-colors duration-500 ${isDark ? "hover:text-white" : "hover:text-gray-900"} ${location.pathname === link.to ? 'text-primary' : ''}`}>
             {link.icon} {link.label}
           </Link>
         ))}
@@ -103,21 +106,25 @@ export default function Navbar() {
       <div className="hidden md:flex items-center gap-3">
         {/* Single Theme Toggle */}
         <button onClick={toggleTheme}
-          className={`p-2 rounded-full border  transition-all cursor-pointer mr-2 shadow-sm ${isDark ? "hover:bg-white/20 border-white/20" : "hover:bg-black/10 border-black/20"}`}          
+          style={{ borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)' }}
+          className={`p-2 rounded-full border transition-all cursor-pointer mr-2 shadow-sm ${isDark ? "hover:bg-white/20" : "hover:bg-black/10"}`}          
           title={isDark ? "Switch to White Theme" : "Switch to Black Theme"}>
           {isDark ? <Sun className="w-4 h-4 text-yellow-500" /> : <Moon className="w-4 h-4 text-blue-500" />}
         </button>
 
         {user ? (
           <div className="flex items-center gap-4">
-            <Link to="/" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors px-4 py-2 rounded-lg">
-              ← Home
-            </Link>
-            <Link to="/profile" className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-zinc-900 border border-black/5 dark:border-white/5 rounded-full hover:bg-gray-200 dark:hover:bg-white/5 transition-colors cursor-pointer">
+            <Link to="/profile" 
+              style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
+              className="flex items-center gap-2 px-3 py-1.5 border rounded-full hover:bg-gray-200 dark:hover:bg-white/5 transition-colors cursor-pointer">
               <div className="w-6 h-6 bg-primary/20 text-primary rounded-full flex items-center justify-center">
                 <User className="w-3.5 h-3.5" />
               </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</span>
+              <span 
+                style={{ color: isDark ? '#ffffff' : '#111827' }}
+                className="text-sm font-medium transition-colors duration-500">
+                {user.name}
+              </span>
             </Link>
             <button onClick={logout}
               className="text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors p-2"
@@ -128,7 +135,11 @@ export default function Navbar() {
         ) : (
           <>
             <button onClick={() => openAuthModal('login')}
-              className="bg-primary hover:bg-primary/90 text-white text-sm font-semibold py-2.5 px-6 rounded-full transition-all shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)]">
+              style={{ 
+                color: isDark ? '#ffffff' : '#111827',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : '#000000'
+              }}
+              className="bg-transparent hover:bg-black/5 dark:hover:bg-white/5 border text-sm font-semibold py-2.5 px-6 rounded-full transition-all">
               Log In
             </button>
             <button onClick={() => openAuthModal('register')}
@@ -150,17 +161,23 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-white dark:bg-black glass-panel border-t border-gray-100 dark:border-white/5 p-4 flex flex-col gap-1 md:hidden z-50 mx-4 rounded-2xl mt-2 shadow-2xl">
+        <div 
+          style={{ 
+            backgroundColor: isDark ? 'rgba(0, 0, 0, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+          }}
+          className="absolute top-full left-0 right-0 glass-panel border-t p-4 flex flex-col gap-1 md:hidden z-50 mx-4 rounded-2xl mt-2 shadow-2xl transition-all duration-500">
           {navItems.map(link => (
             <Link key={link.label}
               to={link.to}
               onClick={() => setIsMobileMenuOpen(false)}
-              className={`flex items-center gap-2 py-3 px-4 rounded-xl transition-all text-sm font-medium ${location.pathname === link.to ? 'text-primary bg-primary/10' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5'}`}>
+              style={{ color: isDark ? '#d1d5db' : '#4b5563' }}
+              className={`flex items-center gap-2 py-3 px-4 rounded-xl transition-all text-sm font-medium ${location.pathname === link.to ? 'text-primary bg-primary/10' : 'hover:bg-gray-100 dark:hover:bg-white/5'}`}>
               {link.icon} {link.label}
             </Link>
           ))}
 
-          <div className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-sm font-medium text-gray-600 dark:text-gray-300">
+          <div style={{ color: isDark ? '#d1d5db' : '#4b5563' }} className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-sm font-medium">
             <span>Theme</span>
             <button
               onClick={toggleTheme}
@@ -170,10 +187,11 @@ export default function Navbar() {
             </button>
           </div>
 
-          <div className="border-t border-gray-100 dark:border-white/5 pt-3 mt-2 flex flex-col gap-2">
+          <div style={{ borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }} className="border-t pt-3 mt-2 flex flex-col gap-2">
             {user ? (
               <>
-                <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 py-3 px-4 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all">
+                <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)} 
+                  className={`flex items-center gap-3 py-3 px-4 text-sm font-medium ${isDark ? 'text-white hover:bg-white/5' : 'text-gray-900 hover:bg-gray-100'} rounded-xl transition-all`}>
                   <User className="w-4 h-4 text-primary" />
                   {user.email}
                 </Link>

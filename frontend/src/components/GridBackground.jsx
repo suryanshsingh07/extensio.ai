@@ -72,11 +72,11 @@ export default function GridBackground() {
 
             {/* Browser Main Frame (Isometric view) */}
             {/* Top Surface */}
-            <path d="M 100,20 L 170,55 L 70,105 L 0,70 Z" fill="rgba(19, 19, 31, 0.4)" stroke="#6366f1" strokeWidth="1" strokeDasharray="3 2" />
+            <path d="M 100,20 L 170,55 L 70,105 L 0,70 Z" fill={isDark ? "rgba(19, 19, 31, 0.4)" : "rgba(0, 0, 0, 0.03)"} stroke="#6366f1" strokeWidth="1" strokeDasharray="3 2" />
             
             {/* Browser Depth/Sides */}
-            <path d="M 0,70 L 0,85 L 70,120 L 70,105 Z" fill="rgba(19, 19, 31, 0.5)" stroke="#6366f1" strokeWidth="1" />
-            <path d="M 70,105 L 70,120 L 170,70 L 170,55 Z" fill="rgba(19, 19, 31, 0.3)" stroke="#6366f1" strokeWidth="1" />
+            <path d="M 0,70 L 0,85 L 70,120 L 70,105 Z" fill={isDark ? "rgba(19, 19, 31, 0.5)" : "rgba(0, 0, 0, 0.05)"} stroke="#6366f1" strokeWidth="1" />
+            <path d="M 70,105 L 70,120 L 170,70 L 170,55 Z" fill={isDark ? "rgba(19, 19, 31, 0.3)" : "rgba(0, 0, 0, 0.02)"} stroke="#6366f1" strokeWidth="1" />
 
             {/* Window controls on title bar */}
             <circle cx="25" cy="63" r="2.5" fill="none" stroke="#ef4444" strokeWidth="1" />
@@ -227,8 +227,8 @@ export default function GridBackground() {
             <line x1="117.5" y1="108.7" x2="100" y2="140" stroke="#6366f1" strokeWidth="1" />
             
             {/* Holographic vertical blueprint guides */}
-            <line x1="100" y1="20" x2="100" y2="180" stroke="rgba(255, 255, 255, 0.05)" strokeWidth="0.5" strokeDasharray="5 5" />
-            <line x1="20" y1="100" x2="180" y2="100" stroke="rgba(255, 255, 255, 0.05)" strokeWidth="0.5" strokeDasharray="5 5" />
+            <line x1="100" y1="20" x2="100" y2="180" stroke={isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)"} strokeWidth="0.5" strokeDasharray="5 5" />
+            <line x1="20" y1="100" x2="180" y2="100" stroke={isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 0, 0, 0.05)"} strokeWidth="0.5" strokeDasharray="5 5" />
 
             {/* Outer satellite ticks */}
             <path d="M 180,100 L 190,105" stroke="#38bdf8" strokeWidth="1" />

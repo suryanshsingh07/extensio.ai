@@ -10,7 +10,7 @@ import Features from './components/Features';
 import Pricing from './components/Pricing';
 import FeedbackPortal from './components/FeedbackPortal';
 import GridBackground from './components/GridBackground';
-import {TermsOfService, PrivacyPolicy, Contact, Changelog, APIDocs, AboutUs, Blog, Careers, Security} from './components/FooterPages';
+import { TermsOfService, PrivacyPolicy, Contact, Changelog, APIDocs, AboutUs, Blog, Careers, Security } from './components/FooterPages';
 import ErrorBoundary from './components/ErrorBoundary';
 
 const Dashboard = lazy(() => import('./components/Dashboard'));
@@ -112,6 +112,22 @@ function WorkspacePage() {
   );
 }
 
+function ProfilePage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <Profile />
+    </Suspense>
+  );
+}
+
+function InsightsPage() {
+  return (
+    <Suspense fallback={<Spinner />}>
+      <EngineInsights />
+    </Suspense>
+  );
+}
+
 function AdminPage() {
   return (
     <Suspense fallback={<Spinner />}>
@@ -150,8 +166,8 @@ export default function App() {
                   <Route path="/" element={<LandingPage />} />
                   <Route path="/workspace" element={<ProtectedRoute><WorkspacePage /></ProtectedRoute>} />
                   <Route path="/admin" element={<AdminRoute><AdminPage /></AdminRoute>} />
-                  <Route path="/profile" element={<ProtectedRoute><Suspense fallback={<Spinner />}><Profile /></Suspense></ProtectedRoute>} />
-                  <Route path="/insights" element={<ProtectedRoute><Suspense fallback={<Spinner />}><EngineInsights /></Suspense></ProtectedRoute>} />
+                  <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+                  <Route path="/insights" element={<ProtectedRoute><InsightsPage /></ProtectedRoute>} />
                   <Route path="/terms" element={<TermsOfService />} />
                   <Route path="/privacy" element={<PrivacyPolicy />} />
                   <Route path="/contact" element={<Contact />} />

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Wand2, Zap, Users, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,17 @@ export default function Hero() {
   const navigate = useNavigate();
   const { user, openAuthModal } = useAuth();
 
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    return saved ? saved === 'dark' : true;
+  });
+
+  useEffect(() => {
+    const handleThemeEvent = (e) => setIsDark(e.detail);
+    window.addEventListener('theme-changed', handleThemeEvent);
+    return () => window.removeEventListener('theme-changed', handleThemeEvent);
+  }, []);
+
   const handleStart = () => user ? navigate('/workspace') : openAuthModal('register');
 
   return (
@@ -22,7 +33,12 @@ export default function Hero() {
       <motion.div initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-panel text-sm text-primary mb-8 border border-primary/20 shimmer-badge">
+        style={{
+          backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+          color: isDark ? '#ffffff' : '#111827',
+          borderColor: isDark ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.2)'
+        }}
+        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border glass-panel shimmer-badge text-sm mb-8 transition-colors duration-500">
         <span className="pulse-dot" />
         <span className="font-medium">Extensio.ai Engine - Now Live</span>
       </motion.div>
@@ -31,7 +47,8 @@ export default function Hero() {
       <motion.h1 initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
-        className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.08] mb-6 text-gray-900 dark:text-white">
+        style={{ color: isDark ? '#ffffff' : '#111827' }}
+        className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.08] mb-6 transition-colors duration-500">
         Turn Ideas into
         <br />
         <span className="gradient-text glow-text">Chrome Extensions</span>
@@ -43,9 +60,10 @@ export default function Hero() {
       <motion.p initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl leading-relaxed">
+        style={{ color: isDark ? '#9ca3af' : '#4b5563' }}
+        className="text-lg md:text-xl mb-10 max-w-2xl leading-relaxed transition-colors duration-500">
         Describe your browser extension in plain English. Our AI builds a{' '}
-        <span className="text-gray-900 dark:text-white font-medium">real, installable, Manifest V3</span>{' '}
+        <span style={{ color: isDark ? '#ffffff' : '#111827' }} className="font-medium transition-colors duration-500">real, installable, Manifest V3</span>{' '}
         Chrome extension - packaged and ready for the Web Store in seconds
       </motion.p>
 
@@ -60,7 +78,12 @@ export default function Hero() {
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </button>
         <a href="#works"
-          className="bg-gray-100 dark:bg-white/5 glass-panel text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-base font-medium py-3.5 px-8 rounded-full transition-all border border-black/5 dark:border-white/10">
+          style={{ 
+            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(243, 244, 246, 0.8)',
+            color: isDark ? '#d1d5db' : '#374151',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#9ca3af'
+          }}
+          className="glass-panel text-base font-medium py-3.5 px-8 rounded-full transition-all duration-500 border hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-white/10">
           See How It Works
         </a>
       </motion.div>
@@ -69,7 +92,8 @@ export default function Hero() {
       <motion.div initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.45 }}
-        className="flex flex-wrap items-center justify-center gap-6 text-xs text-gray-500">
+        style={{ color: isDark ? '#9ca3af' : '#6b7280' }}
+        className="flex flex-wrap items-center justify-center gap-6 text-xs transition-colors duration-500">
         {stats.map(({ icon, label }) => (
           <span key={label} className="flex items-center gap-1.5">
             {icon} {label}

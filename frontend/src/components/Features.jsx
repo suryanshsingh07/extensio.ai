@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Package, ShieldCheck, Zap, Clock, Download, Wand2, Code2, Globe } from 'lucide-react';
 import BorderGlow from './BorderGlow';
@@ -61,8 +61,19 @@ const steps = [
 ];
 
 export default function Features() {
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    return saved ? saved === 'dark' : true;
+  });
+
+  useEffect(() => {
+    const handleThemeEvent = (e) => setIsDark(e.detail);
+    window.addEventListener('theme-changed', handleThemeEvent);
+    return () => window.removeEventListener('theme-changed', handleThemeEvent);
+  }, []);
+
   return (
-    <section className="w-full py-20 border-t border-black/5 dark:border-white/5 text-gray-900 dark:text-white" id="features">
+    <section className="w-full py-20 border-t border-black/5 dark:border-white/5 transition-colors duration-500" id="features">
       {/* Header */}
       <div className="text-center mb-16 px-4">
         <motion.p initial={{ opacity: 0 }}
@@ -74,7 +85,8 @@ export default function Features() {
         <motion.h2 initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-3xl md:text-4xl font-bold mb-4">
+          style={{ color: isDark ? '#ffffff' : '#111827' }}
+          className="text-3xl md:text-4xl font-bold mb-4 transition-colors duration-500">
           Everything you need to ship extensions
         </motion.h2>
         <motion.p
@@ -82,7 +94,8 @@ export default function Features() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          className="text-gray-400 max-w-2xl mx-auto" >
+          style={{ color: isDark ? '#9ca3af' : '#4b5563' }}
+          className="max-w-2xl mx-auto transition-colors duration-500" >
           Our AI engine handles the complex architecture of browser extensions so you can focus entirely on the idea
         </motion.p>
       </div>
@@ -105,11 +118,13 @@ export default function Features() {
               coneSpread={45}
               className="p-7 h-full w-full"
             >
-              <div className={`w-11 h-11 ${f.bg} ${f.border} border rounded-xl flex items-center justify-center mb-5 ${f.color}`}>
-                {f.icon}
+              <div className="flex items-center gap-4 mb-5">
+                <div className={`w-11 h-11 ${f.bg} ${f.border} border rounded-xl flex items-center justify-center shrink-0 ${f.color}`}>
+                  {f.icon}
+                </div>
+                <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-lg font-semibold transition-colors duration-500">{f.title}</h3>
               </div>
-              <h3 className="text-lg font-semibold mb-2">{f.title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">{f.description}</p>
+              <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm leading-relaxed transition-colors duration-500">{f.description}</p>
             </BorderGlow>
           </motion.div>
         ))}
@@ -118,8 +133,8 @@ export default function Features() {
       {/* How It Works */}
       <div className="px-4" id="works">
         <div className="text-center mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold mb-2">How it works</h2>
-          <p className="text-gray-500 text-sm">Three steps from idea to installable Chrome extension.</p>
+          <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-2xl md:text-3xl font-bold mb-2 transition-colors duration-500">How it works</h2>
+          <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm transition-colors duration-500">Three steps from idea to installable Chrome extension.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto relative">
           {/* Connector line (desktop only) */}
@@ -136,13 +151,15 @@ export default function Features() {
                 glowRadius={80}
                 glowIntensity={3}
                 coneSpread={45}
-                className="flex flex-col items-center text-center p-8 h-full w-full"
+                className="flex flex-col p-8 h-full w-full items-start text-left"
               >
-                <div className="w-14 h-14 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center text-primary font-bold text-lg mb-5 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
-                  {n}
+                <div className="flex items-center gap-4 mb-5 w-full">
+                  <div className="w-14 h-14 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center text-primary font-bold text-lg shadow-[0_0_20px_rgba(99,102,241,0.2)] shrink-0">
+                    {n}
+                  </div>
+                  <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="font-semibold text-lg transition-colors duration-500">{label}</h3>
                 </div>
-                <h3 className="font-semibold text-lg mb-2">{label}</h3>
-                <p className="text-gray-400 text-sm">{desc}</p>
+                <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm transition-colors duration-500">{desc}</p>
               </BorderGlow>
             </motion.div>
           ))}
