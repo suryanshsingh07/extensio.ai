@@ -44,10 +44,21 @@ body {
 }
 
 .glow-text {
-  text-shadow: 0 0 40px rgba(99, 102, 241, 0.6), 0 0 80px rgba(99, 102, 241, 0.25);
+  text-shadow: 0 0 90px #ff632f, 0 0 100px #ff3f34;
 }
 
 .gradient-text {
+  background: linear-gradient(135deg, rgb(232, 43, 11) 0%, rgb(255, 30, 150) 45%, rgb(245, 0, 59) 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark .glow-text {
+  text-shadow: 0 0 40px rgba(99, 102, 241, 0.6), 0 0 80px rgba(99, 102, 241, 0.25);
+}
+
+.dark .gradient-text {
   background: linear-gradient(135deg, #c084fc 0%, #818cf8 45%, #38bdf8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
