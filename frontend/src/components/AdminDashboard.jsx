@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, AlertOctagon, Activity, Users, Database, ServerCrash, CheckCircle2, Loader2 } from 'lucide-react';
+import { Shield, AlertOctagon, Activity, Users, Database, ServerCrash, CheckCircle2, Loader2, Smartphone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../config';
 
@@ -12,6 +12,7 @@ export default function AdminDashboard() {
     apiErrors: 0
   });
   const [alerts, setAlerts] = useState([]);
+  const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [isDark, setIsDark] = useState(() => {
@@ -40,6 +41,15 @@ export default function AdminDashboard() {
         const data = await res.json();
         setStats(data.stats);
         setAlerts(data.alerts);
+      }
+      
+      // Fetch sessions
+      const sessRes = await fetch(`${API_URL}/auth/sessions`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (sessRes.ok) {
+        const sessData = await sessRes.json();
+        setSessions(sessData.sessions || []);
       }
     } catch (err) {
       console.error(err);
@@ -73,8 +83,8 @@ export default function AdminDashboard() {
   return (
     <section 
       style={{ 
-        borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
-        backgroundColor: isDark ? 'rgba(69, 10, 10, 0.05)' : 'rgba(249, 250, 251, 0.5)'
+        borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)',
+        backgroundColor: isDark ? 'rgba(69, 10, 10, 0.05)' : 'rgba(249, 250, 251, 0.95)'
       }}
       className="w-full max-w-7xl px-4 md:px-6 py-12 border-t rounded-3xl transition-colors duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
@@ -161,13 +171,45 @@ export default function AdminDashboard() {
                     color: isDark ? '#d1d5db' : '#374151',
                     borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#000000'
                   }}
-                  className="text-xs hover:bg-gray-200 dark:hover:bg-white/10 px-3 py-2 rounded-lg transition-colors border cursor-pointer transition-all duration-500">
+                  className="text-xs hover:bg-gray-200 dark:hover:bg-white/10 px-3 py-2 rounded-lg border cursor-pointer transition-all duration-500">
                   View Logs
                 </button>
                 <button onClick={() => resolveAlert(alert.id)}
                   className="text-xs bg-green-500/10 hover:bg-green-500/20 text-green-400 px-3 py-2 rounded-lg transition-colors border border-green-500/20 cursor-pointer">
                   Resolve
                 </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Active Devices / Sessions Section */}
+      <div 
+        style={{ 
+          backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)',
+          marginTop: '2rem'
+        }}
+        className="glass-panel rounded-2xl border overflow-hidden transition-colors duration-500">
+        <div className="p-5 border-b flex items-center gap-2" style={{ borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }}>
+          <Smartphone className="w-5 h-5 text-primary" />
+          <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="font-semibold">Active User Sessions</h3>
+        </div>
+        <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {sessions.map(session => (
+            <div key={session.id} 
+              style={{ 
+                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+              }}
+              className="p-4 rounded-xl border flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <Smartphone className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <p style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-sm font-medium truncate">{session.deviceName}</p>
+                <span className="text-[10px] text-green-400 font-mono">{session.lastActive}</span>
               </div>
             </div>
           ))}

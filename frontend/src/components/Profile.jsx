@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   User, Mail, Phone, Calendar, MapPin, Camera, Lock, Eye, EyeOff,
   Bell, Globe, Moon, Sun, Clock, Download, ShieldAlert, Trash2,
-  CheckCircle, AlertCircle, Save, ChevronRight, LogIn, Settings, 
+  CheckCircle, AlertCircle, Save, ChevronRight, LogIn, LogOut, Settings, 
   Loader2, X, Smartphone, Monitor
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -46,6 +46,8 @@ export default function Profile() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isLogoutSessionModalOpen, setIsLogoutSessionModalOpen] = useState(false);
+  const [sessionToLogout, setSessionToLogout] = useState(null);
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem('theme');
     if (saved) return saved === 'dark';
@@ -68,20 +70,9 @@ export default function Profile() {
 
   // Theme Toggle Effect
   useEffect(() => {
-    const handleStorage = (e) => {
-      if (e.key === 'theme') {
-        const newDark = e.newValue === 'dark';
-        setIsDark(newDark);
-        window.dispatchEvent(new CustomEvent('theme-changed', { detail: newDark }));
-      }
-    };
     const handleThemeEvent = (e) => setIsDark(e.detail);
-    window.addEventListener('storage', handleStorage);
     window.addEventListener('theme-changed', handleThemeEvent);
-    return () => {
-      window.removeEventListener('storage', handleStorage);
-      window.removeEventListener('theme-changed', handleThemeEvent);
-    };
+    return () => window.removeEventListener('theme-changed', handleThemeEvent);
   }, []);
 
   const setThemeMode = (dark) => {
@@ -135,7 +126,7 @@ export default function Profile() {
         });
         if (res.ok) {
           const data = await res.json();
-          setActiveSessions(data);
+          setActiveSessions(data.sessions || []);
         }
       } catch (err) {
         console.error("Failed to fetch sessions:", err);
@@ -228,6 +219,31 @@ export default function Profile() {
       showToast('Password updated successfully');
     } catch (err) {
       showToast('Current password is incorrect', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handler: Session Logout
+  const handleLogoutSession = async () => {
+    if (!sessionToLogout) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/auth/sessions/${sessionToLogout.id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (res.ok) {
+        setActiveSessions(prev => prev.filter(s => s.id !== sessionToLogout.id));
+        showToast(`${sessionToLogout.deviceName} has been logged out.`);
+        setIsLogoutSessionModalOpen(false);
+        setSessionToLogout(null);
+      } else {
+        showToast('Failed to logout session.', 'error');
+      }
+    } catch (err) {
+      showToast('Failed to logout session.', 'error');
     } finally {
       setLoading(false);
     }
@@ -581,34 +597,44 @@ export default function Profile() {
             <div className="space-y-4">
               {activeSessions.length > 0 ? (
                 activeSessions.map((session) => (
-                  <div key={session.id}
-                    style={{
-                      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
-                      borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
-                    }}
-                    className="flex items-center justify-between p-3 rounded-xl border group hover:border-primary/20 transition-all duration-500">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div
-                        style={{ backgroundColor: isDark ? '#27272a' : '#ffffff', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
-                        className="p-2 rounded-lg border text-gray-400 group-hover:text-primary transition-colors duration-500">
-                        {session.deviceType === 'mobile' ? <Smartphone className="w-4 h-4" /> : <Monitor className="w-4 h-4" />}
+                    <div key={session.id}
+                      style={{
+                        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
+                        borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                      }}
+                      className="flex items-center justify-between p-3 rounded-xl border group hover:border-primary/20 transition-all duration-500">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div
+                          style={{ backgroundColor: isDark ? '#27272a' : '#ffffff', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
+                          className="p-2 rounded-lg border text-gray-400 group-hover:text-primary transition-colors duration-500">
+                          {session.deviceType === 'mobile' ? <Smartphone className="w-4 h-4" /> : <Monitor className="w-4 h-4" />}
+                        </div>
+                        <div className="min-w-0">
+                          <p style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-sm font-bold truncate flex items-center gap-2 transition-colors duration-500">
+                            {session.deviceName}
+                            {session.isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />}
+                          </p>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <p style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-sm font-bold truncate flex items-center gap-2 transition-colors duration-500">
-                          {session.deviceName}
-                          {session.isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />}
-                        </p>
-                        <p style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-[10px] truncate transition-colors duration-500">{session.location} • {session.ip}</p>
+                      <div className="flex flex-col items-end gap-1">
+                        <div className="flex items-center gap-2">
+                          <span style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-[10px] transition-colors duration-500">{session.lastActive}</span>
+                          {!session.isCurrent && (
+                            <button 
+                              onClick={() => { setSessionToLogout(session); setIsLogoutSessionModalOpen(true); }}
+                              className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all cursor-pointer"
+                              title="Logout Device"
+                            >
+                              <LogOut className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+                        {session.isCurrent && (
+                          <span className="text-[10px] text-primary font-bold">Current</span>
+                        )}
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-1">
-                      <span style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-[10px] transition-colors duration-500">{session.lastActive}</span>
-                      {session.isCurrent && (
-                        <span className="text-[10px] text-primary font-bold">Current</span>
-                      )}
-                    </div>
-                  </div>
-                ))
+                  ))
               ) : (
                 <div style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="flex flex-col items-center py-6 gap-2 transition-colors duration-500">
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -794,6 +820,47 @@ export default function Profile() {
                   Save New Password
                 </button>
               </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Session Logout Confirmation Modal */}
+      <AnimatePresence>
+        {isLogoutSessionModalOpen && (
+          <div className="fixed inset-0 z-110 flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsLogoutSessionModalOpen(false)}
+              style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)' }}
+              className="absolute inset-0 backdrop-blur-md transition-colors duration-500" />
+            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              style={{
+                backgroundColor: isDark ? 'rgba(0, 0, 0, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+              }}
+              className="relative w-full max-w-md glass-panel p-8 rounded-[2.5rem] border border-red-500/20 shadow-2xl text-center transition-colors duration-500">
+              <div className="w-20 h-20 rounded-3xl bg-red-500/10 flex items-center justify-center mx-auto mb-6 text-red-500">
+                <LogOut className="w-10 h-10" />
+              </div>
+              <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-2xl font-bold mb-2 transition-colors duration-500">Log Out Device?</h2>
+              <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="mb-8 leading-relaxed transition-colors duration-500">
+                Are you sure you want to log out of <span className="font-bold text-primary">{sessionToLogout?.deviceName}</span>? You will need to sign in again on that device to access your workspace.
+              </p>
+              <div className="flex flex-col gap-3">
+                <button onClick={handleLogoutSession} disabled={loading} className="w-full py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-2">
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Yes, Log Out'}
+                </button>
+                <button
+                  onClick={() => setIsLogoutSessionModalOpen(false)}
+                  style={{
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(243, 244, 246, 0.8)',
+                    color: isDark ? '#ffffff' : '#374151',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#000000'
+                  }}
+                  className="w-full py-4 font-bold rounded-2xl transition-all border hover:scale-105"
+                >
+                  Cancel
+                </button>
+              </div>
             </motion.div>
           </div>
         )}

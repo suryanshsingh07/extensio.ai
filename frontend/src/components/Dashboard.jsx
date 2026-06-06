@@ -242,8 +242,8 @@ export default function Dashboard() {
         </div>
         <div 
           style={{ 
-            backgroundColor: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+            backgroundColor: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.95)',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)',
             color: isDark ? '#9ca3af' : '#4b5563'
           }}
           className="flex items-center gap-2 px-4 py-2 glass-panel rounded-full text-xs border transition-colors duration-500">
@@ -254,7 +254,7 @@ export default function Dashboard() {
       {/* Generator Card */}
       <div 
         style={{ 
-          backgroundColor: isDark ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+          backgroundColor: isDark ? 'rgba(0, 0, 0, 0.8)' : '#ffffff',
           borderColor: isDark ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.2)'
         }}
         className="glass-panel p-6 rounded-2xl mb-10 border transition-all duration-500 dark:bg-linear-to-br dark:from-primary/5 dark:to-transparent">
@@ -276,9 +276,9 @@ export default function Dashboard() {
         <div className="flex flex-col md:flex-row gap-4">
           <textarea 
             style={{ 
-              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
               color: isDark ? '#ffffff' : '#111827',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)'
             }}
             className="flex-1 border rounded-xl p-4 text-sm placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 resize-none h-28 transition-all duration-500"
             placeholder="Describe your browser extension in plain English…"
@@ -350,8 +350,8 @@ export default function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.07 }}
               style={{ 
-                backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-                borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.9)',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)'
               }}
               className="glow-card glass-panel p-6 rounded-2xl border hover:border-primary/30 transition-all group flex flex-col shadow-sm dark:shadow-none" >
               {/* Card header */}

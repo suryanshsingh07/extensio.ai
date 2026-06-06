@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 
 // Controllers
 const ProjectController = require('../controllers/projectController');
@@ -32,18 +33,60 @@ router.get('/auth/me', requireAuth, asyncHandler(AuthController.me));
 router.get('/auth/profile', requireAuth, asyncHandler(AuthController.me));
 router.put('/auth/profile', requireAuth, asyncHandler(AuthController.updateProfile));
 
+// Simulated database for sessions (cleared on server restart)
+let sessionsStore = [];
+
 // Session Management (Active Devices)
 router.get('/auth/sessions', requireAuth, asyncHandler(async (req, res) => {
-  // In a production environment, this would be retrieved from a session store (e.g., Redis)
-  // or a dedicated sessions collection linked to the user.
-  const sessions = [
-    { id: 'sess-1', deviceName: 'Chrome v124 (macOS)', deviceType: 'desktop', location: 'San Francisco, US', ip: '192.168.1.42', lastActive: 'Active Now', isCurrent: true },
-    { id: 'sess-2', deviceName: 'Safari Mobile (iPhone 15)', deviceType: 'mobile', location: 'New York, US', ip: '72.144.12.101', lastActive: '2 hours ago', isCurrent: false },
-    { id: 'sess-3', deviceName: 'Firefox v125 (Windows 11)', deviceType: 'desktop', location: 'London, UK', ip: '84.22.190.54', lastActive: '14 hours ago', isCurrent: false }
-  ];
+  const ua = req.headers['user-agent'] || '';
+  const userId = req.user.id;
+  
+  // Basic User-Agent Parsing logic
+  let browser = "Unknown Browser";
+  if (ua.includes("Firefox")) browser = "Firefox";
+  else if (ua.includes("Edg")) browser = "Microsoft Edge";
+  else if (ua.includes("Chrome")) browser = "Chrome";
+  else if (ua.includes("Safari")) browser = "Safari";
 
-  // Returns the list of active sessions for the authenticated user
+  let os = "Unknown OS";
+  if (ua.includes("Windows")) os = "Windows";
+  else if (ua.includes("Mac OS")) os = "macOS";
+  else if (ua.includes("Linux")) os = "Linux";
+  else if (ua.includes("Android")) os = "Android";
+  else if (ua.includes("iPhone")) os = "iOS";
+
+  // Generate a stable ID for this session based on User-Agent
+  const currentId = crypto.createHash('md5').update(ua).digest('hex');
+
+  // Dynamic Workability: Register the session if it's new
+  const sessionExists = sessionsStore.some(s => s.id === currentId && s.userId === userId);
+  if (!sessionExists) {
+    sessionsStore.push({
+      id: currentId,
+      userId: userId,
+      deviceName: `${browser} on ${os}`,
+      deviceType: ua.includes("Mobile") ? 'mobile' : 'desktop',
+      lastActive: 'Active Now'
+    });
+  }
+
+  // Fetch only this user's literal sessions and mark the current one
+  const sessions = sessionsStore
+    .filter(s => s.userId === userId)
+    .map(s => ({
+      ...s,
+      isCurrent: s.id === currentId
+    }))
+    .sort((a, b) => (a.isCurrent === b.isCurrent) ? 0 : a.isCurrent ? -1 : 1);
+
   res.json({ sessions });
+}));
+
+router.delete('/auth/sessions/:id', requireAuth, asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  // Terminate any session except the one currently making the request
+  sessionsStore = sessionsStore.filter(s => !(s.id === id && s.userId === req.user.id));
+  res.status(200).json({ success: true, message: 'Session terminated' });
 }));
 
 router.get('/projects', requireAuth, asyncHandler(ProjectController.getProjects));
