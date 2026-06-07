@@ -62,13 +62,13 @@ export default function FeedbackPortal() {
         </div>
         <div className="text-center md:text-left">
           <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-3xl font-bold transition-colors duration-500">Help Us Learn</h2>
-          <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="transition-colors duration-500">Extensio.ai gets smarter with your feedback. Tell us how/what the Ai did</p>
+          <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="transition-colors duration-500">Extensio.ai gets smarter with your feedback. Tell us how/what the Ai did</p>
         </div>
       </div>
       <div 
         style={{ 
-          backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+          backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)'
         }}
         className="glass-panel p-8 rounded-3xl border max-w-2xl mx-auto relative overflow-hidden transition-colors duration-500">
         <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
@@ -107,9 +107,9 @@ export default function FeedbackPortal() {
                 <button type="button"
                   onClick={() => setCategory('BUG_REPORT')}
                   style={category !== 'BUG_REPORT' ? {
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
-                    color: isDark ? '#9ca3af' : '#4b5563'
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.08)',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.2)',
+                    color: isDark ? '#9ca3af' : '#374151'
                   } : {}}
                   className={`py-3 px-4 rounded-xl border flex flex-col items-center gap-2 transition-all cursor-pointer ${category === 'BUG_REPORT' ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'hover:bg-white/5'}`}>
                   <AlertTriangle className="w-5 h-5" />
@@ -118,9 +118,9 @@ export default function FeedbackPortal() {
                 <button type="button"
                   onClick={() => setCategory('GENERAL_SATISFACTION')}
                   style={category !== 'GENERAL_SATISFACTION' ? {
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
-                    color: isDark ? '#9ca3af' : '#4b5563'
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.08)',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.2)',
+                    color: isDark ? '#9ca3af' : '#374151'
                   } : {}}
                   className={`py-3 px-4 rounded-xl border flex flex-col items-center gap-2 transition-all cursor-pointer ${category === 'GENERAL_SATISFACTION' ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400' : 'hover:bg-white/5'}`}>
                   <Star className="w-5 h-5" />
@@ -129,9 +129,9 @@ export default function FeedbackPortal() {
                 <button type="button"
                   onClick={() => setCategory('FEATURE_REQUEST')}
                   style={category !== 'FEATURE_REQUEST' ? {
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
-                    color: isDark ? '#9ca3af' : '#4b5563'
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.08)',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.2)',
+                    color: isDark ? '#9ca3af' : '#374151'
                   } : {}}
                   className={`py-3 px-4 rounded-xl border flex flex-col items-center gap-2 transition-all cursor-pointer ${category === 'FEATURE_REQUEST' ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'hover:bg-white/5'}`}>
                   <Lightbulb className="w-5 h-5" />
@@ -150,9 +150,9 @@ export default function FeedbackPortal() {
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="What did the AI get right or wrong?"
                   style={{ 
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.8)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
                     color: isDark ? '#ffffff' : '#111827',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)'
                   }}
                   className="w-full border rounded-xl px-4 py-3 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-none transition-all duration-500"/>
               </div>
@@ -167,7 +167,7 @@ export default function FeedbackPortal() {
                 style={rating === 0 ? {
                   backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(243, 244, 246, 1)',
                   color: isDark ? '#4b5563' : '#9ca3af',
-                  borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                  borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)'
                 } : {}}
                 className={`w-full py-3 rounded-xl font-medium flex justify-center items-center gap-2 transition-all ${
                   rating === 0 
@@ -190,11 +190,11 @@ export default function FeedbackPortal() {
                 <CheckCircle2 className="w-10 h-10" />
               </div>
               <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-2xl font-bold mb-2 transition-colors duration-500">Feedback Ingested</h3>
-              <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="max-w-sm mx-auto transition-colors duration-500">
+              <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="max-w-sm mx-auto transition-colors duration-500">
                 Thank you! Your insights have been routed to our model training pipeline to improve future generations
               </p>
               <button onClick={() => { setIsSubmitted(false); setRating(0); setComment(''); setSubmitError(false); }}
-                className="mt-8 text-sm text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer">
+                className={`mt-8 text-sm font-medium ${isDark ? 'text-indigo-400 hover:text-indigo-300' : 'text-indigo-600 hover:text-indigo-700'} transition-colors cursor-pointer`}>
                 Submit another report
               </button>
             </motion.div>

@@ -236,15 +236,15 @@ export default function Dashboard() {
           <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-3xl font-bold mb-1 flex items-center gap-2 transition-colors duration-500">
             <Sparkles className="w-6 h-6 text-primary" /> My Workspace
           </h2>
-          <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm transition-colors duration-500">
+          <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-sm transition-colors duration-500">
             Welcome back, <span style={{ color: isDark ? '#ffffff' : '#111827' }} className="font-medium transition-colors duration-500">{user?.name}</span>. Generate, manage and download your Chrome extensions
           </p>
         </div>
         <div 
           style={{ 
             backgroundColor: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.95)',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)',
-            color: isDark ? '#9ca3af' : '#4b5563'
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)',
+            color: isDark ? '#9ca3af' : '#374151'
           }}
           className="flex items-center gap-2 px-4 py-2 glass-panel rounded-full text-xs border transition-colors duration-500">
           <div className="pulse-dot" />
@@ -255,14 +255,14 @@ export default function Dashboard() {
       <div 
         style={{ 
           backgroundColor: isDark ? 'rgba(0, 0, 0, 0.8)' : '#ffffff',
-          borderColor: isDark ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.2)'
+          borderColor: isDark ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.4)'
         }}
         className="glass-panel p-6 rounded-2xl mb-10 border transition-all duration-500 dark:bg-linear-to-br dark:from-primary/5 dark:to-transparent">
         <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-lg font-semibold mb-1 flex items-center gap-2 transition-colors duration-500">
           <Terminal className="w-5 h-5 text-primary" />
           Create New Extension
         </h3>
-        <p style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-xs mb-4 transition-colors duration-500">
+        <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs mb-4 transition-colors duration-500">
           Try: <AnimatePresence mode="wait">
             <motion.span key={tipIdx}
               initial={{ opacity: 0, y: 4 }}
@@ -278,10 +278,10 @@ export default function Dashboard() {
             style={{ 
               backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
               color: isDark ? '#ffffff' : '#111827',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)'
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.25)'
             }}
             className="flex-1 border rounded-xl p-4 text-sm placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 resize-none h-28 transition-all duration-500"
-            placeholder="Describe your browser extension in plain English…"
+            placeholder="Describe your browser extension in plain English . . ."
             value={prompt}
             onChange={e => setPrompt(e.target.value)}
             disabled={isGenerating}
@@ -302,14 +302,16 @@ export default function Dashboard() {
                   <span>{statusLabel[jobStatus.status] || jobStatus.status}</span>
                   <span className="font-mono">{jobStatus.progress}%</span>
                 </div>
-                <div className="w-full bg-surface rounded-full h-1.5 overflow-hidden">
+                <div 
+                  style={{ backgroundColor: isDark ? '#111827' : 'rgba(0, 0, 0, 0.1)' }}
+                  className="w-full rounded-full h-1.5 overflow-hidden">
                   <motion.div
                     className="bg-linear-to-r from-primary to-purple-500 h-1.5 rounded-full"
                     animate={{ width: `${jobStatus.progress}%` }}
                     transition={{ duration: 0.4 }}/>
                 </div>
                 {jobStatus.status === 'completed' && (
-                  <p className="text-green-400 mt-2 flex items-center gap-1">
+                  <p className={`${isDark ? 'text-green-400' : 'text-green-600'} mt-2 flex items-center gap-1`}>
                     <CheckCircle2 className="w-3.5 h-3.5" /> Extension ready — scroll down to download!
                   </p>
                 )}
@@ -350,8 +352,8 @@ export default function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.07 }}
               style={{ 
-                backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.9)',
-                borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)'
+                backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)'
               }}
               className="glow-card glass-panel p-6 rounded-2xl border hover:border-primary/30 transition-all group flex flex-col shadow-sm dark:shadow-none" >
               {/* Card header */}
@@ -361,8 +363,8 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${project.status === 'active' || !project.status
-                      ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-                      : 'bg-gray-500/10 text-gray-400 border border-gray-500/20'
+                      ? `bg-green-500/10 ${isDark ? 'text-green-400' : 'text-green-600'} border border-green-500/20`
+                      : `bg-gray-500/10 ${isDark ? 'text-gray-400' : 'text-gray-600'} border border-gray-500/20`
                     }`}>
                     {project.status || 'Active'}
                   </span>
@@ -376,7 +378,7 @@ export default function Dashboard() {
               <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-base font-semibold mb-1 group-hover:text-primary transition-colors line-clamp-1">
                 {project.name}
               </h3>
-              <p style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-xs mb-4 line-clamp-2 leading-relaxed transition-colors duration-500">
+              <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-xs mb-4 line-clamp-2 leading-relaxed transition-colors duration-500">
                 {project.description || 'A custom Chrome extension generated by Extensio.ai.'}
               </p>
               <div className="mt-auto">
@@ -392,9 +394,9 @@ export default function Dashboard() {
                 <div style={{ borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }} className="flex gap-2 pt-3 border-t">
                   <button onClick={() => handleEdit(project._id || project.id)}
                     style={{ 
-                      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
+                      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)',
                       color: isDark ? '#ffffff' : '#111827',
-                      borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                      borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)'
                     }}
                     className="flex-1 hover:bg-gray-100 dark:hover:bg-white/5 text-xs font-medium py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all border">
                     <Edit3 className="w-3.5 h-3.5" /> Edit Prompt

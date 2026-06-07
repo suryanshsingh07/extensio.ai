@@ -15,7 +15,7 @@ const companyLinks = [
   { to: '/about', label: 'About Us' },
   { to: '/blog', label: 'Blog' },
   { to: '/careers', label: 'Careers' },
-  { to: '/contact', label: 'Contact' },
+  { to: '/contact', label: 'Contact Us' },
 ];
 
 const legalLinks = [
@@ -32,7 +32,7 @@ const socials = [
 
 function LinkList({ links, isDark }) {
   return (
-    <ul className="space-y-3 text-sm" style={{ color: isDark ? '#9ca3af' : '#4b5563' }}>
+    <ul className="space-y-3 text-sm" style={{ color: isDark ? '#9ca3af' : '#374151' }}>
       {links.map(({ label, href, to }) => (
         <li key={label}>
           {href
@@ -68,7 +68,7 @@ export default function Footer() {
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div>
             <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-xl font-bold mb-1 transition-colors duration-500">Ready to build your first extension?</h3>
-            <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm transition-colors duration-500">It's free, No credit card required. Takes less than 60 seconds</p>
+            <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-sm transition-colors duration-500">It's free, No credit card required. Takes less than 60 seconds</p>
           </div>
           <button onClick={handleStart}
             className="shrink-0 bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-7 rounded-full transition-all shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)] text-sm">
@@ -86,7 +86,7 @@ export default function Footer() {
               <img src="/logo.png" className="h-10 w-10 object-contain"/>
               <span style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-lg font-bold transition-colors duration-500">Extensio.ai</span>
             </div>
-            <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm leading-relaxed max-w-xs transition-colors duration-500">
+            <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-sm leading-relaxed max-w-xs transition-colors duration-500">
               Transform your ideas into production-ready Chrome extensions using Ai. No coding experience needed. Real MV3 output, every time
             </p>
           </div>
@@ -112,10 +112,10 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 transition-colors duration-500" style={{ borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }}>
-          <p className="text-xs transition-colors duration-500" style={{ color: isDark ? '#4b5563' : '#6b7280' }}>
+          <p className="text-xs transition-colors duration-500" style={{ color: isDark ? '#9ca3af' : '#4b5563' }}>
             © {new Date().getFullYear()} Extensio.ai - All rights reserved
           </p>
-          <p className="text-xs transition-colors duration-500" style={{ color: isDark ? '#374151' : '#6b7280' }}>
+          <p className="text-xs transition-colors duration-500" style={{ color: isDark ? '#9ca3af' : '#4b5563' }}>
             Built by Group 8 under internship at <br></br> Zaalima development pvt.ltd
           </p>
         </div>

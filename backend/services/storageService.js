@@ -1,5 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
+const os = require('os');
 
 class StorageService {
   /**
@@ -9,7 +10,7 @@ class StorageService {
    * @returns {Promise<string>} - Download token/ID
    */
   static async storePackage(tempZipPath, projectId) {
-    const storageDir = path.join(__dirname, '../../storage/builds');
+    const storageDir = path.join(os.tmpdir(), 'extensio_storage', 'builds');
     await fs.ensureDir(storageDir);
 
     const filename = `${projectId}-${Date.now()}.zip`;
@@ -24,7 +25,7 @@ class StorageService {
     }
   }
   static getPackagePath(filename) {
-    const finalPath = path.join(__dirname, '../../storage/builds', filename);
+    const finalPath = path.join(os.tmpdir(), 'extensio_storage', 'builds', filename);
     if (!fs.existsSync(finalPath)) {
       throw new Error('Package not found or expired.');
     }

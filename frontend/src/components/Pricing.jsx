@@ -52,7 +52,7 @@ export default function Pricing() {
     <section className="w-full max-w-7xl px-4 md:px-6 py-24 border-t border-black/5 dark:border-white/5 transition-colors duration-500" id="pricing">
       <div className="text-center mb-16">
         <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-4xl font-bold mb-4 transition-colors duration-500">Simple, transparent pricing</h2>
-        <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="max-w-2xl mx-auto transition-colors duration-500">
+        <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="max-w-2xl mx-auto transition-colors duration-500">
           Start building for free, then upgrade when you need advanced models, team collaboration, and higher volume.
         </p>
       </div>
@@ -76,6 +76,7 @@ export default function Pricing() {
               glowRadius={80}
               glowIntensity={3}
               coneSpread={45}
+              backgroundColor={isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.95)'}
               className={`p-8 ${plan.isPopular ? 'pt-12' : ''} h-full w-full relative border transition-all duration-500 ${plan.isPopular ? 'shadow-xl dark:shadow-[0_0_40px_rgba(99,102,241,0.15)]' : ''}`}
             >
 
@@ -108,7 +109,7 @@ export default function Pricing() {
                 {plan.features.map((feature, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <Check className={`w-5 h-5 shrink-0 ${plan.isPopular ? 'text-primary' : plan.name === 'Enterprise' ? 'text-green-400' : 'text-gray-400'}`} />
-                    <span style={{ color: isDark ? '#d1d5db' : '#4b5563' }} className="text-sm transition-colors duration-500">{feature}</span>
+                    <span style={{ color: isDark ? '#d1d5db' : '#374151' }} className="text-sm transition-colors duration-500">{feature}</span>
                   </div>
                 ))}
               </div>

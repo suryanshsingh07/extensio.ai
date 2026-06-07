@@ -134,11 +134,12 @@ DO NOT output any markdown formatting, no backticks, no explanations, no comment
   }
 
   static async _callGemini(apiKey, systemInstruction, promptText) {
-    const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+    // Ensure model name is clean. Google expects "gemini-1.5-flash", not "models/gemini-1.5-flash" in the URL path.
+    const model = (process.env.GEMINI_MODEL || 'gemini-1.5-flash').split('/').pop();
     const urlV1 = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
     const urlBeta = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-    
-    console.log(`🤖 AI Service: Contacting Gemini API using model ${model}...`);
+
+    console.log(`AI Service: Contacting Gemini API using model ${model}...`);
     
     const requestBody = {
       contents: [
@@ -161,9 +162,21 @@ DO NOT output any markdown formatting, no backticks, no explanations, no comment
     try {
       console.log(`🤖 AI Service: Attempting stable v1 endpoint...`);
       responseText = await this._makeHttpsPost(urlV1, requestBody);
-    } catch (err) {
-      console.warn(`⚠ AI Service: v1 endpoint failed (${err.message}). Retrying with v1beta endpoint...`);
-      responseText = await this._makeHttpsPost(urlBeta, requestBody);
+    } catch (v1Err) {
+      console.warn(`⚠ AI Service: v1 endpoint failed (${v1Err.message}). Retrying with v1beta...`);
+      try {
+        responseText = await this._makeHttpsPost(urlBeta, requestBody);
+      } catch (betaErr) {
+        console.warn(`⚠ AI Service: JSON mode may be unsupported. Final attempt without JSON config...`);
+        try {
+          const fallbackBody = { ...requestBody };
+          delete fallbackBody.generationConfig.responseMimeType;
+          responseText = await this._makeHttpsPost(urlV1, fallbackBody);
+        } catch (finalErr) {
+          console.error(`❌ AI Service: All Gemini attempts failed.`);
+          throw new Error(`Gemini API Error: ${finalErr.message}`);
+        }
+      }
     }
 
     const result = JSON.parse(responseText);

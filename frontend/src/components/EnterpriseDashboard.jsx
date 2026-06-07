@@ -21,19 +21,19 @@ export default function EnterpriseDashboard() {
 
   return (
     <section 
-      style={{ borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }}
+      style={{ borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)' }}
       className="w-full max-w-7xl px-4 md:px-6 py-12 border-t mx-auto transition-colors duration-500" id="enterprise">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
         <div>
           <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-2xl sm:text-3xl font-bold flex items-center gap-3 transition-colors duration-500">
             <Building className="w-7 h-7 sm:w-8 sm:h-8 text-green-400" /> Enterprise Workspace
           </h2>
-          <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="mt-2 text-sm sm:text-base transition-colors duration-500">Manage teams, shared projects and organization security policies</p>
+          <p style={{ color: isDark ? '#9ca3af' : '#111827' }} className="mt-2 text-sm sm:text-base transition-colors duration-500">Manage teams, shared projects and organization security policies</p>
         </div>
         <button id="invite-member-btn" 
           style={{ 
             color: isDark ? '#4ade80' : '#16a34a', 
-            borderColor: isDark ? 'rgba(74, 222, 128, 0.2)' : '#000000',
+            borderColor: isDark ? 'rgba(74, 222, 128, 0.2)' : 'rgba(0, 0, 0, 0.1)',
             backgroundColor: isDark ? 'rgba(74, 222, 128, 0.1)' : 'rgba(22, 163, 74, 0.05)'
           }}
           className="border font-medium py-2 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer hover:scale-105" onClick={() => alert("This facility is currently unavailable!")}>
@@ -44,26 +44,26 @@ export default function EnterpriseDashboard() {
         {/* Left Column: Organization Settings */}
         <div className="space-y-6 lg:col-span-1">
           <div 
-            style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
+            style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)' }}
             className="glass-panel p-5 sm:p-6 rounded-2xl border transition-all duration-500">
             <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="font-semibold mb-4 text-lg transition-colors duration-500">Acme Corp</h3>
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-400">Plan</span>
-                <span className="bg-white/10 px-2 py-0.5 rounded text-white font-medium text-xs sm:text-sm">Enterprise (5 Seats)</span>
+                <span style={{ color: isDark ? '#9ca3af' : '#4b5563' }}>Plan</span>
+                <span className={`${isDark ? 'bg-white/10 text-white' : 'bg-gray-100 text-gray-900'} px-2 py-0.5 rounded font-medium text-xs sm:text-sm`}>Enterprise (5 Seats)</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-400">Seats Used</span>
-                <span className="text-white font-medium">3 / 5</span>
+                <span style={{ color: isDark ? '#9ca3af' : '#4b5563' }}>Seats Used</span>
+                <span style={{ color: isDark ? '#ffffff' : '#111827' }} className="font-medium">3 / 5</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-400">Shared Projects</span>
-                <span className="text-white font-medium">12 Active</span>
+                <span style={{ color: isDark ? '#9ca3af' : '#4b5563' }}>Shared Projects</span>
+                <span style={{ color: isDark ? '#ffffff' : '#111827' }} className="font-medium">12 Active</span>
               </div>
             </div>
             <button 
               style={{ 
-                backgroundColor: isDark ? 'rgba(17, 17, 17, 0.8)' : 'rgba(243, 244, 246, 0.8)', 
+                backgroundColor: isDark ? 'rgba(17, 17, 17, 0.8)' : 'rgba(0, 0, 0, 0.05)', 
                 borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
                 color: isDark ? '#d1d5db' : '#374151'
               }}
@@ -72,7 +72,7 @@ export default function EnterpriseDashboard() {
             </button>
           </div>
           <div 
-            style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
+            style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)' }}
             className="glass-panel p-5 sm:p-6 rounded-2xl border transition-all duration-500">
             <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="font-semibold mb-4 text-lg flex items-center gap-2 transition-colors duration-500">
               <Shield className="w-5 h-5 text-gray-400" /> Security Policies
@@ -92,7 +92,7 @@ export default function EnterpriseDashboard() {
                   <div style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-sm font-medium transition-colors duration-500">Public Sharing</div>
                   <div className="text-xs text-gray-500">Allow external link sharing</div>
                 </div>
-                <div style={{ backgroundColor: isDark ? '#111111' : '#e5e7eb' }} className="w-10 h-5 border border-white/10 rounded-full relative cursor-pointer" role="switch" aria-checked="false" onClick={() => alert("This facility is currently unavailable!")}>
+                <div style={{ backgroundColor: isDark ? '#111111' : '#d1d5db' }} className="w-10 h-5 border border-white/10 rounded-full relative cursor-pointer" role="switch" aria-checked="false" onClick={() => alert("This facility is currently unavailable!")}>
                   <div className="absolute left-1 top-0.5 w-4 h-4 bg-gray-500 rounded-full" />
                 </div>
               </div>
@@ -102,7 +102,7 @@ export default function EnterpriseDashboard() {
         {/* Right Column: Member Management */}
         <div className="lg:col-span-2 space-y-6">  
           <div 
-            style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
+            style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)' }}
             className="glass-panel rounded-2xl border overflow-hidden transition-all duration-500">
             <div style={{ borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)', backgroundColor: isDark ? 'rgba(17, 17, 17, 0.3)' : 'rgba(243, 244, 246, 0.3)' }} className="p-4 sm:p-5 border-b flex justify-between items-center transition-colors duration-500">
               <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="font-semibold flex items-center gap-2 transition-colors duration-500">
@@ -133,7 +133,7 @@ export default function EnterpriseDashboard() {
                         {member.role}
                       </span>
                     </div>
-                    <button className="p-2 text-gray-500 hover:text-red-400 transition-colors bg-surface rounded-lg border border-white/5 hover:bg-red-500/10 hover:border-red-500/20 cursor-pointer" aria-label={`Remove ${member.name}`} onClick={() => alert("This facility is currently unavailable!")}>
+                    <button className={`p-2 text-gray-500 hover:text-red-400 transition-colors ${isDark ? 'bg-white/5' : 'bg-gray-50'} rounded-lg border border-white/5 hover:bg-red-500/10 hover:border-red-500/20 cursor-pointer`} aria-label={`Remove ${member.name}`} onClick={() => alert("This facility is currently unavailable!")}>
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -142,14 +142,14 @@ export default function EnterpriseDashboard() {
             </div>
           </div>
           <div 
-            style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
+            style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)' }}
             className="glass-panel p-5 sm:p-6 rounded-2xl border flex flex-col sm:flex-row gap-5 items-center transition-all duration-500">
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center shrink-0">
               <FolderGit2 className="w-7 h-7 sm:w-8 sm:h-8 text-indigo-400" />
             </div>
             <div className="flex-1 text-center sm:text-left">
               <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="font-semibold text-lg mb-1 transition-colors duration-500">Organization Prompt Library</h3>
-              <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm mb-3 transition-colors duration-500">
+              <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-sm mb-3 transition-colors duration-500">
                 Create and share successful AI system prompts across your entire development team
               </p>
               <button className="text-sm bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg transition-colors font-medium cursor-pointer" onClick={() => alert("This facility is currently unavailable!")}>

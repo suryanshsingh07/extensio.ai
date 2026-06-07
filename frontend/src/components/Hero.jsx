@@ -34,7 +34,7 @@ export default function Hero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         style={{
-          backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+          backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.95)',
           color: isDark ? '#ffffff' : '#111827',
           borderColor: isDark ? 'rgba(99, 102, 241, 0.3)' : 'rgba(99, 102, 241, 0.2)'
         }}
@@ -60,7 +60,7 @@ export default function Hero() {
       <motion.p initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        style={{ color: isDark ? '#9ca3af' : '#4b5563' }}
+        style={{ color: isDark ? '#9ca3af' : '#374151' }}
         className="text-lg md:text-xl mb-10 max-w-2xl leading-relaxed transition-colors duration-500">
         Describe your browser extension in plain English. Our AI builds a{' '}
         <span style={{ color: isDark ? '#ffffff' : '#111827' }} className="font-medium transition-colors duration-500">real, installable, Manifest V3</span>{' '}
@@ -79,9 +79,9 @@ export default function Hero() {
         </button>
         <a href="#works"
           style={{ 
-            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(243, 244, 246, 0.8)',
-            color: isDark ? '#d1d5db' : '#374151',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#9ca3af'
+            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+            color: isDark ? '#d1d5db' : '#111827',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)'
           }}
           className="glass-panel text-base font-medium py-3.5 px-8 rounded-full transition-all duration-500 border hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-white/10">
           See How It Works
@@ -92,7 +92,7 @@ export default function Hero() {
       <motion.div initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.45 }}
-        style={{ color: isDark ? '#9ca3af' : '#6b7280' }}
+        style={{ color: isDark ? '#9ca3af' : '#374151' }}
         className="flex flex-wrap items-center justify-center gap-6 text-xs transition-colors duration-500">
         {stats.map(({ icon, label }) => (
           <span key={label} className="flex items-center gap-1.5">

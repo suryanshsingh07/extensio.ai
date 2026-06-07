@@ -42,7 +42,7 @@ export default function EngineInsights() {
         }`}>
           Engine Insights
         </h1>
-        <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="mt-4 text-base sm:text-lg max-w-2xl mx-auto transition-colors duration-500">
+        <p style={{ color: isDark ? '#9ca3af' : '#111827' }} className="mt-4 text-base sm:text-lg max-w-2xl mx-auto transition-colors duration-500">
           Deep-dive telemetry, autonomous AI agent updates, and organization workspace monitoring.
         </p>
       </div>
@@ -51,8 +51,8 @@ export default function EngineInsights() {
       <div className="w-full flex justify-center mb-8">
         <div 
           style={{ 
-            backgroundColor: isDark ? 'rgba(17, 17, 17, 0.5)' : 'rgba(255, 255, 255, 0.9)', 
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)' 
+            backgroundColor: isDark ? 'rgba(17, 17, 17, 0.5)' : '#ffffff', 
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.15)' 
           }}
           className="flex border p-1.5 rounded-2xl gap-1 transition-all duration-500 shadow-sm">
           {tabs.map((tab) => {
@@ -61,7 +61,7 @@ export default function EngineInsights() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                style={!isActive ? { color: isDark ? '#9ca3af' : '#374151' } : {}}
+                style={!isActive ? { color: isDark ? '#9ca3af' : '#1f2937' } : {}}
                 className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer ${
                   isActive
                     ? 'bg-linear-to-r from-primary to-secondary text-white shadow-lg'

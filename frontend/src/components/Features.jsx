@@ -94,7 +94,7 @@ export default function Features() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
-          style={{ color: isDark ? '#9ca3af' : '#4b5563' }}
+          style={{ color: isDark ? '#9ca3af' : '#374151' }}
           className="max-w-2xl mx-auto transition-colors duration-500" >
           Our AI engine handles the complex architecture of browser extensions so you can focus entirely on the idea
         </motion.p>
@@ -116,6 +116,7 @@ export default function Features() {
               glowRadius={80}
               glowIntensity={3}
               coneSpread={45}
+              backgroundColor={isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.95)'}
               className="p-7 h-full w-full"
             >
               <div className="flex items-center gap-4 mb-5">
@@ -124,7 +125,7 @@ export default function Features() {
                 </div>
                 <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-lg font-semibold transition-colors duration-500">{f.title}</h3>
               </div>
-              <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm leading-relaxed transition-colors duration-500">{f.description}</p>
+              <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-sm leading-relaxed transition-colors duration-500">{f.description}</p>
             </BorderGlow>
           </motion.div>
         ))}
@@ -134,7 +135,7 @@ export default function Features() {
       <div className="px-4" id="works">
         <div className="text-center mb-12">
           <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-2xl md:text-3xl font-bold mb-2 transition-colors duration-500">How it works</h2>
-          <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm transition-colors duration-500">Three steps from idea to installable Chrome extension.</p>
+          <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-sm transition-colors duration-500">Three steps from idea to installable Chrome extension.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto relative">
           {/* Connector line (desktop only) */}
@@ -151,6 +152,7 @@ export default function Features() {
                 glowRadius={80}
                 glowIntensity={3}
                 coneSpread={45}
+                backgroundColor={isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.95)'}
                 className="flex flex-col p-8 h-full w-full items-start text-left"
               >
                 <div className="flex items-center gap-4 mb-5 w-full">
@@ -159,7 +161,7 @@ export default function Features() {
                   </div>
                   <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="font-semibold text-lg transition-colors duration-500">{label}</h3>
                 </div>
-                <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm transition-colors duration-500">{desc}</p>
+                <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-sm transition-colors duration-500">{desc}</p>
               </BorderGlow>
             </motion.div>
           ))}

@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
+
+const Session = require('../models/Session');
+const User = require('../models/User');
+const Version = require('../models/Version');
 
 // Controllers
 const ProjectController = require('../controllers/projectController');
@@ -33,8 +38,28 @@ router.get('/auth/me', requireAuth, asyncHandler(AuthController.me));
 router.get('/auth/profile', requireAuth, asyncHandler(AuthController.me));
 router.put('/auth/profile', requireAuth, asyncHandler(AuthController.updateProfile));
 
-// Simulated database for sessions (cleared on server restart)
-let sessionsStore = [];
+// Real Password Update Route
+router.put('/auth/password', requireAuth, asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user.id);
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+  if (!isMatch) {
+    return res.status(400).json({ message: 'Current password is incorrect' });
+  }
+
+  user.password = await bcrypt.hash(newPassword, 10);
+  await user.save();
+  res.json({ message: 'Password updated successfully' });
+}));
+
+// Real Account Deletion
+router.delete('/auth/account', requireAuth, asyncHandler(async (req, res) => {
+  await Session.deleteMany({ userId: req.user.id });
+  await User.findByIdAndDelete(req.user.id);
+  res.json({ message: 'Account deleted' });
+}));
 
 // Session Management (Active Devices)
 router.get('/auth/sessions', requireAuth, asyncHandler(async (req, res) => {
@@ -55,28 +80,44 @@ router.get('/auth/sessions', requireAuth, asyncHandler(async (req, res) => {
   else if (ua.includes("Android")) os = "Android";
   else if (ua.includes("iPhone")) os = "iOS";
 
-  // Generate a stable ID for this session based on User-Agent
-  const currentId = crypto.createHash('md5').update(ua).digest('hex');
+  // MISTAKE FIX: Generate a more unique session ID using a combination of UA and User ID
+  // In a production app, this should ideally be tied to a specific Refresh Token ID
+  const currentId = crypto.createHash('sha256').update(ua + userId).digest('hex');
 
-  // Dynamic Workability: Register the session if it's new
-  const sessionExists = sessionsStore.some(s => s.id === currentId && s.userId === userId);
-  if (!sessionExists) {
-    sessionsStore.push({
-      id: currentId,
-      userId: userId,
+  // Register or update the session in MongoDB
+  await Session.findOneAndUpdate(
+    { id: currentId, userId: userId },
+    { 
       deviceName: `${browser} on ${os}`,
       deviceType: ua.includes("Mobile") ? 'mobile' : 'desktop',
-      lastActive: 'Active Now'
-    });
-  }
+      lastActive: new Date()
+    },
+    { upsert: true }
+  );
 
-  // Fetch only this user's literal sessions and mark the current one
-  const sessions = sessionsStore
-    .filter(s => s.userId === userId)
-    .map(s => ({
-      ...s,
-      isCurrent: s.id === currentId
-    }))
+  // Fetch this user's persistent sessions
+  const rawSessions = await Session.find({ userId: userId });
+
+  const sessions = rawSessions.map(s => {
+    const isCurrent = s.id === currentId;
+    let lastActiveText = "Active Now";
+    
+    if (!isCurrent) {
+      const seconds = Math.floor((new Date() - new Date(s.lastActive)) / 1000);
+      if (seconds < 60) lastActiveText = "Just now";
+      else if (seconds < 3600) lastActiveText = `${Math.floor(seconds / 60)}m ago`;
+      else if (seconds < 86400) lastActiveText = `${Math.floor(seconds / 3600)}h ago`;
+      else lastActiveText = new Date(s.lastActive).toLocaleDateString();
+    }
+
+    return {
+      id: s.id,
+      deviceName: s.deviceName,
+      deviceType: s.deviceType,
+      lastActive: lastActiveText,
+      isCurrent
+    };
+  })
     .sort((a, b) => (a.isCurrent === b.isCurrent) ? 0 : a.isCurrent ? -1 : 1);
 
   res.json({ sessions });
@@ -85,7 +126,7 @@ router.get('/auth/sessions', requireAuth, asyncHandler(async (req, res) => {
 router.delete('/auth/sessions/:id', requireAuth, asyncHandler(async (req, res) => {
   const { id } = req.params;
   // Terminate any session except the one currently making the request
-  sessionsStore = sessionsStore.filter(s => !(s.id === id && s.userId === req.user.id));
+  await Session.deleteOne({ id: id, userId: req.user.id });
   res.status(200).json({ success: true, message: 'Session terminated' });
 }));
 
@@ -130,7 +171,6 @@ router.post('/deploy/:versionId', requireAuth, asyncHandler(async (req, res) => 
   }
 
   let projectId = null;
-  const Version = require('../models/Version');
   try {
     const version = await Version.findById(versionId);
     if (version) {

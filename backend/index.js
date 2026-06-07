@@ -10,6 +10,7 @@ const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const fs = require('fs-extra');
 const path = require('path');
+const os = require('os');
 
 // Import routes
 const apiRoutes = require('./routes/api');
@@ -134,6 +135,11 @@ app.use((err, _req, res, _next) => {
 
 const MONGO_URI = process.env.MONGO_URI;
 
+// Global Temp Workspace Path (Uses OS temp for Vercel/Render compatibility)
+const tempPath = path.join(os.tmpdir(), 'extensio_workspaces');
+fs.ensureDirSync(tempPath);
+console.log(`✓ Temporary workspace path prepared at: ${tempPath}`);
+
 async function startServer() {
   try {
     if (!MONGO_URI) {
@@ -142,10 +148,7 @@ async function startServer() {
     }
     await mongoose.connect(MONGO_URI);
 
-    // Ensure temp workspace exists and is clean on startup
-    const tempPath = path.join(__dirname, 'temp_workspaces');
-    await fs.ensureDir(tempPath);
-    await fs.emptyDir(tempPath); 
+    await fs.emptyDir(tempPath); // Clean only on full server restart
     console.log('✓ Temporary workspaces initialized and cleaned');
 
     console.log('✓ Connected to MongoDB');

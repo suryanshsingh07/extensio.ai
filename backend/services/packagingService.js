@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const archiver = require('archiver');
+const os = require('os');
 const { v4: uuidv4 } = require('uuid');
 const SecurityValidator = require('../utils/securityValidator');
 
@@ -12,8 +13,8 @@ class PackagingService {
    */
   static async packageExtension(filesInput) {
     const sessionId = uuidv4();
-    const tempDir = path.join(__dirname, '../../temp_workspaces', sessionId);
-    const zipPath = path.join(__dirname, '../../temp_workspaces', `${sessionId}.zip`);
+    const tempDir = path.join(os.tmpdir(), 'extensio_workspaces', sessionId);
+    const zipPath = path.join(os.tmpdir(), 'extensio_workspaces', `${sessionId}.zip`);
 
     try {
       // 1. Create isolated workspace
@@ -86,6 +87,7 @@ class PackagingService {
       const archive = archiver('zip', { zlib: { level: 9 } });
 
       output.on('close', () => resolve(outPath));
+      output.on('error', (err) => reject(err));
       archive.on('error', (err) => reject(err));
 
       archive.pipe(output);

@@ -36,7 +36,7 @@ export default function PublishingDashboard() {
           </div>
           <div>
             <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-2xl sm:text-3xl font-bold transition-colors duration-500">Deployment & Publishing</h2>
-            <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm sm:text-base transition-colors duration-500">Launch your generated applications to the world instantly.</p>
+            <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-sm sm:text-base transition-colors duration-500">Launch your generated applications to the world instantly.</p>
           </div>
         </div>
         <button 
@@ -53,8 +53,8 @@ export default function PublishingDashboard() {
         {/* Environment Status */}
         <div 
           style={{ 
-            backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+            backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)'
           }}
           className="glass-panel p-5 sm:p-6 rounded-2xl border lg:col-span-1 h-fit transition-colors duration-500">
           <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-lg font-semibold mb-6 flex items-center gap-2 transition-colors duration-500">
@@ -63,7 +63,7 @@ export default function PublishingDashboard() {
           
           <div className="space-y-4">
             <div 
-              style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)', borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }}
+              style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)', borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.15)' }}
               className="p-4 rounded-xl border transition-colors duration-500">
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-2">
@@ -74,7 +74,7 @@ export default function PublishingDashboard() {
                   <CheckCircle className="w-3 h-3" /> Ready
                 </span>
               </div>
-              <p style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-xs font-mono transition-colors duration-500">v3.0.0 (Production ZIP)</p>
+              <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs font-mono transition-colors duration-500">v3.0.0 (Production ZIP)</p>
             </div>
 
             <div 
@@ -95,15 +95,15 @@ export default function PublishingDashboard() {
         {/* Release History */}
         <div 
           style={{ 
-            backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+            backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)'
           }}
           className="glass-panel p-5 sm:p-6 rounded-2xl border lg:col-span-2 transition-colors duration-500">
           <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-lg font-semibold mb-6 transition-colors duration-500">Release History</h3>
           <div className="space-y-4">
             {deployments.map((dep) => (
               <div key={dep.id} 
-                style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.02)', borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }}
+                style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.03)', borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)' }}
                 className="flex items-start gap-4 p-4 rounded-xl border hover:border-primary/30 transition-all duration-500">
                 <div 
                   style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
@@ -114,13 +114,13 @@ export default function PublishingDashboard() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1 gap-2">
                     <span className="font-bold text-primary">Version {dep.version}.0</span>
-                    <span style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-xs shrink-0 transition-colors duration-500">{dep.date}</span>
+                    <span style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs shrink-0 transition-colors duration-500">{dep.date}</span>
                   </div>
-                  <div style={{ color: isDark ? '#d1d5db' : '#4b5563' }} className="text-sm mb-3 transition-colors duration-500">Published production-ready ZIP archive.</div>
+                  <div style={{ color: isDark ? '#d1d5db' : '#374151' }} className="text-sm mb-3 transition-colors duration-500">Published production-ready ZIP archive.</div>
                   <button 
                     style={{ 
                       backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(243, 244, 246, 0.8)',
-                      color: isDark ? '#d1d5db' : '#374151',
+                      color: isDark ? '#d1d5db' : '#111827',
                       borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#000000'
                     }}
                     className="text-xs hover:bg-gray-200 dark:hover:bg-white/10 px-3 py-1.5 rounded flex items-center gap-1 border transition-all duration-500 cursor-pointer">

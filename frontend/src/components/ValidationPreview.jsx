@@ -31,13 +31,13 @@ export default function ValidationPreview({ report }) {
         </div>
         <div>
           <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-3xl font-bold transition-colors duration-500">Pre-Flight Validation</h2>
-          <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="transition-colors duration-500">Automated testing engine checking your extension before build.</p>
+          <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="transition-colors duration-500">Automated testing engine checking your extension before build.</p>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Status Card */}
         <div 
-          style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
+          style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)' }}
           className="glass-panel p-6 rounded-2xl border transition-colors duration-500">
           <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-lg font-semibold mb-4 flex items-center gap-2 transition-colors duration-500">
             System Status
@@ -46,13 +46,13 @@ export default function ValidationPreview({ report }) {
             <div 
               style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)' }}
               className="flex justify-between items-center p-3 rounded-lg transition-colors duration-500">
-              <span style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-sm transition-colors duration-500">Files Checked</span>
+              <span style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-sm transition-colors duration-500">Files Checked</span>
               <span style={{ color: isDark ? '#ffffff' : '#111827' }} className="font-mono transition-colors duration-500">{validationReport.filesChecked}</span>
             </div>
             <div 
               style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)' }}
               className="flex justify-between items-center p-3 rounded-lg transition-colors duration-500">
-              <span style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-sm transition-colors duration-500">Manifest Syntax</span>
+              <span style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-sm transition-colors duration-500">Manifest Syntax</span>
               {hasManifestError ? (
                 <span className="flex items-center gap-1 text-red-400 text-sm"><XCircle className="w-4 h-4"/> Invalid</span>
               ) : (
@@ -62,7 +62,7 @@ export default function ValidationPreview({ report }) {
             <div 
               style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)' }}
               className="flex justify-between items-center p-3 rounded-lg transition-colors duration-500">
-              <span style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-sm transition-colors duration-500">Dependency Links</span>
+              <span style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-sm transition-colors duration-500">Dependency Links</span>
               {hasReferenceError ? (
                 <span className="flex items-center gap-1 text-red-400 text-sm"><XCircle className="w-4 h-4"/> Broken</span>
               ) : (
@@ -74,15 +74,15 @@ export default function ValidationPreview({ report }) {
 
         {/* Logs Card */}
         <div 
-          style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
+          style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)' }}
           className="glass-panel p-6 rounded-2xl border flex flex-col transition-colors duration-500">
           <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-lg font-semibold mb-4 flex items-center gap-2 transition-colors duration-500">
             Inspection Logs
           </h3>
           <div 
             style={{ 
-              backgroundColor: isDark ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+              backgroundColor: isDark ? 'rgba(0, 0, 0, 0.8)' : '#f9fafb',
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)'
             }}
             className="flex-1 rounded-xl p-4 font-mono text-sm overflow-y-auto space-y-3 border max-h-62.5 transition-colors duration-500">
             {validationReport.errors.map((err, idx) => (

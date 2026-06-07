@@ -22,7 +22,7 @@ function BackButton({ isDark }) {
   const navigate = useNavigate();
   return (
     <button onClick={() => navigate(-1)}
-      style={{ color: isDark ? '#9ca3af' : '#4b5563' }}
+      style={{ color: isDark ? '#9ca3af' : '#374151' }}
       className={`inline-flex items-center gap-2 text-sm transition-colors mb-8 group ${isDark ? 'hover:text-white' : 'hover:text-gray-900'}`}>
       <span 
         style={{ borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
@@ -41,14 +41,14 @@ const PageTemplate = ({ title, icon, lastUpdated, children, isDark }) => {
       <BackButton isDark={isDark} />
       <motion.div initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
+        style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)' }}
         className="glass-panel p-8 md:p-12 rounded-3xl border transition-colors duration-500">
         <div className="flex items-center gap-4 mb-6">
           <div className="p-3 bg-primary/20 rounded-xl text-primary">{icon}</div>
           <h1 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-3xl font-bold transition-colors duration-500">{title}</h1>
         </div>
-        {lastUpdated && <p style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="mb-8 text-sm transition-colors duration-500">Last updated: {lastUpdated}</p>}
-        <div className="space-y-8 leading-relaxed transition-colors duration-500" style={{ color: isDark ? '#d1d5db' : '#4b5563' }}>{children}</div>
+        {lastUpdated && <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="mb-8 text-sm transition-colors duration-500">Last updated: {lastUpdated}</p>}
+        <div className="space-y-8 leading-relaxed transition-colors duration-500" style={{ color: isDark ? '#d1d5db' : '#374151' }}>{children}</div>
       </motion.div>
     </div>
   );
@@ -143,7 +143,7 @@ export function Changelog() {
     <PageTemplate title="Changelog" icon={<FileText className="w-6 h-6" />} isDark={isDark}>
       <section>
         <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-xl font-semibold mb-1 transition-colors duration-500">v2.0 - Coming Soon</h2>
-        <p style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-xs mb-3 transition-colors duration-500">We are working on it</p>
+        <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs mb-3 transition-colors duration-500">We are working on it</p>
         <ul className="list-disc pl-5 space-y-2 text-sm">
           <li>Launched AI Extension Generator Pipeline with real Manifest V3 output</li>
           <li>Added Workspace Dashboard for managing, versioning and downloading extensions</li>
@@ -153,7 +153,7 @@ export function Changelog() {
       </section>
       <section>
         <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-xl font-semibold mb-1 transition-colors duration-500">v1.0</h2>
-        <p style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-xs mb-3 transition-colors duration-500">Released May 2026</p>
+        <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs mb-3 transition-colors duration-500">Released May 2026</p>
         <ul className="list-disc pl-5 space-y-2 text-sm">
           <li>Beta access released to early users</li>
           <li>Introduced premium plans with advanced generation quota</li>
@@ -177,8 +177,8 @@ export function APIDocs() {
         <div className="space-y-4 font-mono text-sm">
           <div 
             style={{ 
-              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)'
             }}
             className="border rounded-xl p-4 transition-colors duration-500">
             <span className="text-green-400 font-bold">POST</span>
@@ -187,8 +187,8 @@ export function APIDocs() {
           </div>
           <div 
             style={{ 
-              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)'
             }}
             className="border rounded-xl p-4 transition-colors duration-500">
             <span className="text-blue-400 font-bold">GET</span>
@@ -197,8 +197,8 @@ export function APIDocs() {
           </div>
           <div 
             style={{ 
-              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)'
             }}
             className="border rounded-xl p-4 transition-colors duration-500">
             <span className="text-blue-400 font-bold">GET</span>
@@ -207,8 +207,8 @@ export function APIDocs() {
           </div>
           <div 
             style={{ 
-              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)'
             }}
             className="border rounded-xl p-4 transition-colors duration-500">
             <span className="text-blue-400 font-bold">GET</span>
@@ -254,17 +254,17 @@ export function Blog() {
     <PageTemplate title="Blog" icon={<Newspaper className="w-6 h-6" />} isDark={isDark}>
       <section>
         <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-xl font-semibold mb-1 transition-colors duration-500">The Future of AI Code Generation</h2>
-        <p style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-xs mb-3 transition-colors duration-500">Published May 2026</p>
+        <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs mb-3 transition-colors duration-500">Published May 2026</p>
         <p>Browser extensions are just the beginning. Our engine is actively learning and optimizing itself for the future of ambient computing - from browser utilities to OS-level automations</p>
       </section>
       <section>
         <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-xl font-semibold mb-1 transition-colors duration-500">Why Manifest V3 Matters</h2>
-        <p style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-xs mb-3 transition-colors duration-500">Published May 2026</p>
+        <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs mb-3 transition-colors duration-500">Published May 2026</p>
         <p>Chrome's Manifest V3 transition has been controversial in the developer community. We explain what changed, why it matters for privacy and how Extensio.ai handles it automatically so you don't have to</p>
       </section>
       <section>
         <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-xl font-semibold mb-1 transition-colors duration-500">From Idea to Chrome Web Store in 60 Seconds</h2>
-        <p style={{ color: isDark ? '#9ca3af' : '#6b7280' }} className="text-xs mb-3 transition-colors duration-500">Published may 2026</p>
+        <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs mb-3 transition-colors duration-500">Published may 2026</p>
         <p>A step-by-step walkthrough of generating, downloading and publishing a browser extension built entirely with Extensio.ai - no code written by hand</p>
       </section>
     </PageTemplate>
@@ -289,13 +289,13 @@ export function Careers() {
           ].map(({ role, type, desc }) => (
             <div key={role} 
               style={{ 
-                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
-                borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)'
               }}
               className="border rounded-xl p-5 transition-colors duration-500">
               <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="font-semibold transition-colors duration-500">{role}</h3>
               <p className="text-xs text-primary mb-2">{type}</p>
-              <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm transition-colors duration-500">{desc}</p>
+              <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-sm transition-colors duration-500">{desc}</p>
             </div>
           ))}
         </div>
@@ -313,13 +313,13 @@ export function Contact() {
       <BackButton isDark={isDark} />
       <motion.div initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
+        style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.8)', borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
         className="glass-panel p-8 md:p-12 rounded-3xl border transition-colors duration-500">
         <div className="flex items-center gap-4 mb-6">
           <div className="p-3 bg-primary/20 rounded-xl text-primary"><Mail className="w-6 h-6" /></div>
           <h1 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-3xl font-bold transition-colors duration-500">Contact Us</h1>
         </div>
-        <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="mb-8 transition-colors duration-500">We love to hear from you. Please reach out with any questions, feedback or support requests</p>
+        <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="mb-8 transition-colors duration-500">We love to hear from you. Please reach out with any questions, feedback or support requests</p>
         <div className="grid md:grid-cols-2 gap-12">
           <div className="space-y-6">
             {[
@@ -340,40 +340,37 @@ export function Contact() {
           </div>
 
           <div 
-            style={{ 
-              backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
-            }}
+            style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff', borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)' }}
             className="border rounded-2xl p-6 transition-colors duration-500">
             <h3 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-lg font-semibold mb-4 transition-colors duration-500">Send us a message</h3>
             <form className="space-y-4" onSubmit={e => { e.preventDefault(); alert('Message sent! We\'ll get back to you soon.'); }}>
-              <div>
-                <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="block text-xs font-medium mb-1 transition-colors duration-500">Name</label>
-                <input type="text" 
+              <div className="space-y-1">
+                <label style={{ color: isDark ? '#9ca3af' : '#374151' }} className="block text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Name</label>
+                <input type="text" placeholder='Full Name'
                   style={{ 
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.8)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
                     color: isDark ? '#ffffff' : '#111827',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)'
                   }}
                   className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-primary transition-all duration-500" required />
               </div>
-              <div>
-                <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="block text-xs font-medium mb-1 transition-colors duration-500">Email</label>
-                <input type="email" 
+              <div className="space-y-1">
+                <label style={{ color: isDark ? '#9ca3af' : '#374151' }} className="block text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Email</label>
+                <input type="email" placeholder="Enter your email address"
                   style={{ 
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.8)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
                     color: isDark ? '#ffffff' : '#111827',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)'
                   }}
                   className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-primary transition-all duration-500" required />
               </div>
-              <div>
-                <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="block text-xs font-medium mb-1 transition-colors duration-500">Message</label>
-                <textarea rows="4" 
+              <div className="space-y-1">
+                <label style={{ color: isDark ? '#9ca3af' : '#374151' }} className="block text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Message</label>
+                <textarea rows="4" placeholder="Write your message here . . ."
                   style={{ 
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.8)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
                     color: isDark ? '#ffffff' : '#111827',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)'
                   }}
                   className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-primary resize-none transition-all duration-500" required></textarea>
               </div>

@@ -39,6 +39,16 @@ class SecurityValidator {
     return true;
   }
 
+  /**
+   * Reads a manifest file from disk and validates its structure.
+   * @param {string} filePath 
+   */
+  static async validateManifest(filePath) {
+    const content = await fs.readFile(filePath, 'utf-8');
+    const manifest = JSON.parse(content);
+    return this.validateManifestObject(manifest);
+  }
+
   static async validateManifestObject(manifest) {
     try {
       if (manifest.manifest_version !== 3) {

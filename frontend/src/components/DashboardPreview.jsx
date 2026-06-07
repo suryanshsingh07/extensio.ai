@@ -39,11 +39,11 @@ function TypedLine({ text, delay, type, isDark }) {
 
 const colorFor = (t, isDark) => {
   if (t === 'comment') return '#6b7280';
-  if (t === 'brace') return isDark ? '#d1d5db' : '#4b5563';
+  if (t === 'brace') return isDark ? '#d1d5db' : '#1f2937';
   if (t === 'key') return isDark ? '#93c5fd' : '#2563eb';
   if (t === 'string') return isDark ? '#4ade80' : '#16a34a';
   if (t === 'blank') return '';
-  return isDark ? '#d1d5db' : '#4b5563';
+  return isDark ? '#d1d5db' : '#1f2937';
 };
 
 export default function DashboardPreview() {
@@ -74,15 +74,15 @@ export default function DashboardPreview() {
       {/* Browser chrome frame */}
       <div 
         style={{ 
-          backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+          backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.95)',
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)'
         }}
         className="glass-panel rounded-2xl border shadow-[0_0_60px_rgba(99,102,241,0.12)] overflow-hidden transition-colors duration-500">
         {/* Title bar */}
         <div 
           style={{ 
-            backgroundColor: isDark ? 'rgba(17, 17, 17, 0.6)' : 'rgba(243, 244, 246, 0.6)',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+            backgroundColor: isDark ? 'rgba(17, 17, 17, 0.6)' : 'rgba(243, 244, 246, 0.9)',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)'
           }}
           className="flex items-center gap-3 px-5 py-3 border-b transition-colors duration-500">
           <div className="flex gap-1.5">
@@ -92,7 +92,7 @@ export default function DashboardPreview() {
           </div>
           <div className="flex-1 flex justify-center">
             <div 
-              style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.6)', borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }}
+              style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.6)' : '#ffffff', borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.2)' }}
               className="border rounded-full px-4 py-1 text-xs text-gray-500 font-mono transition-colors duration-500">
               app.extensio.ai/workspace
             </div>
@@ -102,16 +102,16 @@ export default function DashboardPreview() {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-0 min-h-380px">
           {/* Left panel — prompt input */}
           <div 
-            style={{ backgroundColor: isDark ? 'rgba(17, 17, 17, 0.2)' : 'rgba(243, 244, 246, 0.2)', borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }}
+            style={{ backgroundColor: isDark ? 'rgba(17, 17, 17, 0.2)' : 'rgba(243, 244, 246, 0.5)', borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)' }}
             className="md:col-span-2 border-r p-5 flex flex-col gap-4 transition-colors duration-500">
             <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest flex items-center gap-2">
               <Terminal className="w-3.5 h-3.5" /> Prompt
             </h3>
             <div 
               style={{ 
-                backgroundColor: isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)',
-                color: isDark ? '#d1d5db' : '#374151',
-                borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                backgroundColor: isDark ? 'rgba(0, 0, 0, 0.7)' : '#ffffff',
+                color: isDark ? '#d1d5db' : '#111827',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.2)'
               }}
               className="rounded-xl p-4 text-sm font-mono border flex-1 leading-relaxed transition-colors duration-500">
               "Dark mode toggle for any website"
@@ -155,13 +155,13 @@ export default function DashboardPreview() {
           </div>
           {/* Right panel — generated code */}
           <div 
-            style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(249, 250, 251, 0.3)' }}
+            style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.3)' : 'rgba(249, 250, 251, 0.8)' }}
             className="md:col-span-3 p-5 flex flex-col transition-colors duration-500">
             <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest flex items-center gap-2 mb-4">
               <Code className="w-3.5 h-3.5" /> Generated Output
             </h3>
             <div 
-              style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)', borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }}
+              style={{ backgroundColor: isDark ? 'rgba(0, 0, 0, 0.8)' : '#ffffff', borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.15)' }}
               className="rounded-xl p-4 border flex-1 overflow-hidden transition-colors duration-500">
               {/* Line numbers + code */}
               <div className="flex gap-3">

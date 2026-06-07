@@ -211,12 +211,26 @@ export default function Profile() {
     setLoading(true);
 
     try {
-      // Simulated password update endpoint
-      await new Promise(r => setTimeout(r, 1200));
+      const res = await fetch(`${API_URL}/auth/password`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          currentPassword: security.currentPassword,
+          newPassword: security.newPassword
+        })
+      });
 
-      setSecurity({ ...security, currentPassword: '', newPassword: '', confirmPassword: '' });
-      setIsPasswordModalOpen(false);
-      showToast('Password updated successfully');
+      if (res.ok) {
+        setSecurity({ ...security, currentPassword: '', newPassword: '', confirmPassword: '' });
+        setIsPasswordModalOpen(false);
+        showToast('Password updated successfully');
+      } else {
+        const data = await res.json();
+        showToast(data.message || 'Failed to update password', 'error');
+      }
     } catch (err) {
       showToast('Current password is incorrect', 'error');
     } finally {
@@ -260,7 +274,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="w-full max-w-7xl px-4 md:px-6 py-12 mt-8 mx-auto space-y-8 animate-in fade-in duration-500 text-gray-900 dark:text-white transition-colors duration-500">
+    <div className="w-full max-w-7xl px-4 md:px-6 py-12 mt-8 mx-auto space-y-8 animate-in fade-in text-gray-900 dark:text-white transition-colors duration-500">
       {/* Success/Error Toast */}
       <AnimatePresence>
         {toast && (
@@ -284,8 +298,8 @@ export default function Profile() {
       {/* Header Section */}
       <div
         style={{
-          backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+          backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff',
+          borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)'
         }}
         className="relative overflow-hidden glass-panel p-8 rounded-4xl border transition-colors duration-500">
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px] -mr-32 -mt-32" />
@@ -318,14 +332,14 @@ export default function Profile() {
                 {user?.isAdmin ? 'Administrator' : 'Creator'}
               </span>
             </div>
-            <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="font-medium transition-colors duration-500">{user?.email}</p>
+            <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="font-medium transition-colors duration-500">{user?.email}</p>
             <div className="flex flex-wrap justify-center md:justify-start gap-4 pt-2">
-              <div style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="flex items-center gap-2 text-sm transition-colors duration-500">
+              <div style={{ color: isDark ? '#9ca3af' : '#374151' }} className="flex items-center gap-2 text-sm transition-colors duration-500">
                 <Calendar className="w-4 h-4" />
                 Joined March 2024
               </div>
               {personalInfo.location && (
-                <div style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="flex items-center gap-2 text-sm transition-colors duration-500">
+                <div style={{ color: isDark ? '#9ca3af' : '#374151' }} className="flex items-center gap-2 text-sm transition-colors duration-500">
                   <MapPin className="w-4 h-4" />
                   {personalInfo.location}
                 </div>
@@ -342,8 +356,8 @@ export default function Profile() {
           {/* Personal Information */}
           <section
             style={{
-              backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+              backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff',
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)'
             }}
             className="glass-panel p-8 rounded-3xl border space-y-6 transition-colors duration-500">
             <div className="flex items-center gap-3 mb-2">
@@ -355,14 +369,14 @@ export default function Profile() {
 
             <form onSubmit={handleSaveInfo} className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Full Name</label>
+                <label style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Full Name</label>
                 <input
                   type="text"
                   value={personalInfo.name}
                   onChange={e => setPersonalInfo({ ...personalInfo, name: e.target.value })}
                   style={{
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.25)',
                     color: isDark ? '#ffffff' : '#111827'
                   }}
                   className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-500"
@@ -371,14 +385,14 @@ export default function Profile() {
                 />
               </div>
               <div className="space-y-2">
-                <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Email Address</label>
+                <label style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Email Address</label>
                 <input
                   type="email"
                   value={personalInfo.email}
                   onChange={e => setPersonalInfo({ ...personalInfo, email: e.target.value })}
                   style={{
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.25)',
                     color: isDark ? '#ffffff' : '#111827'
                   }}
                   className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-500"
@@ -387,14 +401,14 @@ export default function Profile() {
                 />
               </div>
               <div className="space-y-2">
-                <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Mobile Number</label>
+                <label style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Mobile Number</label>
                 <input
                   type="tel"
                   value={personalInfo.phone}
                   onChange={e => setPersonalInfo({ ...personalInfo, phone: e.target.value })}
                   style={{
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.25)',
                     color: isDark ? '#ffffff' : '#111827'
                   }}
                   className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-500"
@@ -402,14 +416,14 @@ export default function Profile() {
                 />
               </div>
               <div className="space-y-2">
-                <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Location</label>
+                <label style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Location</label>
                 <input
                   type="text"
                   value={personalInfo.location}
                   onChange={e => setPersonalInfo({ ...personalInfo, location: e.target.value })}
                   style={{
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.25)',
                     color: isDark ? '#ffffff' : '#111827'
                   }}
                   className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-500"
@@ -417,27 +431,27 @@ export default function Profile() {
                 />
               </div>
               <div className="space-y-2">
-                <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Date of Birth</label>
+                <label style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Date of Birth</label>
                 <input
                   type="date"
                   value={personalInfo.dob}
                   onChange={e => setPersonalInfo({ ...personalInfo, dob: e.target.value })}
                   style={{
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.25)',
                     color: isDark ? '#ffffff' : '#111827'
                   }}
                   className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-500 scheme:dark"
                 />
               </div>
               <div className="space-y-2">
-                <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Gender</label>
+                <label style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Gender</label>
                 <select
                   value={personalInfo.gender}
                   onChange={e => setPersonalInfo({ ...personalInfo, gender: e.target.value })}
                   style={{
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.25)',
                     color: isDark ? '#ffffff' : '#111827'
                   }}
                   className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-500"
@@ -464,8 +478,8 @@ export default function Profile() {
           {/* Security Overview (Dialog Trigger) - Shifted below Profile Details */}
           <section
             style={{
-              backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+              backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff',
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)'
             }}
             className="glass-panel p-8 rounded-3xl border space-y-5 mt-8 transition-colors duration-500">
             <div className="flex items-center gap-3 mb-1">
@@ -476,15 +490,15 @@ export default function Profile() {
             </div>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="max-w-md">
-                <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm leading-relaxed transition-colors duration-500">
+                <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-sm leading-relaxed transition-colors duration-500">
                   Protect your account and managed projects by keeping your credentials updated. We recommend using a strong, unique password for enhanced security.
                 </p>
               </div>
               <button
                 onClick={() => setIsPasswordModalOpen(true)}
                 style={{
-                  backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
-                  borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                  backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.08)',
+                  borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)',
                   color: isDark ? '#ffffff' : '#111827'
                 }}
                 className="w-full md:w-auto px-8 py-3 font-bold rounded-xl border transition-all flex items-center justify-center gap-2 shrink-0 shadow-lg hover:bg-gray-200 dark:hover:bg-white/10"
@@ -501,8 +515,8 @@ export default function Profile() {
           {/* Preferences */}
           <section
             style={{
-              backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+              backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff',
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)'
             }}
             className="glass-panel p-6 rounded-3xl border space-y-5 transition-colors duration-500">
             <div className="flex items-center gap-3 mb-1">
@@ -520,8 +534,8 @@ export default function Profile() {
                 </div>
                 <select
                   style={{
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.25)',
                     color: isDark ? '#ffffff' : '#111827'
                   }}
                   className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none transition-all duration-500"
@@ -546,13 +560,13 @@ export default function Profile() {
               </div>
 
               <div className="space-y-2">
-                <div style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="flex items-center gap-3 text-xs uppercase font-bold tracking-widest transition-colors duration-500">
+                <div style={{ color: isDark ? '#9ca3af' : '#374151' }} className="flex items-center gap-3 text-xs uppercase font-bold tracking-widest transition-colors duration-500">
                   <Clock className="w-3.5 h-3.5" /> Timezone
                 </div>
                 <select
                   style={{
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.25)',
                     color: isDark ? '#ffffff' : '#111827'
                   }}
                   className="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none transition-all duration-500"
@@ -580,8 +594,8 @@ export default function Profile() {
           {/* Active Sessions / Logged in Devices */}
           <section
             style={{
-              backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+              backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff',
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)'
             }}
             className="glass-panel p-6 rounded-3xl border space-y-5 transition-colors duration-500">
             <div className="flex items-center justify-between mb-1">
@@ -591,7 +605,7 @@ export default function Profile() {
                 </div>
                 <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-lg font-bold transition-colors duration-500">Logged in Devices</h2>
               </div>
-              <span style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-[10px] uppercase font-bold tracking-widest transition-colors duration-500">{activeSessions.length} Active</span>
+              <span style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-[10px] uppercase font-bold tracking-widest transition-colors duration-500">{activeSessions.length} Active</span>
             </div>
 
             <div className="space-y-4">
@@ -599,8 +613,8 @@ export default function Profile() {
                 activeSessions.map((session) => (
                     <div key={session.id}
                       style={{
-                        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)',
-                        borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
+                        borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)'
                       }}
                       className="flex items-center justify-between p-3 rounded-xl border group hover:border-primary/20 transition-all duration-500">
                       <div className="flex items-center gap-3 min-w-0">
@@ -653,8 +667,8 @@ export default function Profile() {
         <section
           onClick={() => setIsDeactivateModalOpen(true)}
           style={{
-            backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+            backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)'
           }}
           className="glass-panel p-8 rounded-3xl border flex items-center justify-between group hover:border-yellow-500/30 transition-all duration-500 cursor-pointer"
         >
@@ -663,10 +677,10 @@ export default function Profile() {
               Deactivate Account
               <ShieldAlert className="w-4 h-4 text-yellow-500" />
             </h3>
-            <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm transition-colors duration-500">Temporarily disable your profile and hide your public extensions.</p>
+            <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-sm transition-colors duration-500">Temporarily disable your profile and hide your public extensions.</p>
           </div>
           <div
-            style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)', color: isDark ? '#9ca3af' : '#4b5563' }}
+            style={{ backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)', color: isDark ? '#9ca3af' : '#374151' }}
             className="p-3 rounded-xl group-hover:bg-yellow-500 group-hover:text-white transition-all duration-500"
           >
             <ChevronRight className="w-6 h-6" />
@@ -676,8 +690,8 @@ export default function Profile() {
         {/* Account Deletion */}
         <section
           style={{
-            backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.4)',
-            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+            backgroundColor: isDark ? 'rgba(0, 0, 0, 0.4)' : '#ffffff',
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)'
           }}
           className="glass-panel p-8 rounded-3xl border flex items-center justify-between group hover:border-red-500/30 transition-all duration-500 cursor-pointer">
           <div className="space-y-1">
@@ -685,7 +699,7 @@ export default function Profile() {
               Danger Zone
               <ShieldAlert className="w-4 h-4 text-red-500" />
             </h3>
-            <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-sm transition-colors duration-500">Permanently delete your account and all projects.</p>
+            <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-sm transition-colors duration-500">Permanently delete your account and all projects.</p>
           </div>
           <button
             onClick={() => setIsDeleteModalOpen(true)}
@@ -728,15 +742,15 @@ export default function Profile() {
 
               <form onSubmit={handleUpdatePassword} className="space-y-6">
                 <div className="space-y-2">
-                  <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Current Password</label>
+                  <label style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Current Password</label>
                   <div className="relative">
                     <input
                       type={security.showPass ? "text" : "password"}
                       value={security.currentPassword}
                       onChange={e => setSecurity({ ...security, currentPassword: e.target.value })}
                       style={{
-                        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                        borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+                        borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.25)',
                         color: isDark ? '#ffffff' : '#111827'
                       }}
                       className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-hidden [&::-ms-reveal]:hidden [&::-ms-clear]:hidden"
@@ -754,15 +768,15 @@ export default function Profile() {
                 </div>
 
                 <div className="space-y-2">
-                  <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">New Password</label>
+                  <label style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">New Password</label>
                   <div className="relative">
                     <input
                       type={security.showNewPass ? "text" : "password"}
                       value={security.newPassword}
                       onChange={e => setSecurity({ ...security, newPassword: e.target.value })}
                       style={{
-                        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                        borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+                        borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.25)',
                         color: isDark ? '#ffffff' : '#111827'
                       }}
                       className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-hidden [&::-ms-reveal]:hidden [&::-ms-clear]:hidden"
@@ -790,15 +804,15 @@ export default function Profile() {
                 </div>
 
                 <div className="space-y-2">
-                  <label style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Confirm New Password</label>
+                  <label style={{ color: isDark ? '#9ca3af' : '#374151' }} className="text-xs font-semibold uppercase tracking-wider ml-1 transition-colors duration-500">Confirm New Password</label>
                   <div className="relative">
                     <input
                       type={security.showConfirmPass ? "text" : "password"}
                       value={security.confirmPassword}
                       onChange={e => setSecurity({ ...security, confirmPassword: e.target.value })}
                       style={{
-                        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
-                        borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                        backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
+                        borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.25)',
                         color: isDark ? '#ffffff' : '#111827'
                       }}
                       className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-hidden [&::-ms-reveal]:hidden [&::-ms-clear]:hidden"
@@ -852,9 +866,9 @@ export default function Profile() {
                 <button
                   onClick={() => setIsLogoutSessionModalOpen(false)}
                   style={{
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(243, 244, 246, 0.8)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
                     color: isDark ? '#ffffff' : '#374151',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#000000'
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)'
                   }}
                   className="w-full py-4 font-bold rounded-2xl transition-all border hover:scale-105"
                 >
@@ -883,15 +897,15 @@ export default function Profile() {
                 <ShieldAlert className="w-10 h-10" />
               </div>
               <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-2xl font-bold mb-2 transition-colors duration-500">Deactivate Account?</h2>
-              <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="mb-8 leading-relaxed transition-colors duration-500">Your data will be preserved, but your extensions will go offline and your profile will be hidden until you log back in.</p>
+              <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="mb-8 leading-relaxed transition-colors duration-500">Your data will be preserved, but your extensions will go offline and your profile will be hidden until you log back in.</p>
               <div className="flex flex-col gap-3">
                 <button onClick={() => { showToast('Account deactivated successfully', 'success'); setIsDeactivateModalOpen(false); setTimeout(logout, 1000); }} className="w-full py-4 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-2xl transition-all">Yes, Deactivate</button>
                 <button
                   onClick={() => setIsDeactivateModalOpen(false)}
                   style={{
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(243, 244, 246, 0.8)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
                     color: isDark ? '#ffffff' : '#374151',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#000000'
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)'
                   }}
                   className="w-full py-4 font-bold rounded-2xl transition-all border hover:scale-105"
                 >
@@ -929,14 +943,24 @@ export default function Profile() {
                 <Trash2 className="w-10 h-10" />
               </div>
               <h2 style={{ color: isDark ? '#ffffff' : '#111827' }} className="text-2xl font-bold mb-2 transition-colors duration-500">Delete Account?</h2>
-              <p style={{ color: isDark ? '#9ca3af' : '#4b5563' }} className="mb-8 leading-relaxed transition-colors duration-500">
+              <p style={{ color: isDark ? '#9ca3af' : '#374151' }} className="mb-8 leading-relaxed transition-colors duration-500">
                 This action is irreversible. All your generated extensions and personal data will be wiped from our servers forever.
               </p>
               <div className="flex flex-col gap-3">
                 <button
-                  onClick={() => {
-                    showToast('Simulating account deletion...', 'error');
-                    setTimeout(logout, 1500);
+                  onClick={async () => {
+                    try {
+                      const res = await fetch(`${API_URL}/auth/account`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                      });
+                      if (res.ok) {
+                        showToast('Account deleted permanently', 'success');
+                        setTimeout(logout, 1500);
+                      }
+                    } catch (err) {
+                      showToast('Failed to delete account', 'error');
+                    }
                   }}
                   className="w-full py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-2xl shadow-xl shadow-red-500/20 transition-all active:scale-95"
                 >
@@ -945,9 +969,9 @@ export default function Profile() {
                 <button
                   onClick={() => setIsDeleteModalOpen(false)}
                   style={{
-                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(243, 244, 246, 0.8)',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#ffffff',
                     color: isDark ? '#ffffff' : '#374151',
-                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#000000'
+                    borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)'
                   }}
                   className="w-full py-4 font-bold rounded-2xl transition-all border hover:scale-105"
                 >

@@ -103,8 +103,14 @@ export default function AdminDashboard() {
             borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)'
           }}
           className="flex items-center gap-3 p-2 rounded-lg border transition-colors duration-500">
-          <span className={`flex items-center gap-2 text-sm px-3 py-1 bg-green-500/10 ${isDark ? 'text-green-400' : 'text-green-600'} rounded-md`}>
-            <Activity className="w-4 h-4" /> System Healthy
+          <span className={`flex items-center gap-2 text-sm px-3 py-1 rounded-md ${
+            stats.apiErrors > 5 
+              ? 'bg-red-500/10 text-red-400' 
+              : stats.apiErrors > 0 
+                ? 'bg-yellow-500/10 text-yellow-400' 
+                : `bg-green-500/10 ${isDark ? 'text-green-400' : 'text-green-600'}`
+          }`}>
+            <Activity className="w-4 h-4" /> {stats.apiErrors > 5 ? 'System Degraded' : stats.apiErrors > 0 ? 'Review API Performance' : 'System Healthy'}
           </span>
         </div>
       </div>
