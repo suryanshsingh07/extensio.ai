@@ -42,7 +42,23 @@ router.put('/auth/profile', requireAuth, asyncHandler(AuthController.updateProfi
 router.put('/auth/password', requireAuth, asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: 'Validation Error', message: 'Current password and new password are required' });
+  }
+
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  if (!passwordRegex.test(newPassword)) {
+    return res.status(400).json({
+      error: 'Validation Error',
+      message: 'New password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.'
+    });
+  }
+
   const user = await User.findById(req.user.id);
+  if (!user) {
+    return res.status(404).json({ error: 'Not Found', message: 'User not found' });
+  }
+
   const isMatch = await bcrypt.compare(currentPassword, user.password);
 
   if (!isMatch) {
@@ -51,6 +67,10 @@ router.put('/auth/password', requireAuth, asyncHandler(async (req, res) => {
 
   user.password = await bcrypt.hash(newPassword, 10);
   await user.save();
+
+  // Invalidate all active sessions for this user
+  await Session.deleteMany({ userId: req.user.id });
+
   res.json({ message: 'Password updated successfully' });
 }));
 

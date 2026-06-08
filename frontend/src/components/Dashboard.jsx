@@ -216,7 +216,7 @@ export default function Dashboard() {
         }
         setIsGenerating(false);
       }
-    }, 1000);
+    }, 2000);
   };
 
   const statusLabel = {

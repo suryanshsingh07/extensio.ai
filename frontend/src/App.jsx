@@ -36,12 +36,15 @@ function ProtectedRoute({ children }) {
   const { user, loading, openAuthModal } = useAuth();
   const location = useLocation();
 
+  useEffect(() => {
+    if (!loading && !user) {
+      openAuthModal('login');
+    }
+  }, [loading, user, openAuthModal]);
+
   if (loading) return <Spinner />;
 
   if (!user) {
-    setTimeout(() => {
-      openAuthModal('login');
-    }, 100);
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 

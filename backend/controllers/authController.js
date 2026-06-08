@@ -57,7 +57,7 @@ class AuthController {
       }
 
       const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
-      res.status(201).json({ token, user: { id: user._id, email: user.email, name: user.name } });
+      res.status(201).json({ token, user: { id: user._id, email: user.email, name: user.name, isAdmin: user.isAdmin } });
     } catch (error) {
       res.status(500).json({ error: 'Server Error', message: error.message });
     }
@@ -83,7 +83,7 @@ class AuthController {
       }
 
       const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
-      res.json({ token, user: { id: user._id, email: user.email, name: user.name } });
+      res.json({ token, user: { id: user._id, email: user.email, name: user.name, isAdmin: user.isAdmin } });
     } catch (error) {
       res.status(500).json({ error: 'Server Error', message: error.message });
     }

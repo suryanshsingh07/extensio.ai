@@ -490,7 +490,11 @@ class GenerationWorker {
 
   async getJobStatus(jobId) {
     const job = this.activeJobs.get(jobId);
-    if (!job) throw new Error('Job not found');
+    if (!job) {
+      const err = new Error('Job not found');
+      err.status = 404;
+      throw err;
+    }
     return job;
   }
 }
