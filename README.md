@@ -24,7 +24,7 @@
 
 **Extensio.ai** is a No-Code Extension Factory that empowers business users without coding knowledge to generate real, installable Chrome Extensions using natural language prompts.
 
-### 🎯 Use Case
+### 🎯 Use Cases
 A business user types a requirement, such as: *"Make a Chrome extension that blocks all images on a website and replaces them with a red square."* The AI must generate all necessary files (`manifest.json`, `content.js`, `popup.html`), zip them and provide an immediate download link.
 
 **Extensio.ai** immediately:
