@@ -196,7 +196,7 @@ sequenceDiagram
 
 ### 🧩 Auto-Packaging System
 The Node.js backend handles the entire workflow:
-- **String to File:** Receives code JSON from the AI and writes it to a secure temporary file system.
+- **String to Files:** Receives code JSON from the AI and writes it to a secure temporary file system.
 - **Validated Archiving:** Uses the `archiver` library to create Chrome-compatible ZIP archives.
 - **Immediate Serving:** Streamlined delivery of the generated package directly to the client.
 
