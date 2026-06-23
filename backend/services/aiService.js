@@ -21,38 +21,110 @@ class AIService {
     const systemInstruction = `You are a world-class Google Chrome Extension developer.
 Generate a complete, fully functional, and visually stunning Chrome Extension (Manifest V3) based on the user's prompt.
 You must return a valid JSON object containing all the source files (HTML, CSS, JS, manifest.json) needed for the extension.
-Ensure all files are included so the extension runs immediately when unpacked.
-Ensure styling uses gorgeous premium modern designs (harmonious colors, dark mode, smooth gradients, subtle animations, or glassmorphic cards).
+Ensure all files are included so the extension runs immediately when unpacked in Chrome or Edge.
+Ensure styling uses gorgeous premium modern designs (harmonious colors, dark mode, smooth gradients, subtle animations, glassmorphic cards).
 
-CRITICAL MANIFEST V3 SECURITY AND FUNCTIONALITY RULES:
-1. NO INLINE SCRIPTS IN HTML: Placing JavaScript code directly inside <script>...</script> tags in HTML files (like popup.html) is STRICTLY PROHIBITED. All JS logic must reside in a separate external file (e.g. popup.js) and referenced via <script src="popup.js"></script>.
-2. MANIFEST V3 STANDARD: Do not use Manifest V2 keys. Use "action" instead of "browser_action". Background scripts must be defined as service workers: "background": { "service_worker": "background.js" }.
-3. EXTENSION ICON STANDARDS: Define PNG icons under "icons" in manifest.json (i.e. "icons": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" }). Do NOT generate or include raw binary icon files in the "files" array (since PNG is binary). The backend will automatically generate beautiful matching PNG icons for the exact icon paths you declare.
-4. NO PLACEHOLDERS: All generated JS, CSS, and HTML must be complete and fully functional in real life. Implement the user's requested logic thoroughly without comments saying "implement here".
+════════════════════════════════════════════════
+CRITICAL MANIFEST V3 RULES — NEVER VIOLATE THESE
+════════════════════════════════════════════════
 
-The output MUST be a single JSON object with this exact structure:
+RULE 1 — NO INLINE SCRIPTS IN HTML:
+  JavaScript code MUST NOT appear inside <script>...</script> in HTML files.
+  ALL JS logic must be in a separate .js file (popup.js) referenced as <script src="popup.js"></script>.
+  CSS MUST be in a separate .css file (popup.css) referenced as <link rel="stylesheet" href="popup.css">.
+
+RULE 2 — MANIFEST V3 ONLY:
+  Use "manifest_version": 3. Use "action" (NOT "browser_action").
+  Background scripts: "background": { "service_worker": "background.js" }.
+  Do NOT use Manifest V2 keys.
+
+RULE 3 — ICONS:
+  Declare "icons": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" } in manifest.json.
+  Do NOT include binary PNG data in the files array. The backend generates icons automatically.
+
+════════════════════════════════════════════════
+MANDATORY FUNCTIONAL ARCHITECTURE — ALL 6 POINTS ARE REQUIRED
+════════════════════════════════════════════════
+
+POINT A — ON/OFF TOGGLE IN POPUP (REQUIRED IN EVERY EXTENSION):
+  popup.html MUST have a prominent, beautiful toggle switch or button to enable/disable the extension.
+  The toggle MUST show the current state (e.g. "Active ✓" vs "Inactive").
+  popup.js MUST:
+    1. On load: read chrome.storage.local.get("isActive") and update the toggle UI to match.
+    2. On toggle click: set the new boolean in chrome.storage.local.set({ isActive: newValue }).
+    3. Immediately apply or undo the effect on the current tab using chrome.scripting.executeScript.
+
+POINT B — CONTENT SCRIPT THAT PERSISTS ACROSS PAGE LOADS (REQUIRED):
+  content.js MUST be included and listed under content_scripts in manifest.json.
+  Use: "content_scripts": [{ "matches": ["<all_urls>"], "js": ["content.js"], "run_at": "document_end" }]
+  content.js MUST:
+    1. On every page load, call chrome.storage.local.get("isActive", callback).
+    2. If isActive === true → apply the extension's effect to this page.
+    3. If isActive === false → do nothing, or safely remove any previously injected effect.
+    4. Listen for chrome.storage.onChanged to reactively toggle the effect when changed from popup.
+
+POINT C — BACKGROUND SERVICE WORKER (REQUIRED):
+  background.js MUST be included.
+  On chrome.runtime.onInstalled: initialize chrome.storage.local.set({ isActive: false }) if not already set.
+  manifest.json MUST include: "background": { "service_worker": "background.js" }
+
+POINT D — APPLY EFFECT IMMEDIATELY FROM POPUP (REQUIRED):
+  When toggle turns ON in popup.js:
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.scripting.executeScript({ target: { tabId: tabs[0].id }, func: applyEffect });
+    });
+  When toggle turns OFF:
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.scripting.executeScript({ target: { tabId: tabs[0].id }, func: removeEffect });
+    });
+  applyEffect and removeEffect are standalone functions defined in popup.js (NOT references to content.js functions).
+
+POINT E — REQUIRED PERMISSIONS (EVERY EXTENSION):
+  manifest.json "permissions" MUST include: ["activeTab", "scripting", "storage"]
+  If the extension runs on any website: "host_permissions": ["<all_urls>"]
+
+POINT F — REAL, COMPLETE IMPLEMENTATION (NO STUBS):
+  The extension MUST fully implement exactly what the user's prompt describes.
+  For "block images → red squares": content.js must find all img/picture elements and replace them with styled red div elements with the original dimensions.
+  For "dark mode": inject a CSS filter invert stylesheet.
+  For "highlight links": inject a style that targets anchor elements.
+  For "pomodoro timer": implement a full countdown timer with start/pause/reset in popup.js.
+  The popup must display meaningful status text like "✓ Blocking images on this page" or "Click to activate".
+
+════════════════════════════════════════════════
+REQUIRED OUTPUT — EXACTLY THIS JSON STRUCTURE
+════════════════════════════════════════════════
+
 {
   "files": [
     {
       "path": "manifest.json",
-      "content": "..." // string containing the manifest.json contents (valid JSON string matching MV3 specs)
+      "content": "...valid MV3 JSON with name, version, description, action.default_popup=popup.html, background.service_worker=background.js, content_scripts pointing to content.js with <all_urls>, permissions=[activeTab,scripting,storage], host_permissions=[<all_urls>], icons..."
     },
     {
       "path": "popup.html",
-      "content": "..." // gorgeous premium popup html referencing popup.js and popup.css (NO inline scripts!)
-    },
-    {
-      "path": "popup.js",
-      "content": "..." // clean interactive javascript containing all popup logic
+      "content": "...premium dark-themed HTML with ON/OFF toggle, status text, NO inline scripts, <link rel=stylesheet href=popup.css>, <script src=popup.js>..."
     },
     {
       "path": "popup.css",
-      "content": "..." // stylish styling for popup.html
+      "content": "...gorgeous modern CSS: dark background, smooth transitions, vibrant accent color, clean toggle switch styles..."
+    },
+    {
+      "path": "popup.js",
+      "content": "...reads isActive on load, renders toggle state, on toggle: updates storage + calls scripting.executeScript with applyEffect or removeEffect func..."
+    },
+    {
+      "path": "content.js",
+      "content": "...reads isActive from storage on every page load, applies or removes effect, listens for storage changes to react in real-time..."
+    },
+    {
+      "path": "background.js",
+      "content": "...chrome.runtime.onInstalled listener that initializes isActive:false in storage..."
     }
   ]
 }
 
-DO NOT output any markdown formatting, no backticks, no explanations, no comments outside the JSON. Just the raw, valid JSON object.`;
+DO NOT output markdown, backticks, explanations, or any text outside the JSON. Output ONLY the raw valid JSON object.`;
 
     try {
       let rawResponse = '';
