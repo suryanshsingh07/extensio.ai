@@ -206,9 +206,9 @@ DO NOT output markdown, backticks, explanations, or any text outside the JSON. O
   }
 
   static async _callGemini(apiKey, systemInstruction, promptText) {
-    // Ensure model name is clean. Google expects "gemini-1.5-flash", not "models/gemini-1.5-flash" in the URL path.
-    const model = (process.env.GEMINI_MODEL || 'gemini-1.5-flash').split('/').pop();
-    const urlV1 = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
+    // gemini-2.0-flash is the current stable model. gemini-1.5-flash was deprecated on v1.
+    const model = (process.env.GEMINI_MODEL || 'gemini-2.0-flash').split('/').pop();
+    const urlV1   = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
     const urlBeta = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     console.log(`AI Service: Contacting Gemini API using model ${model}...`);
@@ -241,9 +241,10 @@ DO NOT output markdown, backticks, explanations, or any text outside the JSON. O
       } catch (betaErr) {
         console.warn(`AI Service: JSON mode may be unsupported. Final attempt without JSON config...`);
         try {
-          const fallbackBody = { ...requestBody };
+          // Deep-copy so we don't mutate the original requestBody object
+          const fallbackBody = JSON.parse(JSON.stringify(requestBody));
           delete fallbackBody.generationConfig.responseMimeType;
-          responseText = await this._makeHttpsPost(urlV1, fallbackBody);
+          responseText = await this._makeHttpsPost(urlBeta, fallbackBody);
         } catch (finalErr) {
           console.error(`AI Service: All Gemini attempts failed.`);
           throw new Error(`Gemini API Error: ${finalErr.message}`);
