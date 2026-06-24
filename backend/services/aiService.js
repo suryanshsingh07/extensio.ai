@@ -14,7 +14,7 @@ class AIService {
     const openaiKey = process.env.OPENAI_API_KEY;
 
     if (!geminiKey && !openaiKey) {
-      console.log('💡 AI Service: No GEMINI_API_KEY or OPENAI_API_KEY found. Falling back to local rule-based generation.');
+      console.log('AI Service: No GEMINI_API_KEY or OPENAI_API_KEY found. Falling back to local rule-based generation.');
       return null;
     }
 
@@ -154,10 +154,10 @@ DO NOT output markdown, backticks, explanations, or any text outside the JSON. O
         return parsed.files;
       }
       
-      console.warn('⚠ AI Service: LLM response did not contain expected "files" array structure.');
+      console.warn('AI Service: LLM response did not contain expected "files" array structure.');
       return null;
     } catch (err) {
-      console.error('⚠ AI Service: Failed to generate custom extension via AI API:', err.message);
+      console.error('AI Service: Failed to generate custom extension via AI API:', err.message);
       return null; // Safe fallback
     }
   }
@@ -232,20 +232,20 @@ DO NOT output markdown, backticks, explanations, or any text outside the JSON. O
 
     let responseText;
     try {
-      console.log(`🤖 AI Service: Attempting stable v1 endpoint...`);
+      console.log(`AI Service: Attempting stable v1 endpoint...`);
       responseText = await this._makeHttpsPost(urlV1, requestBody);
     } catch (v1Err) {
-      console.warn(`⚠ AI Service: v1 endpoint failed (${v1Err.message}). Retrying with v1beta...`);
+      console.warn(`AI Service: v1 endpoint failed (${v1Err.message}). Retrying with v1beta...`);
       try {
         responseText = await this._makeHttpsPost(urlBeta, requestBody);
       } catch (betaErr) {
-        console.warn(`⚠ AI Service: JSON mode may be unsupported. Final attempt without JSON config...`);
+        console.warn(`AI Service: JSON mode may be unsupported. Final attempt without JSON config...`);
         try {
           const fallbackBody = { ...requestBody };
           delete fallbackBody.generationConfig.responseMimeType;
           responseText = await this._makeHttpsPost(urlV1, fallbackBody);
         } catch (finalErr) {
-          console.error(`❌ AI Service: All Gemini attempts failed.`);
+          console.error(`AI Service: All Gemini attempts failed.`);
           throw new Error(`Gemini API Error: ${finalErr.message}`);
         }
       }
@@ -264,7 +264,7 @@ DO NOT output markdown, backticks, explanations, or any text outside the JSON. O
     const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
     const url = 'https://api.openai.com/v1/chat/completions';
     
-    console.log(`🤖 AI Service: Contacting OpenAI API using model ${model}...`);
+    console.log(`AI Service: Contacting OpenAI API using model ${model}...`);
     
     const requestBody = {
       model: model,

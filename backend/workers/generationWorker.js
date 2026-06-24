@@ -21,16 +21,16 @@ function buildExtensionFiles(prompt) {
     return match && !isNegated;
   };
 
-  const isDarkMode   = hasIntent(['dark', 'night']);
-  const isAdBlock    = hasIntent(['ad block', 'adblock', 'remove ad']);
+  const isDarkMode = hasIntent(['dark', 'night']);
+  const isAdBlock = hasIntent(['ad block', 'adblock', 'remove ad']);
   const isTabManager = hasIntent(['tab manag', 'save tab', 'close tab', 'group tab']);
-  const isTimer      = hasIntent(['timer', 'pomodoro', 'focus', 'break']);
-  const isHighlight  = hasIntent(['highlight', 'mark']);
-  const isNotes      = hasIntent(['note', 'sticky', 'memo']);
-  const isRedSquare  = (hasIntent(['block']) && p.includes('image')) || (p.includes('red') && p.includes('square'));
+  const isTimer = hasIntent(['timer', 'pomodoro', 'focus', 'break']);
+  const isHighlight = hasIntent(['highlight', 'mark']);
+  const isNotes = hasIntent(['note', 'sticky', 'memo']);
+  const isRedSquare = (hasIntent(['block']) && p.includes('image')) || (p.includes('red') && p.includes('square'));
 
   const nameParts = prompt.split(' ').slice(0, 4).join(' ') || 'Custom Extension';
-  const extName   = (nameParts.charAt(0).toUpperCase() + nameParts.slice(1)).trim() || 'Extensio Project';
+  const extName = (nameParts.charAt(0).toUpperCase() + nameParts.slice(1)).trim() || 'Extensio Project';
   const shortDesc = prompt.length > 80 ? prompt.slice(0, 77) + '...' : prompt;
 
   // ─── Shared background.js that initializes state ─────────────────────────
@@ -142,7 +142,7 @@ toggle.addEventListener('change', () => {
   function removeDark() { const s = document.getElementById('__ext_dark__'); if (s) s.remove(); }
 })();`;
 
-  // ─── AD BLOCK ──────────────────────────────────────────────────────────────
+    // ─── AD BLOCK ──────────────────────────────────────────────────────────────
   } else if (isAdBlock) {
     iconColor = { r: 244, g: 114, b: 182 };
     permissions = ['activeTab', 'scripting', 'storage', 'declarativeNetRequest'];
@@ -204,7 +204,7 @@ toggle.addEventListener('change', () => {
   }
 })();`;
 
-  // ─── RED SQUARE IMAGE BLOCKER ─────────────────────────────────────────────
+    // ─── RED SQUARE IMAGE BLOCKER ─────────────────────────────────────────────
   } else if (isRedSquare) {
     iconColor = { r: 244, g: 63, b: 94 };
     popupCss = sharedCss('#f43f5e');
@@ -276,7 +276,7 @@ toggle.addEventListener('change', () => {
   }
 })();`;
 
-  // ─── POMODORO TIMER ───────────────────────────────────────────────────────
+    // ─── POMODORO TIMER ───────────────────────────────────────────────────────
   } else if (isTimer) {
     iconColor = { r: 245, g: 158, b: 11 };
     host_permissions = []; content_scripts = [];
@@ -323,7 +323,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 });`;
     contentJs = '';
 
-  // ─── TAB MANAGER ─────────────────────────────────────────────────────────
+    // ─── TAB MANAGER ─────────────────────────────────────────────────────────
   } else if (isTabManager) {
     iconColor = { r: 96, g: 165, b: 250 };
     permissions = ['tabs', 'storage', 'activeTab']; host_permissions = []; content_scripts = [];
@@ -375,7 +375,7 @@ document.getElementById('closeDupe').addEventListener('click', () => {
 });`;
     contentJs = '';
 
-  // ─── NOTES ───────────────────────────────────────────────────────────────
+    // ─── NOTES ───────────────────────────────────────────────────────────────
   } else if (isNotes) {
     iconColor = { r: 167, g: 139, b: 250 };
     permissions = ['storage']; host_permissions = []; content_scripts = [];
@@ -413,7 +413,7 @@ note.addEventListener('input', () => {
 });`;
     contentJs = '';
 
-  // ─── LINK HIGHLIGHTER ─────────────────────────────────────────────────────
+    // ─── LINK HIGHLIGHTER ─────────────────────────────────────────────────────
   } else if (isHighlight) {
     iconColor = { r: 251, g: 191, b: 36 };
     popupCss = sharedCss('#fbbf24');
@@ -461,11 +461,11 @@ toggle.addEventListener('change', () => {
   function remove() { const s = document.getElementById('__ext_hl__'); if (s) s.remove(); }
 })();`;
 
-  // ─── GENERIC FALLBACK — real activate badge + scripting ──────────────────
+    // ─── GENERIC FALLBACK — real activate badge + scripting ──────────────────
   } else {
     popupCss = sharedCss('#6366f1');
     popupHtml = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><link rel="stylesheet" href="popup.css"></head><body>
-<div class="header"><span class="header-icon">\u26A1</span><div><div class="header-title">${extName}</div><div class="header-sub">${shortDesc.slice(0,55)}${shortDesc.length>55?'...':''}</div></div></div>
+<div class="header"><span class="header-icon">\u26A1</span><div><div class="header-title">${extName}</div><div class="header-sub">${shortDesc.slice(0, 55)}${shortDesc.length > 55 ? '...' : ''}</div></div></div>
 <div class="toggle-row"><span class="toggle-label">Activate Extension</span>
 <label class="toggle-switch"><input type="checkbox" id="toggle"><span class="slider"></span></label></div>
 <div class="status inactive" id="status">Inactive — toggle to activate</div>
@@ -531,9 +531,9 @@ toggle.addEventListener('change', () => {
   // ─── Assemble file list ───────────────────────────────────────────────────
   const files = [
     { path: 'manifest.json', content: JSON.stringify(manifest, null, 2) },
-    { path: 'popup.html',    content: popupHtml },
-    { path: 'popup.css',     content: popupCss },
-    { path: 'popup.js',      content: popupJs },
+    { path: 'popup.html', content: popupHtml },
+    { path: 'popup.css', content: popupCss },
+    { path: 'popup.js', content: popupJs },
     { path: 'background.js', content: backgroundJs },
   ];
 
@@ -542,8 +542,8 @@ toggle.addEventListener('change', () => {
 
   // Generate PNG icons with the correct accent color per template
   const { r, g, b } = iconColor;
-  files.push({ path: 'icons/icon16.png',  content: generatePng(16,  16,  r, g, b) });
-  files.push({ path: 'icons/icon48.png',  content: generatePng(48,  48,  r, g, b) });
+  files.push({ path: 'icons/icon16.png', content: generatePng(16, 16, r, g, b) });
+  files.push({ path: 'icons/icon48.png', content: generatePng(48, 48, r, g, b) });
   files.push({ path: 'icons/icon128.png', content: generatePng(128, 128, r, g, b) });
 
   return files;
@@ -803,3 +803,4 @@ function parseHexColor(hex) {
 }
 
 module.exports = new GenerationWorker();
+
